@@ -11,9 +11,11 @@ import { useHistory } from 'react-router-dom';
 import { ConsentStatus } from '../../enums/ConsentStatus';
 import { RouterPath } from '../../enums/RouterPath';
 import ServerRequestError from '../../components/ContentState/ServerRequestError';
-import { IFIData, RahasyaList } from '../../interfaces/IFIData';
+import { IFIData } from '../../interfaces/IFIData';
 import { AccountType } from '../../enums/AccountType';
-import InsuranceGraphs from '../../components/Graphs/InsuranceGraphs';
+import { InsuranceInfo } from '../../enums/Insurance';
+import InsuranceFIData from '../../components/FIData/InsuranceFIData';
+import InsuranceSuggestions from '../../components/FIData/InsuranceSuggestions';
 
 const Dashboard: React.FC = () => {
   const history = useHistory();
@@ -56,16 +58,25 @@ const Dashboard: React.FC = () => {
       {!showLoader &&
         <Col sm='12'>
           {!showError &&
-          <>
+          <Row className='mt-1 mb-2'>
             {dashboardData.map(fiData => {
-              return fiData.RahasyaData.map(item => {
+              let existingInsurance: any[] = []
+              let dataCards: any[] = []
+
+              const existingData = fiData.RahasyaData.map(item => {
                 const accountData: any = item.data;
-                if(accountData["attributes"]["type"] == AccountType.Insurance)
-                  return <InsuranceGraphs data={accountData} />
-              })
-            })
-            }
-          </>
+                if(accountData["attributes"]["type"] == AccountType.Insurance) {
+                  existingInsurance.push(accountData.children[0].attributes.policyType)
+                  return <InsuranceFIData key={accountData["attributes"]["linkedAccRef"]} data={accountData} />
+                }
+              });
+              dataCards.push(...existingData);
+              const morePolicies = InsuranceInfo.filter((item: any) => !existingInsurance.includes(item.policyType));
+              const newCards = morePolicies.map(item => <InsuranceSuggestions key={item.policyType} data={item} />)
+              dataCards.push(...newCards);
+              return dataCards;
+            })}
+          </Row>
           }
           {!!showError &&
             <ServerRequestError height='500px' imgHeight='250px' width='100%' />
