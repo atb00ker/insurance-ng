@@ -19,7 +19,8 @@ export const registerUserRequest = (jwt: string): Promise<any> => {
 };
 
 export const createConsentRequest = (phoneNumber: string, jwt: string): Promise<any> => {
-  return axios.post(ServerPath.CreateConsent, { "phone": phoneNumber }, getJwtHeader(jwt))
+  return axios
+    .post(ServerPath.CreateConsent, { phone: phoneNumber }, getJwtHeader(jwt))
     .catch((error: any) => {
       const url = new URL(ServerPath.CreateConsent, axios.defaults.baseURL).toString();
       console.error(`Cant't get ${url} because ${error}`);
@@ -28,18 +29,18 @@ export const createConsentRequest = (phoneNumber: string, jwt: string): Promise<
 
 export const getConsentStatus = (jwt: string): Promise<any> => {
   return axios.get(ServerPath.ConsentStatus, getJwtHeader(jwt)).catch((error: any) => {
-      const url = new URL(ServerPath.ConsentStatus, axios.defaults.baseURL).toString();
-      console.error(`Cant't get ${url} because ${error}`);
-    });
+    const url = new URL(ServerPath.ConsentStatus, axios.defaults.baseURL).toString();
+    console.error(`Cant't get ${url} because ${error}`);
+  });
 };
 
 export const getDashboardData = (jwt: string): Promise<any> => {
   return axios.get(ServerPath.GetUserData, getJwtHeader(jwt)).catch((error: any) => {
-      const url = new URL(ServerPath.GetUserData, axios.defaults.baseURL).toString();
-      console.error(`Cant't get ${url} because ${error}`);
-    });
+    const url = new URL(ServerPath.GetUserData, axios.defaults.baseURL).toString();
+    console.error(`Cant't get ${url} because ${error}`);
+  });
 };
 
 export const getPathToDashboard = () => {
   return new URL(RouterPath.Dashboard, window.location.origin).toString();
-}
+};

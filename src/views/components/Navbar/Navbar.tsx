@@ -24,7 +24,8 @@ const Navbar = () => {
                 className='m-1 me-4 btn-sm'
                 variant='primary'
                 disabled
-                onClick={() => auth.loginWithRedirect()}>
+                onClick={() => auth.loginWithRedirect()}
+              >
                 Loading
               </Button>
             )}

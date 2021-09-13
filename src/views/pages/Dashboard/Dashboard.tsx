@@ -26,67 +26,83 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     auth.user.jwt().then(jwt => {
-      getConsentStatus(jwt).then(response => {
+      getConsentStatus(jwt)
+        .then(response => {
           setShowError(false);
-          const status = response.data["status"];
-          if (![ConsentStatus.UserConsentsReady,
-                ConsentStatus.UserConsentsFetched,
-                ConsentStatus.UserConsentsActive].includes(status))
+          const status = response.data['status'];
+          if (
+            ![
+              ConsentStatus.UserConsentsReady,
+              ConsentStatus.UserConsentsFetched,
+              ConsentStatus.UserConsentsActive,
+            ].includes(status)
+          )
             history.push(RouterPath.CreateConsent);
           else {
-            getDashboardData(jwt).then(response => {
-              const dataJson = prepareDataJson(response.data);
-              setDashboardData(dataJson);
-              setShowLoader(false);
-              setShowError(false);
-            }).catch(error => {
-              console.error(error);
-              setShowLoader(false);
-              setShowError(true);
-            })
+            getDashboardData(jwt)
+              .then(response => {
+                const dataJson = prepareDataJson(response.data);
+                setDashboardData(dataJson);
+                setShowLoader(false);
+                setShowError(false);
+              })
+              .catch(error => {
+                console.error(error);
+                setShowLoader(false);
+                setShowError(true);
+              });
           }
-        }).catch(error => {
+        })
+        .catch(error => {
           console.error(error);
           history.push(RouterPath.CreateConsent);
         });
-      });
-  }, [auth.isReady])
+    });
+  }, [auth.isReady]);
 
   return (
     <Container>
-      <Row className='mt-4'>
-      {!showLoader &&
-        <Col sm='12'>
-          {!showError &&
-          <Row className='mt-1 mb-2'>
-            {dashboardData.map(fiData => {
-              let existingInsurance: any[] = []
-              let dataCards: any[] = []
+      {!showError && !showLoader && (
+        <Row className='mt-1 mb-2 justify-content-center'>
+          {dashboardData.map(fiData => {
+            let existingInsurance: any[] = [];
+            let dataCards: any[] = [];
 
-              const existingData = fiData.RahasyaData.map(item => {
-                const accountData: any = item.data;
-                if(accountData["attributes"]["type"] == AccountType.Insurance) {
-                  existingInsurance.push(accountData.children[0].attributes.policyType)
-                  return <InsuranceFIData key={accountData["attributes"]["linkedAccRef"]} data={accountData} />
-                }
-              });
-              dataCards.push(...existingData);
-              const morePolicies = InsuranceInfo.filter((item: any) => !existingInsurance.includes(item.policyType));
-              const newCards = morePolicies.map(item => <InsuranceSuggestions key={item.policyType} data={item} />)
-              dataCards.push(...newCards);
-              return dataCards;
-            })}
-          </Row>
-          }
-          {!!showError &&
+            const existingData = fiData.RahasyaData.map(item => {
+              const accountData: any = item.data;
+              if (accountData['attributes']['type'] == AccountType.Insurance) {
+                existingInsurance.push(accountData.children[0].attributes.policyType);
+                return <InsuranceFIData key={accountData['attributes']['linkedAccRef']} data={accountData} />;
+              }
+            });
+            dataCards.push(...existingData);
+            const morePolicies = InsuranceInfo.filter(
+              (item: any) => !existingInsurance.includes(item.policyType),
+            );
+            const newCards = morePolicies.map(item => (
+              <InsuranceSuggestions key={item.policyType} data={item} />
+            ));
+            dataCards.push(...newCards);
+            return dataCards;
+          })}
+        </Row>
+      )}
+
+      {!!showError && (
+        <Row className='mt-4'>
+          <Col sm='12'>
             <ServerRequestError height='500px' imgHeight='250px' width='100%' />
-          }
-        </Col>
-      }
-      {!!showLoader &&
-        <SectionLoader height='500px' width='100%' />
-      }
-      </Row>
+          </Col>
+        </Row>
+      )}
+
+      {!!showLoader && (
+        <Row className='mt-4'>
+          <Col sm='12'>
+            <SectionLoader height='500px' width='100%' />
+          </Col>
+        </Row>
+      )}
     </Container>
   );
 };

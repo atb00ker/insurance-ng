@@ -1,3 +1,3 @@
 export enum AccountType {
-	Insurance = "insurance"
+  Insurance = 'insurance',
 }
