@@ -7,6 +7,7 @@ import (
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/models"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/form3tech-oss/jwt-go"
@@ -77,54 +78,61 @@ func getEncryptedFIData(sessionData fiSessionResponse) (fiEncryptedData fiDataRe
 
 func getUnencryptedFIDataList(rahasyaKeys rahasyaKeyResponse,
 	encryptedData fiDataResponse) (response []rahasyaDataResponseCollection, err error) {
+	var wgEncrpyptedData sync.WaitGroup
 
 	for _, encryptedFI := range encryptedData.FI {
-		// TODO: Make Async
-		var fiData []rahasyaDataResponse
-		fiData, err = prepareFIForDecryption(rahasyaKeys, encryptedFI)
-		if err != nil {
-			return
-		}
+		wgEncrpyptedData.Add(1)
+		go func(encryptedFI fiEncryptionData) {
+			defer wgEncrpyptedData.Done()
+			fiData, err := prepareFIForDecryption(rahasyaKeys, encryptedFI)
+			if err != nil {
+				return
+			}
 
-		fiDataCollection := rahasyaDataResponseCollection{
-			RahasyaData: fiData,
-			FipId:       encryptedFI.FipId,
-		}
-		response = append(response, fiDataCollection)
+			fiDataCollection := rahasyaDataResponseCollection{
+				RahasyaData: fiData,
+				FipId:       encryptedFI.FipId,
+			}
+
+			response = append(response, fiDataCollection)
+		}(encryptedFI)
 	}
 
+	wgEncrpyptedData.Wait()
 	return
 }
 
 func prepareFIForDecryption(rahasyaKeys rahasyaKeyResponse,
 	encryptedData fiEncryptionData) (response []rahasyaDataResponse, err error) {
+	var wgEncrpyptedData sync.WaitGroup
 
 	for _, encryptedRecord := range encryptedData.Data {
-		// TODO: Make Async
-		var responseData rahasyaDataResponse
-		responseData, err = sendDecryptRequestToRahasya(rahasyaKeys, encryptedData, encryptedRecord)
-		if err != nil {
-			response = append(response, rahasyaDataResponse{
-				Data:      "",
-				ErrorInfo: err.Error(),
-			})
-		}
+		wgEncrpyptedData.Add(1)
+		go func(encryptedRecord fiData) {
+			defer wgEncrpyptedData.Done()
+			responseData, err := sendDecryptRequestToRahasya(rahasyaKeys, encryptedData, encryptedRecord)
+			if err != nil {
+				response = append(response, rahasyaDataResponse{
+					Data:      "",
+					ErrorInfo: err.Error(),
+				})
+			}
 
-		var data []byte
-		data, err = base64.StdEncoding.DecodeString(responseData.Base64Data)
-		if err != nil {
+			data, err := base64.StdEncoding.DecodeString(responseData.Base64Data)
+			if err != nil {
+				response = append(response, rahasyaDataResponse{
+					Data:      "",
+					ErrorInfo: err.Error(),
+				})
+			}
 			response = append(response, rahasyaDataResponse{
-				Data:      "",
-				ErrorInfo: err.Error(),
+				Data:      string(data),
+				ErrorInfo: responseData.ErrorInfo,
 			})
-		}
-
-		response = append(response, rahasyaDataResponse{
-			Data:      string(data),
-			ErrorInfo: responseData.ErrorInfo,
-		})
+		}(encryptedRecord)
 	}
 
+	wgEncrpyptedData.Wait()
 	return
 }
 
