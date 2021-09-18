@@ -15,7 +15,7 @@ import (
 )
 
 func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
-	consentData models.UserConsents) (sessionData fiSessionResponse, err error) {
+	consentData models.UserConsents) (sessionData setuFiSessionResponse, err error) {
 	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
 	// I have reported, but until those bugs are fixed, we have to comment this and
 	// use the hack below.
@@ -43,10 +43,10 @@ func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 }
 
 func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData models.UserConsents,
-	rahasyaKeys rahasyaKeyResponse) fiSessionRequest {
+	rahasyaKeys rahasyaKeyResponse) setuFiSessionRequest {
 
 	signedConsent := strings.Split(consentData.SignedConsent, ".")[2]
-	requestBody := fiSessionRequest{
+	requestBody := setuFiSessionRequest{
 		Ver:       "1.0",
 		Timestamp: currentTime,
 		Txnid:     uuid,
@@ -64,7 +64,7 @@ func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData mod
 	return requestBody
 }
 
-func getEncryptedFIData(sessionData fiSessionResponse) (fiEncryptedData fiDataResponse, err error) {
+func getEncryptedFIData(sessionData setuFiSessionResponse) (fiEncryptedData setuFiDataResponse, err error) {
 	urlPath := fmt.Sprintf(SetuApiFiDataFetch, sessionData.SessionId.String())
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.StandardClaims{})
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
@@ -77,7 +77,7 @@ func getEncryptedFIData(sessionData fiSessionResponse) (fiEncryptedData fiDataRe
 }
 
 func getUnencryptedFIDataList(rahasyaKeys rahasyaKeyResponse,
-	encryptedData fiDataResponse) (response []rahasyaDataResponseCollection, err error) {
+	encryptedData setuFiDataResponse) (response []rahasyaDataResponseCollection, err error) {
 	var wgEncrpyptedData sync.WaitGroup
 
 	for _, encryptedFI := range encryptedData.FI {
@@ -103,14 +103,14 @@ func getUnencryptedFIDataList(rahasyaKeys rahasyaKeyResponse,
 }
 
 func prepareFIForDecryption(rahasyaKeys rahasyaKeyResponse,
-	encryptedData fiEncryptionData) (response []rahasyaDataResponse, err error) {
+	encryptedDataList fiEncryptionData) (response []rahasyaDataResponse, err error) {
 	var wgEncrpyptedData sync.WaitGroup
 
-	for _, encryptedRecord := range encryptedData.Data {
+	for _, encryptedRecord := range encryptedDataList.Data {
 		wgEncrpyptedData.Add(1)
 		go func(encryptedRecord fiData) {
 			defer wgEncrpyptedData.Done()
-			responseData, err := sendDecryptRequestToRahasya(rahasyaKeys, encryptedData, encryptedRecord)
+			responseData, err := getDecryptedData(rahasyaKeys, encryptedDataList, encryptedRecord)
 			if err != nil {
 				response = append(response, rahasyaDataResponse{
 					Data:      "",
@@ -125,6 +125,7 @@ func prepareFIForDecryption(rahasyaKeys rahasyaKeyResponse,
 					ErrorInfo: err.Error(),
 				})
 			}
+
 			response = append(response, rahasyaDataResponse{
 				Data:      string(data),
 				ErrorInfo: responseData.ErrorInfo,
@@ -136,7 +137,7 @@ func prepareFIForDecryption(rahasyaKeys rahasyaKeyResponse,
 	return
 }
 
-func sendDecryptRequestToRahasya(rahasyaKeys rahasyaKeyResponse,
+func getDecryptedData(rahasyaKeys rahasyaKeyResponse,
 	encryptedData fiEncryptionData, encryptedRecord fiData) (responseData rahasyaDataResponse, err error) {
 
 	requestBody := rahasyaDecryptRequest{
@@ -146,6 +147,7 @@ func sendDecryptRequestToRahasya(rahasyaKeys rahasyaKeyResponse,
 		OurPrivateKey:     rahasyaKeys.PrivateKey,
 		RemoteKeyMaterial: encryptedData.KeyMaterial,
 	}
+
 	rahasyaRequestBody, err := json.Marshal(requestBody)
 	if err != nil {
 		return

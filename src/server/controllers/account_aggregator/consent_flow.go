@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse createConsentResponse,
+func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCreateConsentResponse,
 	consentExpire time.Time, err error) {
 	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
 	// I have reported, but until those bugs are fixed, we have to comment this and
@@ -50,9 +50,9 @@ func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse createC
 }
 
 func createConsentBody(uuid uuid.UUID, startTime string, endTime string,
-	customerId string) createConsentRequest {
+	customerId string) setuCreateConsentRequest {
 
-	requestBody := createConsentRequest{
+	requestBody := setuCreateConsentRequest{
 		Ver:       "1.0",
 		Timestamp: startTime,
 		Txnid:     uuid,
@@ -87,7 +87,7 @@ func createConsentBody(uuid uuid.UUID, startTime string, endTime string,
 	return requestBody
 }
 
-func addOrUpdateConsentToDb(userId string, consent createConsentResponse, expiry time.Time) *gorm.DB {
+func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, expiry time.Time) *gorm.DB {
 	userConsent := models.UserConsents{
 		UserId:        userId,
 		CustomerId:    consent.Customer.Id,
@@ -114,14 +114,14 @@ func getUserConsent(userId string) (userConsent models.UserConsents, err error) 
 
 func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uuid.UUID, err error) {
 	urlPath := fmt.Sprintf(SetuApiConsentStatusPath, consentHandle)
-	jwtPayload := consentStatusRequest{Path: urlPath}
+	jwtPayload := setuConsentStatusRequest{Path: urlPath}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtPayload)
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
 	if err != nil {
 		return
 	}
 
-	var consentStatus consentStatusResponse
+	var consentStatus setuConsentStatusResponse
 	if err = json.Unmarshal(respBytes, &consentStatus); err != nil {
 		return
 	}
@@ -132,14 +132,14 @@ func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uu
 
 func fetchSignedConsent(userId string, consentId uuid.UUID) (status string, err error) {
 	urlPath := fmt.Sprintf(SetuApiConsentSignedPath, consentId)
-	jwtPayload := consentStatusRequest{Path: urlPath}
+	jwtPayload := setuConsentStatusRequest{Path: urlPath}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtPayload)
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
 	if err != nil {
 		return
 	}
 
-	var signedConsent signedConsentResponse
+	var signedConsent setuSignedConsentResponse
 	if err = json.Unmarshal(respBytes, &signedConsent); err != nil {
 		return
 	}

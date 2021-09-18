@@ -53,19 +53,15 @@ const (
 )
 
 // Create Consent Types //
-type createConsentRequestData struct {
+type createConsentRequestInput struct {
 	Phone string `json:"phone"`
 }
 
-type createConsentRequest struct {
-	Ver           string         `json:"ver"`
-	Timestamp     string         `json:"timestamp"`
-	Txnid         uuid.UUID      `json:"txnid"`
-	ConsentDetail consentDetails `json:"ConsentDetail"`
-	jwt.StandardClaims
+type createConsentResponseOutput struct {
+	ConsentHandle string `json:"consent_handle"`
 }
 
-type createConsentResponse struct {
+type setuCreateConsentResponse struct {
 	Ver           string    `json:"ver"`
 	Timestamp     time.Time `json:"timestamp"`
 	Txnid         uuid.UUID `json:"txnid"`
@@ -73,6 +69,14 @@ type createConsentResponse struct {
 	ConsentHandle uuid.UUID `json:"ConsentHandle"`
 	ErrorMsg      string    `json:"errorMsg"`
 	ErrorCode     string    `json:"errorCode"`
+}
+
+type setuCreateConsentRequest struct {
+	Ver           string         `json:"ver"`
+	Timestamp     string         `json:"timestamp"`
+	Txnid         uuid.UUID      `json:"txnid"`
+	ConsentDetail consentDetails `json:"ConsentDetail"`
+	jwt.StandardClaims
 }
 
 type consentDetails struct {
@@ -123,16 +127,12 @@ type dataFilter struct {
 }
 
 // Consent Artefact Status Types //
-type createConsentResponseData struct {
-	ConsentHandle string `json:"consent_handle"`
-}
-
-type consentStatusRequest struct {
+type setuConsentStatusRequest struct {
 	Path string `json:"path"`
 	jwt.StandardClaims
 }
 
-type consentStatusResponse struct {
+type setuConsentStatusResponse struct {
 	Ver           string        `json:"ver"`
 	Txnid         uuid.UUID     `json:"txnid"`
 	Timestamp     time.Time     `json:"timestamp"`
@@ -148,7 +148,7 @@ type consentStatus struct {
 }
 
 // Signed Consent Types //
-type signedConsentResponse struct {
+type setuSignedConsentResponse struct {
 	Ver             string     `json:"ver"`
 	Txnid           uuid.UUID  `json:"txnid"`
 	ConsentUse      consentUse `json:"ConsentUse"`
@@ -189,7 +189,7 @@ type rahasyaDhPublic struct {
 }
 
 // Fi Session //
-type fiSessionRequest struct {
+type setuFiSessionRequest struct {
 	Ver         string             `json:"ver"`
 	Timestamp   string             `json:"timestamp"`
 	Txnid       uuid.UUID          `json:"txnid"`
@@ -199,7 +199,7 @@ type fiSessionRequest struct {
 	jwt.StandardClaims
 }
 
-type fiSessionResponse struct {
+type setuFiSessionResponse struct {
 	Ver       string    `json:"ver"`
 	Timestamp time.Time `json:"timestamp"`
 	Txnid     uuid.UUID `json:"txnid"`
@@ -213,7 +213,7 @@ type fiConsent struct {
 }
 
 // Fi Data //
-type fiDataResponse struct {
+type setuFiDataResponse struct {
 	Ver       string             `json:"ver"`
 	Timestamp string             `json:"timestamp"`
 	Txnid     uuid.UUID          `json:"txnid"`

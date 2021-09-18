@@ -10,8 +10,14 @@ const (
 	UrlCreateConsent = "/api/account_aggregator/consent/"
 	UrlConsentStatus = "/api/account_aggregator/consent/status/"
 	UrlGetUserData   = "/api/account_aggregator/data/"
+	// UrlConsentNotification = "/api/account_aggregator/Consent/Notification"
+	UrlConsentNotification = "/Consent/Notification"
 )
 
+func ConsentNotification(response http.ResponseWriter, request *http.Request) {
+
+
+}
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	userId, ok := controllers.GetUserIdentifier(response, request)
@@ -21,9 +27,7 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	}
 
 	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
-
-	var requestJson createConsentRequestData
+	var requestJson createConsentRequestInput
 	if err := decoder.Decode(&requestJson); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -34,15 +38,16 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 		controllers.HandleError(response, err.Error())
 		return
 	}
-	result := addOrUpdateConsentToDb(userId, consentResponse, expiry)
 
-	if result.Error != nil {
+	if result := addOrUpdateConsentToDb(userId, consentResponse, expiry); result.Error != nil {
 		controllers.HandleError(response, result.Error.Error())
 		return
 	}
-	respMessage, _ := json.Marshal(createConsentResponseData{
+
+	respMessage, _ := json.Marshal(createConsentResponseOutput{
 		ConsentHandle: consentResponse.ConsentHandle.String(),
 	})
+
 	response.Write(respMessage)
 }
 
