@@ -14,6 +14,7 @@ import (
 var Database *gorm.DB
 
 func ConnectToDb() {
+	fmt.Println("Connecting to database...")
 	dsn := url.URL{
 		User:     url.UserPassword(os.Getenv("DB_USER"), os.Getenv("DB_PASS")),
 		Scheme:   "postgres",
@@ -32,6 +33,7 @@ func ConnectToDb() {
 }
 
 func migrateDb() {
+	fmt.Println("Migrating models...")
 	Database.AutoMigrate(&models.Users{})
 	Database.AutoMigrate(&models.UserConsents{})
 }

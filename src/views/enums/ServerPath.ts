@@ -1,6 +1,6 @@
 export enum ServerPath {
-  Register = '/register/',
-  CreateConsent = '/account_aggregator/consent/',
-  ConsentStatus = '/account_aggregator/consent/status/',
-  GetUserData = '/account_aggregator/data/',
+  Register = '/api/register/',
+  CreateConsent = '/api/account_aggregator/consent/',
+  ConsentStatus = '/api/account_aggregator/consent/status/',
+  GetUserData = '/api/account_aggregator/data/',
 }

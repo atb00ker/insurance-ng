@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 )
 
 func LoadEnv() {
+	fmt.Println("Loading environment Variables...")
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}

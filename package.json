@@ -8,7 +8,7 @@
   "scripts": {
     "docker": "docker-compose up -d",
     "server": "env-cmd fresh -c gofresh.config",
-    "react-start": "webpack serve --open --mode development --history-api-fallback",
+    "react-start": "webpack serve --open --mode development",
     "react-build": "webpack --mode production",
     "format": "prettier --write \"src/**/*.(js|ts|tsx)\""
   },

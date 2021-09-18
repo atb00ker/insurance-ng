@@ -12,6 +12,7 @@ module.exports = {
   devServer: {
     port: 8010,
     watchContentBase: true,
+    historyApiFallback: true,
   },
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],

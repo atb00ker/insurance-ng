@@ -1,5 +1,5 @@
 const axios = require('axios');
-const port = location.protocol === 'http:' ? process.env.APP_PORT : '443';
+const port = location.protocol === 'http:' ? process.env.REACT_APP_PORT : '443';
 import { RouterPath } from '../enums/RouterPath';
 import { ServerPath } from '../enums/ServerPath';
 

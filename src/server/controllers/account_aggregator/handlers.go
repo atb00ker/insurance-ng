@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	UrlCreateConsent = "/account_aggregator/consent/"
-	UrlConsentStatus = "/account_aggregator/consent/status/"
-	UrlGetUserData   = "/account_aggregator/data/"
+	UrlCreateConsent = "/api/account_aggregator/consent/"
+	UrlConsentStatus = "/api/account_aggregator/consent/status/"
+	UrlGetUserData   = "/api/account_aggregator/data/"
 )
 
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {

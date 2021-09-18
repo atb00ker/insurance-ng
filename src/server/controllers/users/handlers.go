@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	UrlRegister = "/register/"
+	UrlRegister = "/api/register/"
 )
 
 func RegisterUserHandler(response http.ResponseWriter, request *http.Request) {
