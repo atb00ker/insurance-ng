@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthConfigurations, { Provider, ProviderOptions } from './Auth0';
-import { IAuth } from '../../interfaces/IAuth';
+import { IAuth } from '../../interfaces/IUser';
 
 export const AuthContext = React.createContext<IAuth>(undefined as unknown as IAuth);
 

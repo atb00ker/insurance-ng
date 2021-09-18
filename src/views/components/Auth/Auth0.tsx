@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth0, Auth0Provider, Auth0ProviderOptions } from '@auth0/auth0-react';
-import { IAuth } from '../../interfaces/IAuth';
+import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from './AuthProvider';
 
 export const Provider = Auth0Provider;

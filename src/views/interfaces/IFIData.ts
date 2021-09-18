@@ -1,4 +1,4 @@
-import { IUser } from './IUser';
+import { IUser, IUserMetrics } from './IUser';
 
 export interface IFIData {
   FipId: string;
@@ -6,6 +6,11 @@ export interface IFIData {
 }
 
 export interface RahasyaList {
-  data: string;
+  data: any;
   errorInfo: string;
+}
+
+export interface IInsuranceFIData {
+  data: any;
+  userInfo: IUserMetrics;
 }

@@ -8,7 +8,7 @@ import CreateConsentForm from '../../components/CreateConsentSection/CreateConse
 import { createConsentRequest, getPathToDashboard } from '../../services/axios';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import { AuthContext } from '../../components/Auth/AuthProvider';
-import { IAuth } from '../../interfaces/IAuth';
+import { IAuth } from '../../interfaces/IUser';
 import ServerRequestError from '../../components/ContentState/ServerRequestError';
 
 const CreateConsent: React.FC = () => {

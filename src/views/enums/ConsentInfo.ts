@@ -8,3 +8,9 @@ export enum ConsentStatus {
   UserConsentsNorecord = 'NOTFOUND',
   UserConsentsUnknown = 'UNKNOWN',
 }
+
+export enum ConsentType {
+  Transactions = 'Transactions',
+  Summary = 'Summary',
+  Profile = 'Profile',
+}

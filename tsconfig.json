@@ -11,6 +11,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "./src/views/types/svg.d.ts"
+    "./src/views/types/*.d.ts"
   ]
 }

@@ -27,12 +27,12 @@ const (
 	FetchTypeOnetime  = "ONETIME"
 	FetchTypePeriodic = "PERIODIC"
 	// Consent Types
-	ConsentTypesTransaction = "TRANSACTIONS"
 	ConsentTypesProfile     = "PROFILE"
+	ConsentTypesTransaction = "TRANSACTIONS"
 	ConsentTypesSummary     = "SUMMARY"
 	// FI Types
-	FiTypesTransaction         = "DEPOSIT"
-	FiTypesProfile             = "MUTUAL_FUNDS"
+	FiTypesDeposit             = "DEPOSIT"
+	FiTypesMutualFunds         = "MUTUAL_FUNDS"
 	FiTypesInsurancePolicies   = "INSURANCE_POLICIES"
 	FiTypesTermDeposit         = "TERM_DEPOSIT"
 	FiTypesRecurringDeposit    = "RECURRING_DEPOSIT"

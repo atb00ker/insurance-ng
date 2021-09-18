@@ -2,11 +2,13 @@ import React, { useContext, useMemo, useState } from 'react';
 import { default as BootstrapNav } from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
 
 import { AuthContext } from '../Auth/AuthProvider';
-import { IAuth } from '../../interfaces/IAuth';
+import { IAuth } from '../../interfaces/IUser';
 // import { Link } from 'react-router-dom';
 // import { RouterPath } from '../../enums/RouterPath';
+import LogoThinImage from '../../assets/icons/logo-thin.png';
 
 const Navbar = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -15,7 +17,9 @@ const Navbar = () => {
     <React.Fragment>
       <BootstrapNav bg='light' expand='sm'>
         <Container fluid>
-          <BootstrapNav.Brand href='#home'>Insurance NG</BootstrapNav.Brand>
+          <BootstrapNav.Brand href='#home'>
+            <Image src={LogoThinImage} height='26px' />
+          </BootstrapNav.Brand>
           <BootstrapNav.Toggle aria-controls='navbar-toggle' />
           <BootstrapNav.Collapse id='navbar-toggle'>
             <div style={{ flex: '1 1 auto' }}></div>
