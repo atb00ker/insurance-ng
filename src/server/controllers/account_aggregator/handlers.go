@@ -29,8 +29,7 @@ func ConsentNotification(response http.ResponseWriter, request *http.Request) {
 		startTime.Year(), startTime.Month(), startTime.Day(),
 		startTime.Hour(), startTime.Minute(), startTime.Second())
 
-	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification.ConsentId,
-		requestJson.ConsentStatusNotification.ConsentStatus); err != nil {
+	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification); err != nil {
 		HandleNotificationError(response, startTimeHack, err.Error())
 		return
 	}
@@ -79,44 +78,50 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Write(respMessage)
 }
 
-func GetConsentStatus(response http.ResponseWriter, request *http.Request) {
+// Data flow
+func FINotification(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
-		return
-	}
-
-	status, err := getSignedConsent(userId)
-	if err != nil {
+	decoder := json.NewDecoder(request.Body)
+	var requestJson fINotificationRequest
+	if err := decoder.Decode(&requestJson); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
+	startTime := time.Now()
+	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		startTime.Year(), startTime.Month(), startTime.Day(),
+		startTime.Hour(), startTime.Minute(), startTime.Second())
 
-	respMessage, _ := json.Marshal(controllers.ResponseMessage{Status: status})
-	response.Write(respMessage)
-}
+	if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
+		HandleNotificationError(response, startTimeHack, err.Error())
+		return
+	}
 
-// Data flow
-func FINotification(response http.ResponseWriter, request *http.Request) {
-	// I am not receiving FI Notification because of some problem in the setu API,
-	// Hence this code is pending in dicussion on slack community.
+	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification(startTimeHack)
+	if err != nil {
+		HandleNotificationError(response, startTimeHack, err.Error())
+		return
+	}
+
+	response.Header().Set("client_api_key", clientApi)
+	response.Header().Set("x-jws-signature", requestJws)
+	response.Write(setuResponseBody)
 }
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
-		return
-	}
+	// userId, ok := controllers.GetUserIdentifier(response, request)
+	// if !ok {
+	// 	controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+	// 	return
+	// }
 
-	userData, err := getUserData(userId)
-	if err != nil {
-		controllers.HandleError(response, err.Error())
-		return
-	}
+	// userData, err := getUserData(userId)
+	// if err != nil {
+	// 	controllers.HandleError(response, err.Error())
+	// 	return
+	// }
 
-	respMessage, _ := json.Marshal(userData)
-	response.Write(respMessage)
+	// respMessage, _ := json.Marshal(userData)
+	// response.Write(respMessage)
 }

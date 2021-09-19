@@ -10,7 +10,9 @@
       "port": 3000,
       "host": "0.0.0.0",
       "program": "${workspaceRoot}/src/server",
-      "env": {},
+      "env": {
+          "GO111MODULE": "on"
+      },
       "cwd": "${workspaceRoot}",
       "envFile": "${workspaceRoot}/.env",
       "args": [],
@@ -25,7 +27,9 @@
       "port": 3000,
       "host": "0.0.0.0",
       "program": "${workspaceRoot}/src/server",
-      "env": {},
+      "env": {
+          "GO111MODULE": "on"
+      },
       "envFile": "${workspaceRoot}/.env.test",
       "args": [],
       "showLog": true
@@ -40,7 +44,9 @@
       "host": "0.0.0.0",
       "buildFlags": "-tags 'unit_tests integration_tests all_tests'",
       "program": "${file}",
-      "env": {},
+      "env": {
+          "GO111MODULE": "on"
+      },
       "envFile": "${workspaceRoot}/.env.test",
       "args": [],
       "showLog": true

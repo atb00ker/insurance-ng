@@ -7,6 +7,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"insurance-ng/src/server/config"
+	"insurance-ng/src/server/models"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -108,6 +110,18 @@ func HandleNotificationError(response http.ResponseWriter, startTimeHack string,
 		Response:  "Errored",
 	})
 	response.Write(respMessage)
+}
+
+func getUserConsentWithUserId(userId string) (userConsent models.UserConsents, err error) {
+	result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Take(&userConsent)
+	err = result.Error
+	return
+}
+
+func getUserConsentWithSessionId(sessionId string) (userConsent models.UserConsents, err error) {
+	result := config.Database.Model(&models.UserConsents{}).Where("session_id = ?", sessionId).Take(&userConsent)
+	err = result.Error
+	return
 }
 
 func getPrivatePemFileContent() (x509Key interface{}, err error) {

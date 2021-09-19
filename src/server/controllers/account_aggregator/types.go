@@ -248,9 +248,73 @@ type rahasyaDataResponse struct {
 	ErrorInfo  string `json:"errorInfo"`
 }
 
-type rahasyaDataResponseCollection struct {
-	RahasyaData []rahasyaDataResponse
-	FipId       string
+type fipDataCollection struct {
+	FipData []fipData
+	FipId   string
+}
+
+type fipData struct {
+	Account struct {
+		LinkedAccRef    uuid.NullUUID `xml:"linkedAccRef,attr"`
+		MaskedAccNumber string        `xml:"maskedAccNumber,attr"`
+		Type            string        `xml:"type,attr"`
+		Profile         struct {
+			Holders []fipProfileHolder `xml:"Holders"`
+			Riders  []fipProfileRider  `xml:"Riders"`
+		} `xml:"Profile"`
+		Summary      fipSummary     `xml:"Summary"`
+		Transactions fipTransctions `xml:"Transactions"`
+	} `xml:"Account"`
+}
+
+type fipProfileHolder struct {
+	Holder struct {
+		Name           string `xml:"name,attr"`
+		Email          string `xml:"email,attr"`
+		Address        string `xml:"address,attr"`
+		Mobile         string `xml:"mobile,attr"`
+		Pan            string `xml:"pan,attr"`
+		Dob            string `xml:"dob,attr"`
+		CkycCompliance string `xml:"ckycCompliance,attr"`
+	} `xml:"Holder"`
+}
+
+type fipProfileRider struct {
+	RiderType       string `xml:"riderType,attr"`
+	PolicyEndDate   string `xml:"policyEndDate,attr"`
+	PolicyStartDate string `xml:"policyStartDate,attr"`
+	PremiumAmount   string `xml:"premiumAmount,attr"`
+	SumAssured      string `xml:"sumAssured,attr"`
+}
+
+type fipSummary struct {
+	Type            string  `xml:"type,attr"`
+	Status          string  `xml:"status,attr"`
+	CurrentBalance  string  `xml:"currentBalance,attr"`
+	CoverAmount     float32 `xml:"coverAmount,attr"`
+	TenureMonths    string  `xml:"tenureMonths,attr"`
+	CoverType       string  `xml:"coverType,attr"`
+	PolicyName      string  `xml:"policyName,attr"`
+	TenureYears     string  `xml:"tenureYears,attr"`
+	MaturityDate    string  `xml:"maturityDate,attr"`
+	MaturityBenefit string  `xml:"maturityBenefit,attr"`
+	PolicyStartDate string  `xml:"policyStartDate,attr"`
+	PolicyType      string  `xml:"policyType,attr"`
+	SumAssured      string  `xml:"sumAssured,attr"`
+	PremiumAmount   float32 `xml:"premiumAmount,attr"`
+}
+
+type fipTransctions struct {
+	Transaction []struct {
+		Mode                 string `xml:"mode,attr"`
+		Type                 string `xml:"type,attr"`
+		TxnID                string `xml:"txnId,attr"`
+		Amount               string `xml:"amount,attr"`
+		Narration            string `xml:"narration,attr"`
+		Reference            string `xml:"reference,attr"`
+		CurrentBalance       string `xml:"currentBalance,attr"`
+		TransactionTimestamp string `xml:"transactionTimestamp,attr"`
+	} `xml:"Transaction"`
 }
 
 // Consent Notification Types //
@@ -281,4 +345,28 @@ type consentNotifierStatus struct {
 	ConsentId     uuid.UUID `json:"consentId"`
 	ConsentHandle uuid.UUID `json:"consentHandle"`
 	ConsentStatus string    `json:"consentStatus"`
+}
+
+// FI Notification Types //
+
+type fINotificationRequest struct {
+	Ver       string    `json:"ver"`
+	Timestamp time.Time `json:"timestamp"`
+	Txnid     string    `json:"txnid"`
+	Notifier  struct {
+		Type string `json:"type"`
+		ID   string `json:"id"`
+	} `json:"Notifier"`
+	FIStatusNotification struct {
+		SessionID        string `json:"sessionId"`
+		SessionStatus    string `json:"sessionStatus"`
+		FIStatusResponse []struct {
+			FipID    string `json:"fipID"`
+			Accounts []struct {
+				LinkRefNumber string `json:"linkRefNumber"`
+				FIStatus      string `json:"FIStatus"`
+				Description   string `json:"description"`
+			} `json:"Accounts"`
+		} `json:"FIStatusResponse"`
+	} `json:"FIStatusNotification"`
 }

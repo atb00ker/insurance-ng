@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Database *gorm.DB
@@ -23,7 +24,16 @@ func ConnectToDb() {
 		RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
 	}
 	var err error
-	Database, err = gorm.Open(postgres.Open(dsn.String()), &gorm.Config{})
+	dbLogger := logger.New(
+		log.New(os.Stdout, "\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold:             2,
+			LogLevel:                  logger.Info,
+			IgnoreRecordNotFoundError: true,
+			Colorful:                  true,
+		},
+	)
+	Database, err = gorm.Open(postgres.Open(dsn.String()), &gorm.Config{Logger: dbLogger})
 
 	if err != nil {
 		log.Fatal("Error connecting to database")
@@ -36,4 +46,5 @@ func migrateDb() {
 	fmt.Println("Migrating models...")
 	Database.AutoMigrate(&models.Users{})
 	Database.AutoMigrate(&models.UserConsents{})
+	Database.AutoMigrate(&models.UserPlanScores{})
 }

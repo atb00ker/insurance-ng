@@ -95,78 +95,60 @@ func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, ex
 		Expire:         expiry,
 		ConsentStatus:  models.EmptyColumn,
 		ArtefactStatus: models.ArtefactStatusPending,
+		DataFetched:    false,
 		SignedConsent:  models.EmptyColumn,
-		UserData:       models.EmptyColumn,
 		ConsentHandle:  consent.ConsentHandle,
 		ConsentId:      uuid.Nil,
 	}
-	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Updates(&userConsent)
-	if updatedRow.RowsAffected == 0 {
-		return config.Database.Create(&userConsent)
-	}
 
-	return updatedRow
+	// We delete here instead of updating because we want to delete
+	// cascade all FIP the stored with this user consent.
+	config.Database.Where("customer_id = ?", consent.Customer.Id).Delete(&userConsent)
+	return config.Database.Create(&userConsent)
 }
 
-func getUserConsentWithUserId(userId string) (userConsent models.UserConsents, err error) {
-	result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Take(&userConsent)
-	err = result.Error
-	return
-}
-
-func updateUserConsentForStatusChange(consentId uuid.UUID, consentStatus string) error {
+func updateUserConsentForStatusChange(consent consentNotifierStatus) error {
 	var userConsent models.UserConsents
-	if consentStatus == models.ConsentStatusRevoked {
+	if consent.ConsentStatus == models.ConsentStatusRevoked {
 		userConsent = models.UserConsents{
 			SignedConsent:  models.EmptyColumn,
-			UserData:       models.EmptyColumn,
-			ConsentStatus:  consentStatus,
+			ConsentId:      consent.ConsentId,
+			DataFetched:    false,
+			ConsentStatus:  consent.ConsentStatus,
 			ArtefactStatus: models.ArtefactStatusDenied,
 		}
 	} else {
 		userConsent = models.UserConsents{
-			ConsentStatus: consentStatus,
+			ConsentStatus: consent.ConsentStatus,
 		}
 	}
+	if result := config.Database.Model(&models.UserConsents{}).Where("consent_handle = ?",
+		consent.ConsentHandle).Updates(&userConsent).Take(&userConsent); result.Error != nil {
+		return result.Error
+	}
 
-	result := config.Database.Model(&models.UserConsents{}).Where("consent_id = ?", consentId).Updates(userConsent)
-
-	// We fetch the signed consent in an async manner
-	// If it fails, that's okay too in setu Mock API.
-	// In setu AA production mode, we should use RabbitMQ
-	// to be able to re-try if a failure is received.
-	go getSignedConsent(userConsent.UserId)
-	return result.Error
+	err := updateSignedConsent(userConsent)
+	return err
 }
 
-func getSignedConsent(userId string) (status string, err error) {
-	userConsent, err := getUserConsentWithUserId(userId)
-	if err != nil {
-		status = models.ArtefactStatusError
-		return
-	}
-
+func updateSignedConsent(userConsent models.UserConsents) (err error) {
 	// If the data is already fetched, we are all good.
 	// Let's inform the user that data request can be initiated.
-	if userConsent.UserData != models.EmptyColumn {
-		status = models.StatusDataFetched
+	if userConsent.DataFetched || userConsent.SignedConsent != models.EmptyColumn {
 		return
 	}
 
-	// If the signed consent is already fetch, we are all good.
-	// Let's inform the user that data request can be initiated.
-	if userConsent.SignedConsent != models.EmptyColumn {
-		status = userConsent.ArtefactStatus
-		return
-	}
-
-	consentId, err := getUserArtefactStatus(userId, userConsent.ConsentHandle)
+	consentId, err := getUserArtefactStatus(userConsent.UserId, userConsent.ConsentHandle)
 	if err != nil {
-		status = models.ArtefactStatusError
+		return
+	}
+	if err = fetchSignedConsent(userConsent.UserId, consentId); err != nil {
+		return
+	}
+	if err = createAndSaveSessionDetails(userConsent.UserId); err != nil {
 		return
 	}
 
-	status, err = fetchSignedConsent(userId, consentId)
 	return
 }
 
@@ -188,7 +170,7 @@ func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uu
 	return
 }
 
-func fetchSignedConsent(userId string, consentId uuid.UUID) (status string, err error) {
+func fetchSignedConsent(userId string, consentId uuid.UUID) (err error) {
 	urlPath := fmt.Sprintf(SetuApiConsentSignedPath, consentId)
 	jwtPayload := setuConsentStatusRequest{Path: urlPath}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtPayload)
@@ -209,5 +191,5 @@ func fetchSignedConsent(userId string, consentId uuid.UUID) (status string, err 
 	}
 
 	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Updates(&updatedConsent)
-	return updatedConsent.ArtefactStatus, updatedRow.Error
+	return updatedRow.Error
 }

@@ -3,6 +3,7 @@ package account_aggregator
 import (
 	"encoding/base64"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/models"
@@ -14,41 +15,53 @@ import (
 	"github.com/google/uuid"
 )
 
-func getUserData(userId string) (userData []rahasyaDataResponseCollection, err error) {
+func createAndSaveSessionDetails(userId string) (err error) {
 	userConsent, err := getUserConsentWithUserId(userId)
 	if err != nil {
 		return
 	}
 
-	if userConsent.UserData != models.EmptyColumn {
-		if err = json.Unmarshal([]byte(userConsent.UserData), &userData); err != nil {
-			return
-		}
-	}
-
 	rahasyaKeys := getRahasyaKeys()
-	sessionData, session_err := getDataSession(userId, rahasyaKeys, userConsent)
+	sessionData, err := getDataSession(userId, rahasyaKeys, userConsent)
 	if err != nil {
-		err = session_err
 		return
 	}
 
-	encryptedData, data_err := getEncryptedFIData(sessionData)
+	updatedUserConsent := models.UserConsents{
+		SessionId:         sessionData.SessionId.String(),
+		RahasyaNonce:      rahasyaKeys.KeyMaterial.Nonce,
+		RahasyaPrivateKey: rahasyaKeys.PrivateKey,
+	}
+
+	config.Database.Where("user_id = ?", userId).Updates(&updatedUserConsent)
+	return
+}
+
+func saveFipData(sessionId string) (err error) {
+	userConsent, err := getUserConsentWithSessionId(sessionId)
+	if err != nil {
+		return
+	}
+
+	// If the data is already fetched, we don't need to do anything.
+	if userConsent.DataFetched {
+		return
+	}
+
+	encryptedData, data_err := getEncryptedFIData(userConsent.SessionId)
 	if err != nil {
 		err = data_err
 		return
 	}
 
-	userData, err = getUnencryptedFIDataList(rahasyaKeys, encryptedData)
+	allFipData, err := getDataFromAllFIP(userConsent.RahasyaNonce, userConsent.RahasyaPrivateKey, encryptedData)
 	if err != nil {
 		return
 	}
 
-	// TODO: Bad Idea to store data like this. I want to create seperate tables for the data.
-	if err = savebase64Data(userData, userId); err != nil {
+	if err = processAndSaveFipDataCollection(allFipData, userConsent); err != nil {
 		return
 	}
-
 	return
 }
 
@@ -102,8 +115,8 @@ func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData mod
 	return requestBody
 }
 
-func getEncryptedFIData(sessionData setuFiSessionResponse) (fiEncryptedData setuFiDataResponse, err error) {
-	urlPath := fmt.Sprintf(SetuApiFiDataFetch, sessionData.SessionId.String())
+func getEncryptedFIData(sessionId string) (fiEncryptedData setuFiDataResponse, err error) {
+	urlPath := fmt.Sprintf(SetuApiFiDataFetch, sessionId)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.StandardClaims{})
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
 	if err != nil {
@@ -114,25 +127,23 @@ func getEncryptedFIData(sessionData setuFiSessionResponse) (fiEncryptedData setu
 	return
 }
 
-func getUnencryptedFIDataList(rahasyaKeys rahasyaKeyResponse,
-	encryptedData setuFiDataResponse) (response []rahasyaDataResponseCollection, err error) {
+func getDataFromAllFIP(rahasyaNonce string, rahasyaPrivateKey string,
+	encryptedData setuFiDataResponse) (response []fipDataCollection, err error) {
 	var wgEncrpyptedData sync.WaitGroup
 
 	for _, encryptedFI := range encryptedData.FI {
 		wgEncrpyptedData.Add(1)
 		go func(encryptedFI fiEncryptionData) {
 			defer wgEncrpyptedData.Done()
-			fiData, err := prepareFIForDecryption(rahasyaKeys, encryptedFI)
+			fipDataList, err := getFIPData(rahasyaNonce, rahasyaPrivateKey, encryptedFI)
 			if err != nil {
 				return
 			}
 
-			fiDataCollection := rahasyaDataResponseCollection{
-				RahasyaData: fiData,
-				FipId:       encryptedFI.FipId,
-			}
-
-			response = append(response, fiDataCollection)
+			response = append(response, fipDataCollection{
+				FipData: fipDataList,
+				FipId:   encryptedFI.FipId,
+			})
 		}(encryptedFI)
 	}
 
@@ -140,49 +151,45 @@ func getUnencryptedFIDataList(rahasyaKeys rahasyaKeyResponse,
 	return
 }
 
-func prepareFIForDecryption(rahasyaKeys rahasyaKeyResponse,
-	encryptedDataList fiEncryptionData) (response []rahasyaDataResponse, err error) {
-	var wgEncrpyptedData sync.WaitGroup
+func getFIPData(rahasyaNonce string, rahasyaPrivateKey string,
+	encryptedDataList fiEncryptionData) (fipDataList []fipData, err error) {
+	var wgEncryptedRecord sync.WaitGroup
 
 	for _, encryptedRecord := range encryptedDataList.Data {
-		wgEncrpyptedData.Add(1)
+		wgEncryptedRecord.Add(1)
 		go func(encryptedRecord fiData) {
-			defer wgEncrpyptedData.Done()
-			responseData, err := getDecryptedData(rahasyaKeys, encryptedDataList, encryptedRecord)
+			defer wgEncryptedRecord.Done()
+			responseData, err := getDecryptedData(rahasyaNonce, rahasyaPrivateKey, encryptedDataList, encryptedRecord)
 			if err != nil {
-				response = append(response, rahasyaDataResponse{
-					Data:      "",
-					ErrorInfo: err.Error(),
-				})
+				return
 			}
 
 			data, err := base64.StdEncoding.DecodeString(responseData.Base64Data)
 			if err != nil {
-				response = append(response, rahasyaDataResponse{
-					Data:      "",
-					ErrorInfo: err.Error(),
-				})
+				return
 			}
 
-			response = append(response, rahasyaDataResponse{
-				Data:      string(data),
-				ErrorInfo: responseData.ErrorInfo,
-			})
+			var fiData fipData
+			if err = xml.Unmarshal(data, &fiData.Account); err != nil {
+				return
+			}
+
+			fipDataList = append(fipDataList, fiData)
 		}(encryptedRecord)
 	}
 
-	wgEncrpyptedData.Wait()
+	wgEncryptedRecord.Wait()
 	return
 }
 
-func getDecryptedData(rahasyaKeys rahasyaKeyResponse,
+func getDecryptedData(rahasyaNonce string, rahasyaPrivateKey string,
 	encryptedData fiEncryptionData, encryptedRecord fiData) (responseData rahasyaDataResponse, err error) {
 
 	requestBody := rahasyaDecryptRequest{
 		Base64Data:        encryptedRecord.EncryptedFI,
 		Base64RemoteNonce: encryptedData.KeyMaterial.Nonce,
-		Base64YourNonce:   rahasyaKeys.KeyMaterial.Nonce,
-		OurPrivateKey:     rahasyaKeys.PrivateKey,
+		Base64YourNonce:   rahasyaNonce,
+		OurPrivateKey:     rahasyaPrivateKey,
 		RemoteKeyMaterial: encryptedData.KeyMaterial,
 	}
 
@@ -198,15 +205,4 @@ func getDecryptedData(rahasyaKeys rahasyaKeyResponse,
 
 	err = json.Unmarshal(respBytes, &responseData)
 	return
-}
-
-func savebase64Data(base64Data []rahasyaDataResponseCollection, userId string) error {
-	userData, err := json.Marshal(base64Data)
-	if err != nil {
-		return err
-	}
-	updatedRow := config.Database.Model(&models.UserConsents{}).Where(
-		"user_id = ?", userId).Update("user_data", userData)
-
-	return updatedRow.Error
 }

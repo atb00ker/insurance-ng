@@ -22,8 +22,6 @@ func main() {
 	muxDispatcher.Handle(users.UrlRegister, jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
 	// Account Aggregator
 	//// Consent Flow
-	muxDispatcher.Handle(account_aggregator.UrlConsentStatus,
-		jwtAuth(account_aggregator.GetConsentStatus)).Methods("OPTIONS", "GET")
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
 		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
 	//// Data Flow
@@ -32,6 +30,8 @@ func main() {
 	//// Notifications Flow
 	muxDispatcher.Handle(account_aggregator.UrlConsentNotification,
 		setuAuth(account_aggregator.ConsentNotification)).Methods("POST")
+	muxDispatcher.Handle(account_aggregator.UrlArtefactNotification,
+		setuAuth(account_aggregator.FINotification)).Methods("POST")
 	// Static Files
 	muxDispatcher.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist/")))
 	// Start Server
