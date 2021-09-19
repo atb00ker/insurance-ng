@@ -19,13 +19,19 @@ func main() {
 	muxDispatcher := mux.NewRouter()
 	config.LoadEnv()
 	config.ConnectToDb()
-	muxDispatcher.Handle(users.UrlRegister, authenticated(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
+	muxDispatcher.Handle(users.UrlRegister, jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
+	// Account Aggregator
+	//// Consent Flow
 	muxDispatcher.Handle(account_aggregator.UrlConsentStatus,
-		authenticated(account_aggregator.GetConsentStatus)).Methods("OPTIONS", "GET")
-	muxDispatcher.Handle(account_aggregator.UrlGetUserData,
-		authenticated(account_aggregator.GetUserData)).Methods("OPTIONS", "GET")
+		jwtAuth(account_aggregator.GetConsentStatus)).Methods("OPTIONS", "GET")
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
-		authenticated(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
+		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
+	//// Data Flow
+	muxDispatcher.Handle(account_aggregator.UrlGetUserData,
+		jwtAuth(account_aggregator.GetUserData)).Methods("OPTIONS", "GET")
+	//// Notifications Flow
+	muxDispatcher.Handle(account_aggregator.UrlConsentNotification,
+		setuAuth(account_aggregator.ConsentNotification)).Methods("POST")
 	// Static Files
 	muxDispatcher.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist/")))
 	// Start Server
@@ -35,10 +41,17 @@ func main() {
 	fmt.Printf("Mux HTTP server running on port %s", port)
 }
 
-func authenticated(controller func(http.ResponseWriter, *http.Request)) *negroni.Negroni {
+func jwtAuth(controller func(http.ResponseWriter, *http.Request)) *negroni.Negroni {
 	return negroni.New(
 		middleware.CorsMiddleware(),
 		negroni.HandlerFunc(middleware.JwtMiddleware().HandlerWithNext),
+		negroni.Wrap(http.HandlerFunc(controller)),
+	)
+}
+
+func setuAuth(controller func(http.ResponseWriter, *http.Request)) *negroni.Negroni {
+	return negroni.New(
+		negroni.HandlerFunc(middleware.NewSetuValidateMiddleware().HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(controller)),
 	)
 }

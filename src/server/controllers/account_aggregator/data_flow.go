@@ -14,6 +14,44 @@ import (
 	"github.com/google/uuid"
 )
 
+func getUserData(userId string) (userData []rahasyaDataResponseCollection, err error) {
+	userConsent, err := getUserConsentWithUserId(userId)
+	if err != nil {
+		return
+	}
+
+	if userConsent.UserData != models.EmptyColumn {
+		if err = json.Unmarshal([]byte(userConsent.UserData), &userData); err != nil {
+			return
+		}
+	}
+
+	rahasyaKeys := getRahasyaKeys()
+	sessionData, session_err := getDataSession(userId, rahasyaKeys, userConsent)
+	if err != nil {
+		err = session_err
+		return
+	}
+
+	encryptedData, data_err := getEncryptedFIData(sessionData)
+	if err != nil {
+		err = data_err
+		return
+	}
+
+	userData, err = getUnencryptedFIDataList(rahasyaKeys, encryptedData)
+	if err != nil {
+		return
+	}
+
+	// TODO: Bad Idea to store data like this. I want to create seperate tables for the data.
+	if err = savebase64Data(userData, userId); err != nil {
+		return
+	}
+
+	return
+}
+
 func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 	consentData models.UserConsents) (sessionData setuFiSessionResponse, err error) {
 	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which

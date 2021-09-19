@@ -30,3 +30,6 @@ Thumbs.db
 
 # Docker Ignore
 .git
+
+# development
+ngrok

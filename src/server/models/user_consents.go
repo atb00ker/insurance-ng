@@ -8,31 +8,38 @@ import (
 )
 
 const (
-	ConsentPending  = "PENDING"
-	ConsentReady    = "READY"
-	ConsentNotFound = "NOTFOUND"
-	ConsentError    = "UNKNOWN"
+	EmptyColumn       = "-"
+	StatusDataFetched = "FETCHED"
 )
 
 const (
-	SignedConsentAccepted = "ACTIVE"
-	SignedConsentRejected = "REJECTED"
-	SignedConsentRevoked  = "REVOKED"
-	SignedConsentNotFound = "NOTFOUND"
-	SignedConsentError    = "UNKNOWN"
+	ArtefactStatusReady   = "READY"
+	ArtefactStatusDenied  = "DENIED"
+	ArtefactStatusPending = "PENDING"
+	ArtefactStatusTimeout = "TIMEOUT"
+	ArtefactStatusError   = "UNKNOWN"
+)
+
+const (
+	ConsentStatusAction   = "ACTIVE"
+	ConsentStatusRejected = "REJECTED"
+	ConsentStatusRevoked  = "REVOKED"
+	ConsentStatusPaused   = "PAUSED"
+	ConsentStatusError    = "UNKNOWN"
 )
 
 type UserConsents struct {
-	Id            uuid.UUID `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
-	UserId        string    `json:"user_id"`
-	CustomerId    string    `json:"customer_id"`
-	Expire        time.Time `json:"expire"`
-	Status        string    `json:"status"`
-	UserData      string    `json:"user_data" gorm:"default:-"`
-	SignedConsent string    `json:"signed_consent" gorm:"default:-"`
-	ConsentHandle uuid.UUID `json:"consent_handle" gorm:"type:uuid;"`
-	ConsentId     uuid.UUID `json:"consent_id" gorm:"type:uuid;"`
-	User          Users     `gorm:"foreignKey:UserId"`
+	Id             uuid.UUID `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	UserId         string    `json:"user_id"`
+	CustomerId     string    `json:"customer_id"`
+	Expire         time.Time `json:"expire"`
+	ConsentStatus  string    `json:"consent_status"`
+	ArtefactStatus string    `json:"artefact_status"`
+	UserData       string    `json:"user_data" gorm:"default:-"`
+	SignedConsent  string    `json:"signed_consent" gorm:"default:-"`
+	ConsentHandle  uuid.UUID `json:"consent_handle" gorm:"type:uuid;"`
+	ConsentId      uuid.UUID `json:"consent_id" gorm:"type:uuid;"`
+	User           Users     `gorm:"foreignKey:UserId"`
 	gorm.Model
 }
 

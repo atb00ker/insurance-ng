@@ -252,3 +252,33 @@ type rahasyaDataResponseCollection struct {
 	RahasyaData []rahasyaDataResponse
 	FipId       string
 }
+
+// Consent Notification Types //
+
+type setuConsentNotificationResponse struct {
+	ErrorCode string    `json:"errorCode"`
+	Ver       string    `json:"ver"`
+	Timestamp string    `json:"timestamp"`
+	Txnid     uuid.UUID `json:"txnid"`
+	Response  string    `json:"Response"`
+	jwt.StandardClaims
+}
+
+type setuConsentNotificationRequest struct {
+	Ver                       string                `json:"ver"`
+	Timestamp                 string                `json:"timestamp"`
+	Txnid                     uuid.UUID             `json:"txnid"`
+	Notifier                  consentNotifier       `json:"Notifier"`
+	ConsentStatusNotification consentNotifierStatus `json:"ConsentStatusNotification"`
+}
+
+type consentNotifier struct {
+	Type string `json:"type"`
+	Id   string `json:"id"`
+}
+
+type consentNotifierStatus struct {
+	ConsentId     uuid.UUID `json:"consentId"`
+	ConsentHandle uuid.UUID `json:"consentHandle"`
+	ConsentStatus string    `json:"consentStatus"`
+}

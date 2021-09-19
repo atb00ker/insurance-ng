@@ -2,22 +2,50 @@ package account_aggregator
 
 import (
 	"encoding/json"
+	"fmt"
 	"insurance-ng/src/server/controllers"
 	"net/http"
+	"time"
 )
 
 const (
-	UrlCreateConsent = "/api/account_aggregator/consent/"
-	UrlConsentStatus = "/api/account_aggregator/consent/status/"
-	UrlGetUserData   = "/api/account_aggregator/data/"
-	// UrlConsentNotification = "/api/account_aggregator/Consent/Notification"
-	UrlConsentNotification = "/Consent/Notification"
+	UrlCreateConsent        = "/api/account_aggregator/consent/"
+	UrlConsentStatus        = "/api/account_aggregator/consent/status/"
+	UrlGetUserData          = "/api/account_aggregator/data/"
+	UrlConsentNotification  = "/api/account_aggregator/Consent/Notification"
+	UrlArtefactNotification = "/api/account_aggregator/FI/Notification"
 )
 
 func ConsentNotification(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(request.Body)
+	var requestJson setuConsentNotificationRequest
+	if err := decoder.Decode(&requestJson); err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+	startTime := time.Now()
+	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		startTime.Year(), startTime.Month(), startTime.Day(),
+		startTime.Hour(), startTime.Minute(), startTime.Second())
 
+	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification.ConsentId,
+		requestJson.ConsentStatusNotification.ConsentStatus); err != nil {
+		HandleNotificationError(response, startTimeHack, err.Error())
+		return
+	}
 
+	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification(startTimeHack)
+	if err != nil {
+		HandleNotificationError(response, startTimeHack, err.Error())
+		return
+	}
+
+	response.Header().Set("client_api_key", clientApi)
+	response.Header().Set("x-jws-signature", requestJws)
+	response.Write(setuResponseBody)
 }
+
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	userId, ok := controllers.GetUserIdentifier(response, request)
@@ -59,25 +87,7 @@ func GetConsentStatus(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	userConsent, err := getUserConsent(userId)
-	if err != nil {
-		controllers.HandleError(response, err.Error())
-		return
-	}
-
-	if userConsent.UserData != "-" {
-		respMessage, _ := json.Marshal(controllers.ResponseMessage{Status: userConsent.Status})
-		response.Write(respMessage)
-		return
-	}
-
-	consentId, err := getUserArtefactStatus(userId, userConsent.ConsentHandle)
-	if err != nil {
-		controllers.HandleError(response, err.Error())
-		return
-	}
-
-	status, err := fetchSignedConsent(userId, consentId)
+	status, err := getSignedConsent(userId)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -85,6 +95,12 @@ func GetConsentStatus(response http.ResponseWriter, request *http.Request) {
 
 	respMessage, _ := json.Marshal(controllers.ResponseMessage{Status: status})
 	response.Write(respMessage)
+}
+
+// Data flow
+func FINotification(response http.ResponseWriter, request *http.Request) {
+	// I am not receiving FI Notification because of some problem in the setu API,
+	// Hence this code is pending in dicussion on slack community.
 }
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
@@ -95,43 +111,10 @@ func GetUserData(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	userConsent, err := getUserConsent(userId)
+	userData, err := getUserData(userId)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
-	}
-
-	var userData []rahasyaDataResponseCollection
-	rahasyaKeys := getRahasyaKeys()
-	if userConsent.UserData == "-" {
-		sessionData, err := getDataSession(userId, rahasyaKeys, userConsent)
-		if err != nil {
-			controllers.HandleError(response, err.Error())
-			return
-		}
-
-		encryptedData, err := getEncryptedFIData(sessionData)
-		if err != nil {
-			controllers.HandleError(response, err.Error())
-			return
-		}
-
-		userData, err = getUnencryptedFIDataList(rahasyaKeys, encryptedData)
-		if err != nil {
-			controllers.HandleError(response, err.Error())
-			return
-		}
-
-		// TODO: Bad Idea to store unencrypted data
-		if err := savebase64Data(userData, userId); err != nil {
-			controllers.HandleError(response, err.Error())
-			return
-		}
-	} else {
-		if err := json.Unmarshal([]byte(userConsent.UserData), &userData); err != nil {
-			controllers.HandleError(response, err.Error())
-			return
-		}
 	}
 
 	respMessage, _ := json.Marshal(userData)

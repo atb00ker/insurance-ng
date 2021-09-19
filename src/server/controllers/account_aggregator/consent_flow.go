@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Create Consent
 func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCreateConsentResponse,
 	consentExpire time.Time, err error) {
 	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
@@ -89,14 +90,15 @@ func createConsentBody(uuid uuid.UUID, startTime string, endTime string,
 
 func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, expiry time.Time) *gorm.DB {
 	userConsent := models.UserConsents{
-		UserId:        userId,
-		CustomerId:    consent.Customer.Id,
-		Expire:        expiry,
-		Status:        models.ConsentPending,
-		SignedConsent: "-",
-		UserData:      "-",
-		ConsentHandle: consent.ConsentHandle,
-		ConsentId:     uuid.Nil,
+		UserId:         userId,
+		CustomerId:     consent.Customer.Id,
+		Expire:         expiry,
+		ConsentStatus:  models.EmptyColumn,
+		ArtefactStatus: models.ArtefactStatusPending,
+		SignedConsent:  models.EmptyColumn,
+		UserData:       models.EmptyColumn,
+		ConsentHandle:  consent.ConsentHandle,
+		ConsentId:      uuid.Nil,
 	}
 	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Updates(&userConsent)
 	if updatedRow.RowsAffected == 0 {
@@ -106,9 +108,65 @@ func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, ex
 	return updatedRow
 }
 
-func getUserConsent(userId string) (userConsent models.UserConsents, err error) {
+func getUserConsentWithUserId(userId string) (userConsent models.UserConsents, err error) {
 	result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Take(&userConsent)
 	err = result.Error
+	return
+}
+
+func updateUserConsentForStatusChange(consentId uuid.UUID, consentStatus string) error {
+	var userConsent models.UserConsents
+	if consentStatus == models.ConsentStatusRevoked {
+		userConsent = models.UserConsents{
+			SignedConsent:  models.EmptyColumn,
+			UserData:       models.EmptyColumn,
+			ConsentStatus:  consentStatus,
+			ArtefactStatus: models.ArtefactStatusDenied,
+		}
+	} else {
+		userConsent = models.UserConsents{
+			ConsentStatus: consentStatus,
+		}
+	}
+
+	result := config.Database.Model(&models.UserConsents{}).Where("consent_id = ?", consentId).Updates(userConsent)
+
+	// We fetch the signed consent in an async manner
+	// If it fails, that's okay too in setu Mock API.
+	// In setu AA production mode, we should use RabbitMQ
+	// to be able to re-try if a failure is received.
+	go getSignedConsent(userConsent.UserId)
+	return result.Error
+}
+
+func getSignedConsent(userId string) (status string, err error) {
+	userConsent, err := getUserConsentWithUserId(userId)
+	if err != nil {
+		status = models.ArtefactStatusError
+		return
+	}
+
+	// If the data is already fetched, we are all good.
+	// Let's inform the user that data request can be initiated.
+	if userConsent.UserData != models.EmptyColumn {
+		status = models.StatusDataFetched
+		return
+	}
+
+	// If the signed consent is already fetch, we are all good.
+	// Let's inform the user that data request can be initiated.
+	if userConsent.SignedConsent != models.EmptyColumn {
+		status = userConsent.ArtefactStatus
+		return
+	}
+
+	consentId, err := getUserArtefactStatus(userId, userConsent.ConsentHandle)
+	if err != nil {
+		status = models.ArtefactStatusError
+		return
+	}
+
+	status, err = fetchSignedConsent(userId, consentId)
 	return
 }
 
@@ -145,11 +203,11 @@ func fetchSignedConsent(userId string, consentId uuid.UUID) (status string, err 
 	}
 
 	updatedConsent := models.UserConsents{
-		Status:        signedConsent.Status,
-		SignedConsent: signedConsent.SignedConsent,
-		ConsentId:     signedConsent.ConsentId,
+		ArtefactStatus: signedConsent.Status,
+		SignedConsent:  signedConsent.SignedConsent,
+		ConsentId:      signedConsent.ConsentId,
 	}
 
 	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Updates(&updatedConsent)
-	return updatedConsent.Status, updatedRow.Error
+	return updatedConsent.ArtefactStatus, updatedRow.Error
 }

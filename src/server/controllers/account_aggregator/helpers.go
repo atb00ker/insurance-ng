@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/form3tech-oss/jwt-go"
+	"github.com/google/uuid"
 )
 
 func getDetachedJwt(jwtToken *jwt.Token) (string, error) {
@@ -54,7 +55,7 @@ func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 		return
 	}
 
-	clientApi := os.Getenv("APP_SETU_CLIENT_API")
+	clientApi := os.Getenv("APP_SETU_CLIENT_KEY")
 	setuRequest.Header = http.Header{
 		"Content-Type":    []string{"application/json"},
 		"client_api_key":  []string{clientApi},
@@ -70,6 +71,43 @@ func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 
 	response, err = ioutil.ReadAll(setuResponse.Body)
 	return
+}
+
+func sendResponseToSetuNotification(startTimeHack string) (clientApi string, requestJws string,
+	setuResponseBody []byte, err error) {
+
+	respMessage := setuConsentNotificationResponse{
+		Ver:       "1.0",
+		Timestamp: startTimeHack,
+		Txnid:     uuid.New(),
+		Response:  "OK",
+	}
+
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, respMessage)
+	setuResponseBody, err = json.Marshal(respMessage)
+	if err != nil {
+		return
+	}
+
+	requestJws, err = getDetachedJwt(jwtToken)
+	if err != nil {
+		return
+	}
+
+	clientApi = os.Getenv("APP_SETU_CLIENT_KEY")
+	return
+}
+
+func HandleNotificationError(response http.ResponseWriter, startTimeHack string, err string) {
+	response.WriteHeader(http.StatusBadRequest)
+	respMessage, _ := json.Marshal(setuConsentNotificationResponse{
+		ErrorCode: err,
+		Ver:       "1.0",
+		Timestamp: startTimeHack,
+		Txnid:     uuid.New(),
+		Response:  "Errored",
+	})
+	response.Write(respMessage)
 }
 
 func getPrivatePemFileContent() (x509Key interface{}, err error) {
@@ -128,6 +166,3 @@ func sendRequestToRahasya(urlPath string, reqType string, payload []byte) (respo
 	response, err = ioutil.ReadAll(rahasyaResponse.Body)
 	return
 }
-
-
-
