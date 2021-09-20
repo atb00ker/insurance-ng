@@ -6,10 +6,12 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func processAndSaveFipDataCollection(allFipData []fipDataCollection,
-	userConsent models.UserConsents) (err error) {
+	userConsent models.UserConsents) error {
 
 	name := getHolderField(allFipData, "Name")
 	dob, _ := time.Parse("2006-01-02", getHolderField(allFipData, "Dob"))
@@ -40,10 +42,18 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		TravelAccountId:   getAccountIdField(allFipData, models.OfferePlansTravelPlan),
 		AllAccountId:      getAccountIdField(allFipData, models.OfferePlansAllPlan),
 	}
-
-	config.Database.Create(&planInformation)
-	config.Database.Model(&models.UserConsents{}).Where("id = ?", userConsent.Id).Update("data_fetched", true)
-	return
+	// We can to this in go routines to make this section faster.
+	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id); err != nil {
+		return err
+	}
+	if result := config.Database.Create(&planInformation); result.Error != nil {
+		return result.Error
+	}
+	if result := config.Database.Model(&models.UserConsents{}).Where("id = ?",
+		userConsent.Id).Update("data_fetched", true); result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 func getAccountIdField(allFipData []fipDataCollection, planName string) string {
@@ -75,4 +85,24 @@ func getHolderField(allFipData []fipDataCollection, field string) string {
 		}
 	}
 	return ""
+}
+
+func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID) error {
+	for _, fipData := range allFipData {
+		for _, fipDataItem := range fipData.FipData {
+			if fipDataItem.Account.Type == "insurance" {
+				insurance := models.UserExistingInsurance{
+					UserConsentId: consendId,
+					Type:          fipDataItem.Account.Summary.PolicyType,
+					Premium:       fipDataItem.Account.Summary.PremiumAmount,
+					Cover:         fipDataItem.Account.Summary.CoverAmount,
+				}
+				result := config.Database.Create(&insurance)
+				if result.Error != nil {
+					return result.Error
+				}
+			}
+		}
+	}
+	return nil
 }

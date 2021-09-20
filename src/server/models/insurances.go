@@ -27,6 +27,21 @@ type Insurance struct {
 	gorm.Model
 }
 
+type UserExistingInsurance struct {
+	Id            uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	UserConsentId uuid.UUID    `json:"consent_id"`
+	Type          string       `json:"type"`
+	Premium       float32      `json:"premium"`
+	Cover         float32      `json:"cover"`
+	UserConsent   UserConsents `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
+	gorm.Model
+}
+
+func (insurance *UserExistingInsurance) BeforeCreate(tx *gorm.DB) (err error) {
+	insurance.Id = uuid.New()
+	return
+}
+
 func (insurance *Insurance) BeforeCreate(tx *gorm.DB) (err error) {
 	insurance.Id = uuid.New()
 	return
