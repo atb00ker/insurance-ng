@@ -7,19 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	OfferePlansAllPlan      = "ALL_PLAN"
-	OfferePlansMedicalPlan  = "MEDICAL_PLAN"
-	OfferePlansPensionPlan  = "PENSION_PLAN"
-	OfferePlansHomePlan     = "HOME_PLAN"
-	OfferePlansFamilyPlan   = "FAMILY_PLAN"
-	OfferePlansChildrenPlan = "CHILDREN_PLAN"
-	OfferePlansLifePlan     = "LIFE_PLAN"
-	OfferePlansTermPlan     = "TERM_PLAN"
-	OfferePlansMotorPlan    = "MOTOR_PLAN"
-	OfferePlansTravelPlan   = "TRAVEL_PLAN"
-)
-
 type UserPlanScores struct {
 	Id                uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	UserConsentId     uuid.UUID    `json:"consent_id"`

@@ -110,18 +110,18 @@ func FINotification(response http.ResponseWriter, request *http.Request) {
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	// userId, ok := controllers.GetUserIdentifier(response, request)
-	// if !ok {
-	// 	controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
-	// 	return
-	// }
+	userId, ok := controllers.GetUserIdentifier(response, request)
+	if !ok {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
+	}
 
-	// userData, err := getUserData(userId)
-	// if err != nil {
-	// 	controllers.HandleError(response, err.Error())
-	// 	return
-	// }
+	userData, err := getUserData(userId)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
 
-	// respMessage, _ := json.Marshal(userData)
-	// response.Write(respMessage)
+	respMessage, _ := json.Marshal(userData)
+	response.Write(respMessage)
 }

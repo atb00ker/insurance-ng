@@ -206,3 +206,7 @@ func getDecryptedData(rahasyaNonce string, rahasyaPrivateKey string,
 	err = json.Unmarshal(respBytes, &responseData)
 	return
 }
+
+func getUserData(userId string) (responseData rahasyaDataResponse, err error) {
+	return
+}
