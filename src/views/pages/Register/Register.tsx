@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { registerUserRequest } from '../../services/axios';
-import { RouterPath } from '../../enums/RouterPath';
-import { IAuth } from '../../interfaces/IAuth';
+import { RouterPath } from '../../enums/UrlPath';
+import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
 import { useHistory } from 'react-router-dom';
 import SectionLoader from '../../components/ContentState/SectionLoader';

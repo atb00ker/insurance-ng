@@ -1,6 +1,6 @@
 import React from 'react';
 import ServerDownSvg from '../../assets/illustrations/server-down-1.svg';
-import IContentStateImages from './IContentStateImages';
+import IContentStateImages from '../../interfaces/IContentStateImages';
 
 const ServerRequestError: React.FC<IContentStateImages> = ({ height, width, imgHeight }) => {
   return (

@@ -4,51 +4,67 @@ import "insurance-ng/src/server/models"
 
 func InitInsuranceSeed() {
 	all_policy := models.Insurance{
+		Title:            "Complete Package Plan",
 		Type:             models.OfferePlansAllPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            10000000,
+		Premium:          90000,
+		Description:      "All insurance packages into one, you pay one premium and enjoy the benefits of all the plans we offer.",
 		YoyDeductionRate: 1.2,
 	}
 	medical_policy := models.Insurance{
+		Title:            "Medical Plan",
 		Type:             models.OfferePlansMedicalPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            100000,
+		Premium:          21000,
+		Description:      "We cover your medical emergencies, quickly and without the need to difficult and long claim steps.",
 		YoyDeductionRate: 1.2,
 	}
 	motor_policy := models.Insurance{
+		Title:            "Motor Plan",
+		Description:      "Be it your car or bike, we have you covered in the event of an accident.",
 		Type:             models.OfferePlansMotorPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            150000,
+		Premium:          7000,
 		YoyDeductionRate: 1.2,
 	}
 	family_policy := models.Insurance{
+		Title:            "Family Plan",
+		Description:      "The amazing medical plan, but for the entire family to enjoy the benefits from a shared pool of amount.",
 		Type:             models.OfferePlansFamilyPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            200000,
+		Premium:          25000,
 		YoyDeductionRate: 1.2,
 	}
 	travel_policy := models.Insurance{
+		Title:            "Travel Plan",
+		Description:      "When you travel, we ensure that you and your baggage is insured.",
 		Type:             models.OfferePlansTravelPlan,
-		Premium:          91000,
 		Cover:            20000,
+		Premium:          2000,
 		YoyDeductionRate: 1.2,
 	}
 	term_policy := models.Insurance{
+		Title:            "Term Plan",
+		Description:      "We recommend atleast x10 of your yearly salary for your family after you.",
 		Type:             models.OfferePlansTermPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            3000000,
+		Premium:          28500,
 		YoyDeductionRate: 1.2,
 	}
 	children_policy := models.Insurance{
+		Title:            "Children's Plan",
 		Type:             models.OfferePlansChildrenPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Description:      "You can get seperate insurance for your children. We advice having enough for their adulthhood.",
+		Cover:            100000,
+		Premium:          20000,
 		YoyDeductionRate: 1.2,
 	}
 	pension_policy := models.Insurance{
+		Title:            "Pension Plan",
 		Type:             models.OfferePlansPensionPlan,
-		Premium:          91000,
-		Cover:            20000,
+		Cover:            400000,
+		Premium:          10000,
+		Description:      "Your income for the old age when you retire, planned for you ahead of time.",
 		YoyDeductionRate: 1.2,
 	}
 

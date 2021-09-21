@@ -18,6 +18,8 @@ const (
 
 type Insurance struct {
 	Id               uuid.UUID `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	Title            string    `json:"title"`
+	Description      string    `json:"description"`
 	Type             string    `json:"type"`
 	Premium          float32   `json:"premium"`
 	Cover            float32   `json:"cover"`

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const port = location.protocol === 'http:' ? process.env.REACT_APP_PORT : '443';
-import { RouterPath } from '../enums/RouterPath';
-import { ServerPath } from '../enums/ServerPath';
+import { RouterPath } from '../enums/UrlPath';
+import { ServerPath } from '../enums/UrlPath';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = process.env.REACT_CORS;

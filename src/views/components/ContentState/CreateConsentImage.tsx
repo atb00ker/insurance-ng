@@ -1,6 +1,6 @@
 import React from 'react';
 import EmptyInformationDashboard from '../../assets/illustrations/empty-information-dashboard-2.svg';
-import IContentStateImages from './IContentStateImages';
+import IContentStateImages from '../../interfaces/IContentStateImages';
 
 const CreateConsentImage: React.FC<IContentStateImages> = ({ height, width, imgHeight }) => {
   return (

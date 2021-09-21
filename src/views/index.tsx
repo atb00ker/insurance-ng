@@ -6,7 +6,7 @@ import Navbar from './components/Navbar/Navbar';
 import RegisterUser from './pages/Register/Register';
 import CreateConsent from './pages/CreateConsent/CreateConsent';
 import Dashboard from './pages/Dashboard/Dashboard';
-import { RouterPath } from './enums/RouterPath';
+import { RouterPath } from './enums/UrlPath';
 import './index.scss';
 
 const App = () => (

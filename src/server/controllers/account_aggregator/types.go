@@ -376,9 +376,10 @@ type fINotificationRequest struct {
 
 type getUserDataResponse struct {
 	Status bool     `json:"status"`
-	Data   userData `json:"name"`
+	Data   userData `json:"data"`
 	Error  error    `json:"error"`
 }
+
 type userData struct {
 	Name            string            `json:"name"`
 	DateOfBirth     time.Time         `json:"date_of_birth"`
@@ -390,12 +391,14 @@ type userData struct {
 
 type insuranceOffers struct {
 	AccountId      string  `json:"account_id"`
+	Type           string  `json:"type"`
+	Title          string  `json:"title"`
+	Description    string  `json:"description"`
 	Score          float32 `json:"score"`
 	CurrentPremium float32 `json:"current_premium"`
 	CurrentCover   float32 `json:"current_cover"`
 	OfferedPremium float32 `json:"offer_premium"`
 	OfferedCover   float32 `json:"offer_cover"`
-	Type           string  `json:"type"`
 }
 
 type userPlanScoreChResp struct {
