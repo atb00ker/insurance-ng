@@ -27,18 +27,6 @@ func InitInsuranceSeed() {
 		Cover:            20000,
 		YoyDeductionRate: 1.2,
 	}
-	home_policy := models.Insurance{
-		Type:             models.OfferePlansHomePlan,
-		Premium:          91000,
-		Cover:            20000,
-		YoyDeductionRate: 1.2,
-	}
-	life_policy := models.Insurance{
-		Type:             models.OfferePlansLifePlan,
-		Premium:          91000,
-		Cover:            20000,
-		YoyDeductionRate: 1.2,
-	}
 	travel_policy := models.Insurance{
 		Type:             models.OfferePlansTravelPlan,
 		Premium:          91000,
@@ -72,8 +60,6 @@ func InitInsuranceSeed() {
 	createInsuranceSeed(term_policy)
 	createInsuranceSeed(pension_policy)
 	createInsuranceSeed(travel_policy)
-	createInsuranceSeed(home_policy)
-	createInsuranceSeed(life_policy)
 }
 
 func createInsuranceSeed(insurance models.Insurance) {

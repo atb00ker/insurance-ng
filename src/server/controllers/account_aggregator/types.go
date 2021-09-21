@@ -1,6 +1,7 @@
 package account_aggregator
 
 import (
+	"insurance-ng/src/server/models"
 	"time"
 
 	"github.com/form3tech-oss/jwt-go"
@@ -369,4 +370,49 @@ type fINotificationRequest struct {
 			} `json:"Accounts"`
 		} `json:"FIStatusResponse"`
 	} `json:"FIStatusNotification"`
+}
+
+// Get User Data Types //
+
+type getUserDataResponse struct {
+	Status bool     `json:"status"`
+	Data   userData `json:"name"`
+	Error  error    `json:"error"`
+}
+type userData struct {
+	Name            string            `json:"name"`
+	DateOfBirth     time.Time         `json:"date_of_birth"`
+	Pancard         string            `json:"pancard"`
+	CkycCompliance  bool              `json:"ckyc_compliance"`
+	AgeScore        float32           `json:"age_score"`
+	InsuranceOffers []insuranceOffers `json:"insurance"`
+}
+
+type insuranceOffers struct {
+	AccountId      string  `json:"account_id"`
+	Score          float32 `json:"score"`
+	CurrentPremium float32 `json:"current_premium"`
+	CurrentCover   float32 `json:"current_cover"`
+	OfferedPremium float32 `json:"offer_premium"`
+	OfferedCover   float32 `json:"offer_cover"`
+	Type           string  `json:"type"`
+}
+
+type userPlanScoreChResp struct {
+	result *models.UserPlanScores
+	err    error
+}
+type userExistingInsurancesChResp struct {
+	result []*models.UserExistingInsurance
+	err    error
+}
+
+type userConsentChResp struct {
+	result *models.UserConsents
+	err    error
+}
+
+type insuranceChResp struct {
+	result []*models.Insurance
+	err    error
 }

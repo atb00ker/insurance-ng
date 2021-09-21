@@ -19,28 +19,20 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	ckycCompliance, _ := strconv.ParseBool(getHolderField(allFipData, "CkycCompliance"))
 
 	planInformation := models.UserPlanScores{
-		UserConsentId:     userConsent.Id,
-		Name:              name,
-		DateOfBirth:       dob,
-		PanCard:           panCard,
-		CkycCompliance:    ckycCompliance,
-		AgeScore:          getAgeScore(dob),
-		MedicalScore:      getMedicalPlanScore(allFipData),
-		PensionScore:      getPensionPlanScore(allFipData),
-		FamilyScore:       getFamilyPlanScore(allFipData),
-		ChildrenScore:     getChildrenPlanScore(allFipData),
-		MotorScore:        getMotorPlanScore(allFipData),
-		TermScore:         getTermPlanScore(allFipData),
-		TravelScore:       getTravelPlanScore(allFipData),
-		AllScore:          getAllPlanScore(allFipData),
-		MedicalAccountId:  getAccountIdField(allFipData, models.OfferePlansMedicalPlan),
-		PensionAccountId:  getAccountIdField(allFipData, models.OfferePlansPensionPlan),
-		FamilyAccountId:   getAccountIdField(allFipData, models.OfferePlansFamilyPlan),
-		ChildrenAccountId: getAccountIdField(allFipData, models.OfferePlansChildrenPlan),
-		MotorAccountId:    getAccountIdField(allFipData, models.OfferePlansMotorPlan),
-		TermAccountId:     getAccountIdField(allFipData, models.OfferePlansTermPlan),
-		TravelAccountId:   getAccountIdField(allFipData, models.OfferePlansTravelPlan),
-		AllAccountId:      getAccountIdField(allFipData, models.OfferePlansAllPlan),
+		UserConsentId:  userConsent.Id,
+		Name:           name,
+		DateOfBirth:    dob,
+		PanCard:        panCard,
+		CkycCompliance: ckycCompliance,
+		AgeScore:       getAgeScore(dob),
+		MedicalScore:   getMedicalPlanScore(allFipData),
+		PensionScore:   getPensionPlanScore(allFipData),
+		FamilyScore:    getFamilyPlanScore(allFipData),
+		ChildrenScore:  getChildrenPlanScore(allFipData),
+		MotorScore:     getMotorPlanScore(allFipData),
+		TermScore:      getTermPlanScore(allFipData),
+		TravelScore:    getTravelPlanScore(allFipData),
+		AllScore:       getAllPlanScore(allFipData),
 	}
 	// We can to this in go routines to make this section faster.
 	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id); err != nil {
@@ -88,6 +80,7 @@ func getHolderField(allFipData []fipDataCollection, field string) string {
 }
 
 func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID) error {
+
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
 			if fipDataItem.Account.Type == "insurance" {
@@ -96,6 +89,7 @@ func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId 
 					Type:          fipDataItem.Account.Summary.PolicyType,
 					Premium:       fipDataItem.Account.Summary.PremiumAmount,
 					Cover:         fipDataItem.Account.Summary.CoverAmount,
+					AccountId:     getAccountIdField(allFipData, fipDataItem.Account.Summary.PolicyType),
 				}
 				result := config.Database.Create(&insurance)
 				if result.Error != nil {

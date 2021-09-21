@@ -115,37 +115,16 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     auth.user.jwt().then((jwt: string) => {
-      getConsentStatus(jwt)
+      getDashboardData(jwt)
         .then(response => {
+          console.log(response);
+          setShowLoader(false);
           setShowError(false);
-          const status = response.data['status'];
-          if (
-            ![
-              ConsentStatus.UserConsentsReady,
-              ConsentStatus.UserConsentsFetched,
-              ConsentStatus.UserConsentsActive,
-            ].includes(status)
-          )
-            history.push(RouterPath.CreateConsent);
-          else {
-            getDashboardData(jwt)
-              .then(response => {
-                const dataJson = prepareDataJson(response.data);
-                console.log(dataJson);
-                setDashboardData(dataJson);
-                setShowLoader(false);
-                setShowError(false);
-              })
-              .catch(error => {
-                console.error(error);
-                setShowLoader(false);
-                setShowError(true);
-              });
-          }
         })
         .catch(error => {
           console.error(error);
-          history.push(RouterPath.CreateConsent);
+          setShowLoader(false);
+          setShowError(true);
         });
     });
   }, [auth.isReady]);

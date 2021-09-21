@@ -207,6 +207,141 @@ func getDecryptedData(rahasyaNonce string, rahasyaPrivateKey string,
 	return
 }
 
-func getUserData(userId string) (responseData rahasyaDataResponse, err error) {
+func getUserData(userId string) (responseData getUserDataResponse, err error) {
+	userConsentCh := make(chan userConsentChResp, 1)
+	go getUserConsent(userId, userConsentCh)
+	insuranceAvailableCh := make(chan insuranceChResp, 1)
+	go getAllInsuranceOffers(insuranceAvailableCh)
+
+	insuranceAvailable := <-insuranceAvailableCh
+	if insuranceAvailable.err != nil {
+		err = insuranceAvailable.err
+		return
+	}
+
+	userConsent := <-userConsentCh
+	if userConsent.err != nil {
+		err = userConsent.err
+		return
+	}
+
+	if !userConsent.result.DataFetched {
+		return getUserDataResponse{Status: false}, nil
+	}
+
+	userPlanScoresCh := make(chan userPlanScoreChResp, 1)
+	go getUserPlanScore(userConsent.result.Id, userPlanScoresCh)
+	userExistingInsuranceCh := make(chan userExistingInsurancesChResp, 1)
+	go getUserExistingInsurances(userConsent.result.Id, userExistingInsuranceCh)
+
+	userScore := <-userPlanScoresCh
+	if userScore.err != nil {
+		err = insuranceAvailable.err
+		return
+	}
+
+	userExistingInsurance := <-userExistingInsuranceCh
+	if userExistingInsurance.err != nil {
+		err = userConsent.err
+		return
+	}
+
+	var insuranceOffered []insuranceOffers
+
+	for _, insurance := range insuranceAvailable.result {
+		existingInsurance := models.UserExistingInsurance{}
+		for _, userInsurances := range userExistingInsurance.result {
+			if userInsurances.Type == insurance.Type {
+				existingInsurance = *userInsurances
+				break
+			}
+		}
+
+		insuranceOffered = append(insuranceOffered, insuranceOffers{
+			AccountId:      existingInsurance.AccountId,
+			Score:          getScoreForType(userScore.result, insurance.Type),
+			CurrentPremium: existingInsurance.Premium,
+			CurrentCover:   existingInsurance.Cover,
+			OfferedPremium: insurance.Premium,
+			OfferedCover:   insurance.Cover,
+			Type:           insurance.Type,
+		})
+	}
+
+	responseData = getUserDataResponse{
+		Status: true,
+		Data: userData{
+			Name:            userScore.result.Name,
+			DateOfBirth:     userScore.result.DateOfBirth,
+			Pancard:         userScore.result.PanCard,
+			CkycCompliance:  userScore.result.CkycCompliance,
+			AgeScore:        userScore.result.AgeScore,
+			InsuranceOffers: insuranceOffered,
+		},
+		Error: nil,
+	}
+
 	return
+}
+
+func getScoreForType(userScore *models.UserPlanScores, insuranceType string) float32 {
+	switch insuranceType {
+	case models.OfferePlansAllPlan:
+		return userScore.AllScore
+	case models.OfferePlansMedicalPlan:
+		return userScore.MedicalScore
+	case models.OfferePlansPensionPlan:
+		return userScore.PensionScore
+	case models.OfferePlansFamilyPlan:
+		return userScore.FamilyScore
+	case models.OfferePlansChildrenPlan:
+		return userScore.ChildrenScore
+	case models.OfferePlansTermPlan:
+		return userScore.TermScore
+	case models.OfferePlansMotorPlan:
+		return userScore.MotorScore
+	case models.OfferePlansTravelPlan:
+		return userScore.TravelScore
+	}
+	return 1
+}
+
+func getUserExistingInsurances(consentId uuid.UUID, userExistingInsuranceCh chan userExistingInsurancesChResp) {
+	var userExistingInsurance []*models.UserExistingInsurance
+	result := config.Database.Where("user_consent_id = ?", consentId).Find(&userExistingInsurance)
+
+	userExistingInsuranceCh <- userExistingInsurancesChResp{
+		result: userExistingInsurance,
+		err:    result.Error,
+	}
+}
+
+func getUserPlanScore(consentId uuid.UUID, userPlanScoreCh chan userPlanScoreChResp) {
+	var userPlanScore *models.UserPlanScores
+	result := config.Database.Where("user_consent_id = ?", consentId).Take(&userPlanScore)
+
+	userPlanScoreCh <- userPlanScoreChResp{
+		result: userPlanScore,
+		err:    result.Error,
+	}
+}
+
+func getUserConsent(userId string, userConsentChannel chan userConsentChResp) {
+	var userConsent *models.UserConsents
+	result := config.Database.Where("user_id = ?", userId).Take(&userConsent)
+
+	userConsentChannel <- userConsentChResp{
+		result: userConsent,
+		err:    result.Error,
+	}
+}
+
+func getAllInsuranceOffers(insuranceAvailableChannel chan insuranceChResp) {
+	var insurance []*models.Insurance
+	result := config.Database.Find(&insurance)
+
+	insuranceAvailableChannel <- insuranceChResp{
+		result: insurance,
+		err:    result.Error,
+	}
 }

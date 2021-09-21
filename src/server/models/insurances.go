@@ -9,10 +9,8 @@ const (
 	OfferePlansAllPlan      = "ALL_PLAN"
 	OfferePlansMedicalPlan  = "MEDICAL_PLAN"
 	OfferePlansPensionPlan  = "PENSION_PLAN"
-	OfferePlansHomePlan     = "HOME_PLAN"
 	OfferePlansFamilyPlan   = "FAMILY_PLAN"
 	OfferePlansChildrenPlan = "CHILDREN_PLAN"
-	OfferePlansLifePlan     = "LIFE_PLAN"
 	OfferePlansTermPlan     = "TERM_PLAN"
 	OfferePlansMotorPlan    = "MOTOR_PLAN"
 	OfferePlansTravelPlan   = "TRAVEL_PLAN"
@@ -33,6 +31,7 @@ type UserExistingInsurance struct {
 	Type          string       `json:"type"`
 	Premium       float32      `json:"premium"`
 	Cover         float32      `json:"cover"`
+	AccountId     string       `json:"account_id"`
 	UserConsent   UserConsents `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
 	gorm.Model
 }
