@@ -12,3 +12,9 @@ export interface IAuth {
   isReady?: boolean;
   user: IUser;
 }
+
+export interface IUserProfileScores {
+  title: string,
+  explaination: string,
+  score: number
+}

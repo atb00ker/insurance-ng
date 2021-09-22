@@ -10,6 +10,9 @@ export interface IFIUserData {
   pancard: string;
   ckyc_compliance: boolean;
   age_score: number;
+  wealth_score: number;
+  debt_score: number;
+  investment_score: number;
   insurance: IFIInsurance[];
 }
 

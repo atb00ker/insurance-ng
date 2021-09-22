@@ -386,6 +386,9 @@ type userData struct {
 	Pancard         string            `json:"pancard"`
 	CkycCompliance  bool              `json:"ckyc_compliance"`
 	AgeScore        float32           `json:"age_score"`
+	WealthScore     float32           `json:"wealth_score"`
+	DebtScore       float32           `json:"debt_score"`
+	InvestmentScore float32           `json:"investment_score"`
 	InsuranceOffers []insuranceOffers `json:"insurance"`
 }
 

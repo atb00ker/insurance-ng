@@ -9,6 +9,9 @@ import { IFIUserData } from '../../interfaces/IFIData';
 import Row from 'react-bootstrap/esm/Row';
 import ProfileImage from './../../assets/images/default-profile-picture.jpeg';
 import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../services/svgIcons';
+import { InsuranceTypes } from "../../enums/FIData"
+import { IUserProfileScores } from "../../interfaces/IUser"
+import Button from 'react-bootstrap/esm/Button';
 
 const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
 
@@ -26,7 +29,7 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
 
   return (
     <>
-      <Col className='mt-4' sm='10'>
+      <Col className='mt-4' sm='12' md='10'>
         <Card className='border'>
           <Card.Body>
             <Row className='justify-content-center'>
@@ -80,20 +83,19 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
                 </tr>
               </thead>
               <tbody>
-                {fiData.insurance.map(insurance => {
+                {getUserScoreList(fiData).map(scoreInfo => {
                   return (
-                    <tr key={insurance.type}>
-                      <td>{insurance.title}</td>
+                    <tr key={scoreInfo.title}>
+                      <td>{scoreInfo.title}</td>
                       <td>
-                        {insurance.score.toFixed(2)}{' '}
+                        {scoreInfo.score.toFixed(2)}{' '}
                         <OverlayTrigger
                           placement='bottom'
-                          overlay={<Tooltip id='tooltip'>WEEEEEE</Tooltip>}
-                        >
-                          <>{questionIcon()}</>
+                          overlay={<Tooltip id='button-tooltip'>{scoreInfo.explaination}</Tooltip>}>
+                          <span>{questionIcon()}</span>
                         </OverlayTrigger>
                       </td>
-                      <td>{getIconForScore(insurance.score)}</td>
+                      <td>{getIconForScore(scoreInfo.score)}</td>
                     </tr>
                   );
                 })}
@@ -107,5 +109,44 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
     </>
   );
 };
+
+
+const getUserScoreList = (fiData: IFIUserData): IUserProfileScores[] => [
+  {
+    title: "Age Score",
+    explaination: "Younger clients score better for term insurance and pension plans.",
+    score: fiData.age_score
+  },
+  {
+    title: "Wealth Score",
+    explaination: "We suggest you plans based on your income and wealth in your account.",
+    score: fiData.wealth_score
+  },
+  {
+    title: "Medical Emergency Score",
+    explaination: "Higher score can qualify you for lower premiums on health insurance.",
+    score: fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MEDICAL_PLAN)?.score || 0
+  },
+  {
+    title: "Debt Score",
+    explaination: "Lower dept can qualify you for lower premiums on many plans.",
+    score: fiData.debt_score
+  },
+  {
+    title: "Travel Probablity",
+    explaination: "We suggest you plans based on your travel requirements and habits.",
+    score: fiData.insurance.find(insurance => insurance.type == InsuranceTypes.TRAVEL_PLAN)?.score || 0
+  },
+  {
+    title: "Investment Health",
+    explaination: "We check your investments (PPF, NPS etc), higher score means lower prenium on pension plan and life insurance.",
+    score: fiData.investment_score
+  },
+  {
+    title: "Motor Safety Score",
+    explaination: "Based on the safety and maintainence record of your vehicle, we adjust the premium.",
+    score:  fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MOTOR_PLAN)?.score || 0
+  },
+]
 
 export default UserProfile;

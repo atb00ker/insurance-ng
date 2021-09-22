@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { IFIInsurance } from '../../interfaces/IFIData';
@@ -40,7 +40,7 @@ const InsuranceCard: React.FC<{ insurance: IFIInsurance }> = ({ insurance }) => 
 
   return (
     <>
-      <Col className='mt-4' sm='5'>
+      <Col className='mt-4' md='10' lg='5'>
         <Card className={`border border-${cardColor}`}>
           <Card.Body>
             <Card.Title>{insurance.title}</Card.Title>
