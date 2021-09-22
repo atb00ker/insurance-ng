@@ -5,7 +5,6 @@ import { IFIInsurance } from '../../interfaces/IFIData';
 import Button from 'react-bootstrap/Button';
 
 const InsuranceCard: React.FC<{ insurance: IFIInsurance }> = ({ insurance }) => {
-  const [interested, setInterested] = useState(false);
 
   const recommend = 'Recommended plan',
     highlyRecommend = 'Highly recommended plan',
@@ -83,19 +82,17 @@ const InsuranceCard: React.FC<{ insurance: IFIInsurance }> = ({ insurance }) => 
           </Card.Body>
           <Card.Footer className={`text-${cardColor} d-flex`} style={{ lineHeight: '30px' }}>
             {recommendedText}
-            {!interested && insurance.score > 0 && (
+            {insurance.score > 0 && (
               <Button
                 className='btn-sm'
                 style={{ marginLeft: 'auto' }}
                 variant='primary'
-                onClick={() => setInterested(true)}
+                // onClick={() => setInterested(true)}
               >
-                I am Interested!
-              </Button>
-            )}
-            {!!interested && insurance.score > 0 && (
-              <Button className='btn-sm' style={{ marginLeft: 'auto' }} variant='secondary' disabled>
-                We'll get in touch!
+                Read More
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-right" viewBox="0 0 16 18">
+  <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+</svg>
               </Button>
             )}
           </Card.Footer>
