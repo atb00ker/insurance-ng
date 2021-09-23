@@ -14,7 +14,7 @@ export interface IAuth {
 }
 
 export interface IUserProfileScores {
-  title: string,
-  explaination: string,
-  score: number
+  title: string;
+  explaination: string;
+  score: number;
 }

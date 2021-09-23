@@ -18,46 +18,44 @@ const Dashboard: React.FC = () => {
   const [showError, setShowError] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [showProcessing, setShowProcessing] = useState(false);
-  const [fiData, setFIData] = useState([] as unknown as IFIData);
+  const [fiData, setFIData] = useState({} as IFIData);
 
   const getDataFromServer = () => {
     auth.user.jwt().then((jwt: string) => {
-    getDashboardData(jwt)
-      .then(response => {
-        const data: IFIData = response?.data;
-        if (data?.status) {
-          setFIData(data);
-          setShowProcessing(false);
-        } else {
-          setShowProcessing(true);
-          setTimeout(() => getDataFromServer(), 5000);
-        }
-        setShowLoader(false);
-        setShowError(false);
-      })
-      .catch(error => {
-        console.error(error);
-        setShowLoader(false);
-        setShowError(true);
-      });
-  });
-  }
+      getDashboardData(jwt)
+        .then(response => {
+          const data: IFIData = response?.data;
+          if (data?.status) {
+            setFIData(data);
+            setShowProcessing(false);
+          } else {
+            setShowProcessing(true);
+            setTimeout(() => getDataFromServer(), 5000);
+          }
+          setShowLoader(false);
+          setShowError(false);
+        })
+        .catch(error => {
+          console.error(error);
+          setShowLoader(false);
+          setShowError(true);
+        });
+    });
+  };
 
   useEffect(() => {
-    getDataFromServer()
+    getDataFromServer();
   }, [auth.isReady]);
 
   const sortedFiInsuranceList = useMemo(() => {
     const insuranceList = fiData?.data?.insurance || [];
-    return (
-      [...insuranceList].sort((a, b) => {
-        if (a.type == InsuranceTypes.ALL_PLAN) return -1;
-        if (b.type == InsuranceTypes.ALL_PLAN) return 1;
-        if (a.account_id) return -1;
-        if (b.account_id) return 1;
-        return b.score - a.score;
-      })
-    );
+    return [...insuranceList].sort((a, b) => {
+      if (a.type == InsuranceTypes.ALL_PLAN) return -1;
+      if (b.type == InsuranceTypes.ALL_PLAN) return 1;
+      if (a.account_id) return -1;
+      if (b.account_id) return 1;
+      return b.score - a.score;
+    });
   }, [fiData]);
 
   return (
@@ -69,7 +67,7 @@ const Dashboard: React.FC = () => {
           </Row>
           <Row className='mt-1 mb-5 justify-content-center'>
             {sortedFiInsuranceList.map(insurance => (
-              <InsuranceCard key={insurance.type} insurance={insurance} />
+              <InsuranceCard key={insurance.type} fiData={fiData} insurance={insurance} />
             ))}
           </Row>
         </>

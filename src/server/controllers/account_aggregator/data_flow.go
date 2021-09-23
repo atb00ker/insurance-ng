@@ -258,6 +258,7 @@ func getUserData(userId string) (responseData getUserDataResponse, err error) {
 		}
 
 		insuranceOffered = append(insuranceOffered, insuranceOffers{
+			Id:             insurance.Id,
 			Title:          insurance.Title,
 			Description:    insurance.Description,
 			AccountId:      existingInsurance.AccountId,

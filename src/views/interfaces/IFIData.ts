@@ -17,6 +17,7 @@ export interface IFIUserData {
 }
 
 export interface IFIInsurance {
+  uuid: string;
   title: string;
   description: string;
   account_id: string;

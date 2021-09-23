@@ -393,15 +393,16 @@ type userData struct {
 }
 
 type insuranceOffers struct {
-	AccountId      string  `json:"account_id"`
-	Type           string  `json:"type"`
-	Title          string  `json:"title"`
-	Description    string  `json:"description"`
-	Score          float32 `json:"score"`
-	CurrentPremium float32 `json:"current_premium"`
-	CurrentCover   float32 `json:"current_cover"`
-	OfferedPremium float32 `json:"offer_premium"`
-	OfferedCover   float32 `json:"offer_cover"`
+	Id             uuid.UUID `json:"uuid"`
+	AccountId      string    `json:"account_id"`
+	Type           string    `json:"type"`
+	Title          string    `json:"title"`
+	Description    string    `json:"description"`
+	Score          float32   `json:"score"`
+	CurrentPremium float32   `json:"current_premium"`
+	CurrentCover   float32   `json:"current_cover"`
+	OfferedPremium float32   `json:"offer_premium"`
+	OfferedCover   float32   `json:"offer_cover"`
 }
 
 type userPlanScoreChResp struct {
