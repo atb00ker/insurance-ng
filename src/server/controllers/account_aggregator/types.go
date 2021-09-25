@@ -256,66 +256,57 @@ type fipDataCollection struct {
 
 type fipData struct {
 	Account struct {
-		LinkedAccRef    uuid.NullUUID `xml:"linkedAccRef,attr"`
-		MaskedAccNumber string        `xml:"maskedAccNumber,attr"`
-		Type            string        `xml:"type,attr"`
+		LinkedAccRef    uuid.NullUUID `json:"linkedAccRef" xml:"linkedAccRef,attr"`
+		MaskedAccNumber string        `json:"maskedAccNumber" xml:"maskedAccNumber,attr"`
+		Type            string        `json:"type" xml:"type,attr"`
 		Profile         struct {
-			Holders []fipProfileHolder `xml:"Holders"`
-			Riders  []fipProfileRider  `xml:"Riders"`
-		} `xml:"Profile"`
-		Summary      fipSummary     `xml:"Summary"`
-		Transactions fipTransctions `xml:"Transactions"`
-	} `xml:"Account"`
+			Holders fipProfileHolder `json:"holders" xml:"Holders"`
+		} `json:"profile" xml:"Profile"`
+		Summary      fipSummary     `json:"summary" xml:"Summary"`
+		Transactions fipTransctions `json:"transactions" xml:"Transactions"`
+	} `json:"account" xml:"Account"`
 }
 
 type fipProfileHolder struct {
-	Holder struct {
-		Name           string `xml:"name,attr"`
-		Email          string `xml:"email,attr"`
-		Address        string `xml:"address,attr"`
-		Mobile         string `xml:"mobile,attr"`
-		Pan            string `xml:"pan,attr"`
-		Dob            string `xml:"dob,attr"`
-		CkycCompliance string `xml:"ckycCompliance,attr"`
-	} `xml:"Holder"`
-}
-
-type fipProfileRider struct {
-	RiderType       string `xml:"riderType,attr"`
-	PolicyEndDate   string `xml:"policyEndDate,attr"`
-	PolicyStartDate string `xml:"policyStartDate,attr"`
-	PremiumAmount   string `xml:"premiumAmount,attr"`
-	SumAssured      string `xml:"sumAssured,attr"`
+	Holder []struct {
+		Name           string `json:"name" xml:"name,attr"`
+		Email          string `json:"email" xml:"email,attr"`
+		Address        string `json:"address" xml:"address,attr"`
+		Mobile         string `json:"mobile" xml:"mobile,attr"`
+		Pan            string `json:"pan" xml:"pan,attr"`
+		Dob            string `json:"dob" xml:"dob,attr"`
+		CkycCompliance string `json:"ckycCompliance" xml:"ckycCompliance,attr"`
+	} `json:"holder" xml:"Holder"`
 }
 
 type fipSummary struct {
-	Type            string  `xml:"type,attr"`
-	Status          string  `xml:"status,attr"`
-	CurrentBalance  string  `xml:"currentBalance,attr"`
-	CoverAmount     float32 `xml:"coverAmount,attr"`
-	TenureMonths    string  `xml:"tenureMonths,attr"`
-	CoverType       string  `xml:"coverType,attr"`
-	PolicyName      string  `xml:"policyName,attr"`
-	TenureYears     string  `xml:"tenureYears,attr"`
-	MaturityDate    string  `xml:"maturityDate,attr"`
-	MaturityBenefit string  `xml:"maturityBenefit,attr"`
-	PolicyStartDate string  `xml:"policyStartDate,attr"`
-	PolicyType      string  `xml:"policyType,attr"`
-	SumAssured      string  `xml:"sumAssured,attr"`
-	PremiumAmount   float32 `xml:"premiumAmount,attr"`
+	Type            string `json:"type" xml:"type,attr"`
+	Status          string `json:"status" xml:"status,attr"`
+	CurrentBalance  string `json:"currentBalance" xml:"currentBalance,attr"`
+	CoverAmount     string `json:"coverAmount" xml:"coverAmount,attr"`
+	TenureMonths    string `json:"tenureMonths" xml:"tenureMonths,attr"`
+	CoverType       string `json:"coverType" xml:"coverType,attr"`
+	PolicyName      string `json:"policyName" xml:"policyName,attr"`
+	TenureYears     string `json:"tenureYears" xml:"tenureYears,attr"`
+	MaturityDate    string `json:"maturityDate" xml:"maturityDate,attr"`
+	MaturityBenefit string `json:"maturityBenefit" xml:"maturityBenefit,attr"`
+	PolicyStartDate string `json:"policyStartDate" xml:"policyStartDate,attr"`
+	PolicyType      string `json:"policyType" xml:"policyType,attr"`
+	SumAssured      string `json:"sumAssured" xml:"sumAssured,attr"`
+	PremiumAmount   string `json:"premiumAmount" xml:"premiumAmount,attr"`
 }
 
 type fipTransctions struct {
 	Transaction []struct {
-		Mode                 string `xml:"mode,attr"`
-		Type                 string `xml:"type,attr"`
-		TxnID                string `xml:"txnId,attr"`
-		Amount               string `xml:"amount,attr"`
-		Narration            string `xml:"narration,attr"`
-		Reference            string `xml:"reference,attr"`
-		CurrentBalance       string `xml:"currentBalance,attr"`
-		TransactionTimestamp string `xml:"transactionTimestamp,attr"`
-	} `xml:"Transaction"`
+		Mode                 string `json:"mode" xml:"mode,attr"`
+		Type                 string `json:"type" xml:"type,attr"`
+		TxnID                string `json:"txnId" xml:"txnId,attr"`
+		Amount               string `json:"amount" xml:"amount,attr"`
+		Narration            string `json:"narration" xml:"narration,attr"`
+		Reference            string `json:"reference" xml:"reference,attr"`
+		CurrentBalance       string `json:"currentBalance" xml:"currentBalance,attr"`
+		TransactionTimestamp string `json:"transactionTimestamp" xml:"transactionTimestamp,attr"`
+	} `json:"transaction" xml:"Transaction"`
 }
 
 // Consent Notification Types //
@@ -399,18 +390,18 @@ type insuranceOffers struct {
 	Title          string    `json:"title"`
 	Description    string    `json:"description"`
 	Score          float32   `json:"score"`
-	CurrentPremium float32   `json:"current_premium"`
-	CurrentCover   float32   `json:"current_cover"`
-	OfferedPremium float32   `json:"offer_premium"`
-	OfferedCover   float32   `json:"offer_cover"`
+	CurrentPremium float64   `json:"current_premium"`
+	CurrentCover   float64   `json:"current_cover"`
+	OfferedPremium float64   `json:"offer_premium"`
+	OfferedCover   float64   `json:"offer_cover"`
 }
 
-type userPlanScoreChResp struct {
-	result *models.UserPlanScores
+type userScoreChResp struct {
+	result *models.UserScores
 	err    error
 }
-type userExistingInsurancesChResp struct {
-	result []*models.UserExistingInsurance
+type userInsurancesChResp struct {
+	result []*models.UserInsurance
 	err    error
 }
 

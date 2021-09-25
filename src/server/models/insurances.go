@@ -21,24 +21,25 @@ type Insurance struct {
 	Title            string    `json:"title"`
 	Description      string    `json:"description"`
 	Type             string    `json:"type"`
-	Premium          float32   `json:"premium"`
-	Cover            float32   `json:"cover"`
+	Premium          float64   `json:"premium"`
+	Cover            float64   `json:"cover"`
 	YoyDeductionRate float32   `json:"yoy_deduction_rate"`
 	gorm.Model
 }
 
-type UserExistingInsurance struct {
+type UserInsurance struct {
 	Id            uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	UserConsentId uuid.UUID    `json:"consent_id"`
 	Type          string       `json:"type"`
-	Premium       float32      `json:"premium"`
-	Cover         float32      `json:"cover"`
+	Premium       float64      `json:"premium"`
+	Cover         float64      `json:"cover"`
+	IsActive      bool         `json:"is_active"`
 	AccountId     string       `json:"account_id"`
 	UserConsent   UserConsents `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
 	gorm.Model
 }
 
-func (insurance *UserExistingInsurance) BeforeCreate(tx *gorm.DB) (err error) {
+func (insurance *UserInsurance) BeforeCreate(tx *gorm.DB) (err error) {
 	insurance.Id = uuid.New()
 	return
 }

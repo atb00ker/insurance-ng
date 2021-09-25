@@ -16,6 +16,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/google/uuid"
@@ -75,8 +76,16 @@ func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 	return
 }
 
-func sendResponseToSetuNotification(startTimeHack string) (clientApi string, requestJws string,
+func sendResponseToSetuNotification() (clientApi string, requestJws string,
 	setuResponseBody []byte, err error) {
+
+	// Hack
+	// Currently, Setu API is not following
+	// the complete RFC3339
+	startTime := time.Now()
+	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		startTime.Year(), startTime.Month(), startTime.Day(),
+		startTime.Hour(), startTime.Minute(), startTime.Second())
 
 	respMessage := setuConsentNotificationResponse{
 		Ver:       "1.0",
@@ -100,14 +109,22 @@ func sendResponseToSetuNotification(startTimeHack string) (clientApi string, req
 	return
 }
 
-func HandleNotificationError(response http.ResponseWriter, startTimeHack string, err string) {
+func HandleNotificationError(response http.ResponseWriter, err error) {
+	// Hack
+	// Currently, Setu API is not following
+	// the complete RFC3339
+	startTime := time.Now()
+	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		startTime.Year(), startTime.Month(), startTime.Day(),
+		startTime.Hour(), startTime.Minute(), startTime.Second())
+
 	response.WriteHeader(http.StatusBadRequest)
 	respMessage, _ := json.Marshal(setuConsentNotificationResponse{
-		ErrorCode: err,
+		ErrorCode: "Errored",
 		Ver:       "1.0",
 		Timestamp: startTimeHack,
 		Txnid:     uuid.New(),
-		Response:  "Errored",
+		Response:  err.Error(),
 	})
 	response.Write(respMessage)
 }

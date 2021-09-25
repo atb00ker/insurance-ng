@@ -2,10 +2,8 @@ package account_aggregator
 
 import (
 	"encoding/json"
-	"fmt"
 	"insurance-ng/src/server/controllers"
 	"net/http"
-	"time"
 )
 
 const (
@@ -24,19 +22,15 @@ func ConsentNotification(response http.ResponseWriter, request *http.Request) {
 		controllers.HandleError(response, err.Error())
 		return
 	}
-	startTime := time.Now()
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
-		startTime.Year(), startTime.Month(), startTime.Day(),
-		startTime.Hour(), startTime.Minute(), startTime.Second())
 
 	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification); err != nil {
-		HandleNotificationError(response, startTimeHack, err.Error())
+		HandleNotificationError(response, err)
 		return
 	}
 
-	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification(startTimeHack)
+	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {
-		HandleNotificationError(response, startTimeHack, err.Error())
+		HandleNotificationError(response, err)
 		return
 	}
 
@@ -87,19 +81,21 @@ func FINotification(response http.ResponseWriter, request *http.Request) {
 		controllers.HandleError(response, err.Error())
 		return
 	}
-	startTime := time.Now()
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
-		startTime.Year(), startTime.Month(), startTime.Day(),
-		startTime.Hour(), startTime.Minute(), startTime.Second())
 
+	// Hack:
+	// TODO - Currently the Setu FI notification is not triggered
+	// sometimes, which can be a big problem in the
+	// hackathon, hence, for the time being, I am commenting this
+	// out and focusing and trigger this notification automatically
+	// after consent request.
 	if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
-		HandleNotificationError(response, startTimeHack, err.Error())
+		HandleNotificationError(response, err)
 		return
 	}
 
-	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification(startTimeHack)
+	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {
-		HandleNotificationError(response, startTimeHack, err.Error())
+		HandleNotificationError(response, err)
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/controllers/account_aggregator"
+	"insurance-ng/src/server/controllers/insurance"
 	"insurance-ng/src/server/controllers/users"
 	"insurance-ng/src/server/middleware"
 
@@ -19,7 +20,12 @@ func main() {
 	muxDispatcher := mux.NewRouter()
 	config.LoadEnv()
 	config.ConnectToDb()
-	muxDispatcher.Handle(users.UrlRegister, jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
+	// User
+	muxDispatcher.Handle(users.UrlRegister,
+		jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
+	// Insurance
+	muxDispatcher.Handle(insurance.InsurancePurchase,
+		jwtAuth(insurance.InsurancePurchaseHandler)).Methods("OPTIONS", "POST")
 	// Account Aggregator
 	//// Consent Flow
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,

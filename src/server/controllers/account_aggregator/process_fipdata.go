@@ -14,11 +14,11 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	userConsent models.UserConsents) error {
 
 	name := getHolderField(allFipData, "Name")
-	dob, _ := time.Parse("2006-01-02", getHolderField(allFipData, "Dob"))
+	dob, _ := time.Parse("02-01-2006", getHolderField(allFipData, "Dob"))
 	panCard := getHolderField(allFipData, "Pan")
 	ckycCompliance, _ := strconv.ParseBool(getHolderField(allFipData, "CkycCompliance"))
 
-	planInformation := models.UserPlanScores{
+	planInformation := models.UserScores{
 		UserConsentId:   userConsent.Id,
 		Name:            name,
 		DateOfBirth:     dob,
@@ -51,23 +51,12 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	return nil
 }
 
-func getAccountIdField(allFipData []fipDataCollection, planName string) string {
-	for _, fipData := range allFipData {
-		for _, fipDataItem := range fipData.FipData {
-			if fipDataItem.Account.Type == "insurance" &&
-				fipDataItem.Account.Summary.PolicyType == planName {
-				return fipDataItem.Account.MaskedAccNumber
-			}
-		}
-	}
-	return ""
-}
-
 func getHolderField(allFipData []fipDataCollection, field string) string {
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
-			for _, holder := range fipDataItem.Account.Profile.Holders {
-				relfectedHolder := reflect.ValueOf(holder.Holder)
+			// Problem in the Setu API's new version
+			for _, holder := range fipDataItem.Account.Profile.Holders.Holder {
+				relfectedHolder := reflect.ValueOf(holder)
 				fieldValue := reflect.Indirect(relfectedHolder).FieldByName(field)
 				if fieldValue.String() != "" {
 					// Return as soon as we find a name
@@ -77,6 +66,16 @@ func getHolderField(allFipData []fipDataCollection, field string) string {
 					return fieldValue.String()
 				}
 			}
+			// relfectedHolder := reflect.ValueOf(fipDataItem.Account.Profile.Holders.Holder)
+			// fieldValuePtr := reflect.Indirect(relfectedHolder).FieldByName(field)
+			// fieldValue := fieldValuePtr.String()
+			// if fieldValue != "" {
+			// 	// Return as soon as we find a name
+			// 	// We can match for mobile number to ensure we can
+			// 	// picking the correct person's defails but for
+			// 	// mock data, that is not required.
+			// 	return fieldValue
+			// }
 		}
 	}
 	return ""
@@ -86,13 +85,15 @@ func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId 
 
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
-			if fipDataItem.Account.Type == "insurance" {
-				insurance := models.UserExistingInsurance{
+			if fipDataItem.Account.Type == "insurance_policies" {
+				premium, _ := strconv.ParseFloat(fipDataItem.Account.Summary.PremiumAmount, 32)
+				cover, _ := strconv.ParseFloat(fipDataItem.Account.Summary.CoverAmount, 32)
+				insurance := models.UserInsurance{
 					UserConsentId: consendId,
 					Type:          fipDataItem.Account.Summary.PolicyType,
-					Premium:       fipDataItem.Account.Summary.PremiumAmount,
-					Cover:         fipDataItem.Account.Summary.CoverAmount,
-					AccountId:     getAccountIdField(allFipData, fipDataItem.Account.Summary.PolicyType),
+					Premium:       premium,
+					Cover:         cover,
+					AccountId:     fipDataItem.Account.MaskedAccNumber,
 				}
 				result := config.Database.Create(&insurance)
 				if result.Error != nil {

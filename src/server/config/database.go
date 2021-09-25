@@ -46,8 +46,8 @@ func migrateDb() {
 	fmt.Println("Migrating models...")
 	Database.AutoMigrate(&models.Users{})
 	Database.AutoMigrate(&models.UserConsents{})
-	Database.AutoMigrate(&models.UserPlanScores{})
-	Database.AutoMigrate(&models.UserExistingInsurance{})
+	Database.AutoMigrate(&models.UserScores{})
+	Database.AutoMigrate(&models.UserInsurance{})
 	Database.AutoMigrate(&models.Insurance{})
 	InitInsuranceSeed()
 }

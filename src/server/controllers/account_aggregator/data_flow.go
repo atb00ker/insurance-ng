@@ -3,7 +3,6 @@ package account_aggregator
 import (
 	"encoding/base64"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/models"
@@ -34,6 +33,16 @@ func createAndSaveSessionDetails(userId string) (err error) {
 	}
 
 	config.Database.Where("user_id = ?", userId).Updates(&updatedUserConsent)
+
+	// Hack:
+	// TODO - Currently the Setu FI notification is not triggered
+	// sometimes, which can be a big problem in the
+	// hackathon, hence, for the time being, we start the FI
+	// notification steps here, even if we don't receive
+	// the said notification. Not required in production.
+	config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
+	saveFipData(updatedUserConsent.SessionId)
+
 	return
 }
 
@@ -170,7 +179,7 @@ func getFIPData(rahasyaNonce string, rahasyaPrivateKey string,
 			}
 
 			var fiData fipData
-			if err = xml.Unmarshal(data, &fiData.Account); err != nil {
+			if err = json.Unmarshal(data, &fiData); err != nil {
 				return
 			}
 
@@ -229,10 +238,10 @@ func getUserData(userId string) (responseData getUserDataResponse, err error) {
 		return getUserDataResponse{Status: false}, nil
 	}
 
-	userPlanScoresCh := make(chan userPlanScoreChResp, 1)
+	userPlanScoresCh := make(chan userScoreChResp, 1)
 	go getUserPlanScore(userConsent.result.Id, userPlanScoresCh)
-	userExistingInsuranceCh := make(chan userExistingInsurancesChResp, 1)
-	go getUserExistingInsurances(userConsent.result.Id, userExistingInsuranceCh)
+	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
+	go getUserInsurances(userConsent.result.Id, userExistingInsuranceCh)
 
 	userScore := <-userPlanScoresCh
 	if userScore.err != nil {
@@ -249,7 +258,7 @@ func getUserData(userId string) (responseData getUserDataResponse, err error) {
 	var insuranceOffered []insuranceOffers
 
 	for _, insurance := range insuranceAvailable.result {
-		existingInsurance := models.UserExistingInsurance{}
+		existingInsurance := models.UserInsurance{}
 		for _, userInsurances := range userExistingInsurance.result {
 			if userInsurances.Type == insurance.Type {
 				existingInsurance = *userInsurances
@@ -290,7 +299,7 @@ func getUserData(userId string) (responseData getUserDataResponse, err error) {
 	return
 }
 
-func getScoreForType(userScore *models.UserPlanScores, insuranceType string) float32 {
+func getScoreForType(userScore *models.UserScores, insuranceType string) float32 {
 	switch insuranceType {
 	case models.OfferePlansAllPlan:
 		return userScore.AllScore
@@ -312,21 +321,21 @@ func getScoreForType(userScore *models.UserPlanScores, insuranceType string) flo
 	return 1
 }
 
-func getUserExistingInsurances(consentId uuid.UUID, userExistingInsuranceCh chan userExistingInsurancesChResp) {
-	var userExistingInsurance []*models.UserExistingInsurance
+func getUserInsurances(consentId uuid.UUID, userExistingInsuranceCh chan userInsurancesChResp) {
+	var userExistingInsurance []*models.UserInsurance
 	result := config.Database.Where("user_consent_id = ?", consentId).Find(&userExistingInsurance)
 
-	userExistingInsuranceCh <- userExistingInsurancesChResp{
+	userExistingInsuranceCh <- userInsurancesChResp{
 		result: userExistingInsurance,
 		err:    result.Error,
 	}
 }
 
-func getUserPlanScore(consentId uuid.UUID, userPlanScoreCh chan userPlanScoreChResp) {
-	var userPlanScore *models.UserPlanScores
+func getUserPlanScore(consentId uuid.UUID, userPlanScoreCh chan userScoreChResp) {
+	var userPlanScore *models.UserScores
 	result := config.Database.Where("user_consent_id = ?", consentId).Take(&userPlanScore)
 
-	userPlanScoreCh <- userPlanScoreChResp{
+	userPlanScoreCh <- userScoreChResp{
 		result: userPlanScore,
 		err:    result.Error,
 	}

@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserPlanScores struct {
+type UserScores struct {
 	Id              uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	UserConsentId   uuid.UUID    `json:"consent_id"`
 	Name            string       `json:"name"`
@@ -29,7 +29,7 @@ type UserPlanScores struct {
 	UserConsent     UserConsents `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
 }
 
-func (insurance *UserPlanScores) BeforeCreate(tx *gorm.DB) (err error) {
+func (insurance *UserScores) BeforeCreate(tx *gorm.DB) (err error) {
 	insurance.Id = uuid.New()
 	return
 }
