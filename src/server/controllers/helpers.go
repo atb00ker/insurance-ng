@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"math/rand"
 	"net/http"
 
 	"github.com/form3tech-oss/jwt-go"
@@ -21,4 +22,14 @@ func GetUserIdentifier(response http.ResponseWriter, request *http.Request) (str
 	user := token.(*jwt.Token).Claims.(jwt.MapClaims)
 	userId, ok := user["sub"].(string)
 	return userId, ok
+}
+
+func GetRandomString(n int) string {
+	var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
 }

@@ -2,16 +2,32 @@ package insurance
 
 import (
 	"encoding/json"
-	"fmt"
-	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/controllers"
-	"insurance-ng/src/server/models"
 	"net/http"
 )
 
 const (
 	InsurancePurchase = "/api/insurance/purchase/"
+	UrlGetUserData    = "/api/insurance/"
 )
+
+func GetUserData(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	userId, ok := controllers.GetUserIdentifier(response, request)
+	if !ok {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
+	}
+
+	userData, err := getUserDataRecord(userId)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	respMessage, _ := json.Marshal(userData)
+	response.Write(respMessage)
+}
 
 func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
@@ -21,7 +37,6 @@ func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	fmt.Println(userId)
 	decoder := json.NewDecoder(request.Body)
 	var requestJson purchaseRequest
 	if err := decoder.Decode(&requestJson); err != nil {
@@ -29,14 +44,17 @@ func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	var insurance models.Insurance
-	result := config.Database.Model(&models.Insurance{}).Where("id = ?",
-		requestJson.Uuid).Take(&insurance)
-	if result.Error != nil {
-		controllers.HandleError(response, result.Error.Error())
+	if err := createInsuranceRecord(userId, requestJson.Uuid); err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	respMessage, _ := json.Marshal(controllers.ResponseMessage{Status: controllers.ResponseSuccess})
+	userData, err := getUserDataRecord(userId)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	respMessage, _ := json.Marshal(userData)
 	response.Write(respMessage)
 }

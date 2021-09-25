@@ -9,7 +9,6 @@ import (
 const (
 	UrlCreateConsent        = "/api/account_aggregator/consent/"
 	UrlConsentStatus        = "/api/account_aggregator/consent/status/"
-	UrlGetUserData          = "/api/account_aggregator/data/"
 	UrlConsentNotification  = "/api/account_aggregator/Consent/Notification"
 	UrlArtefactNotification = "/api/account_aggregator/FI/Notification"
 )
@@ -102,22 +101,4 @@ func FINotification(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("client_api_key", clientApi)
 	response.Header().Set("x-jws-signature", requestJws)
 	response.Write(setuResponseBody)
-}
-
-func GetUserData(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
-		return
-	}
-
-	userData, err := getUserData(userId)
-	if err != nil {
-		controllers.HandleError(response, err.Error())
-		return
-	}
-
-	respMessage, _ := json.Marshal(userData)
-	response.Write(respMessage)
 }

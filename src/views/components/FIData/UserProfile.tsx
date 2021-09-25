@@ -7,11 +7,10 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { IFIUserData } from '../../interfaces/IFIData';
 import Row from 'react-bootstrap/esm/Row';
-import ProfileImage from './../../assets/images/default-profile-picture.jpeg';
+import ProfileImage from './../../assets/images/default-profile-picture-female.jpeg';
 import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../services/svgIcons';
-import { InsuranceTypes } from '../../enums/FIData';
+import { InsuranceTypes } from '../../enums/Insurance';
 import { IUserProfileScores } from '../../interfaces/IUser';
-import Button from 'react-bootstrap/esm/Button';
 
 const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
   const getIconForScore = (score: number) => {

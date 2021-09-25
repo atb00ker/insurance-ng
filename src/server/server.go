@@ -26,14 +26,11 @@ func main() {
 	// Insurance
 	muxDispatcher.Handle(insurance.InsurancePurchase,
 		jwtAuth(insurance.InsurancePurchaseHandler)).Methods("OPTIONS", "POST")
+    muxDispatcher.Handle(insurance.UrlGetUserData,
+      jwtAuth(insurance.GetUserData)).Methods("OPTIONS", "GET")
 	// Account Aggregator
-	//// Consent Flow
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
 		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
-	//// Data Flow
-	muxDispatcher.Handle(account_aggregator.UrlGetUserData,
-		jwtAuth(account_aggregator.GetUserData)).Methods("OPTIONS", "GET")
-	//// Notifications Flow
 	muxDispatcher.Handle(account_aggregator.UrlConsentNotification,
 		setuAuth(account_aggregator.ConsentNotification)).Methods("POST")
 	muxDispatcher.Handle(account_aggregator.UrlArtefactNotification,

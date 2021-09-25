@@ -6,7 +6,7 @@ import Navbar from './components/Navbar/Navbar';
 import RegisterUser from './pages/Register/Register';
 import CreateConsent from './pages/CreateConsent/CreateConsent';
 import Dashboard from './pages/Dashboard/Dashboard';
-import InsuranceDetails from './pages/InsuranceDetails/InsuranceDetails';
+import InsuranceInfo from './pages/InsuranceDetails/InsuranceInfo';
 import { RouterPath } from './enums/UrlPath';
 import './index.scss';
 
@@ -17,7 +17,7 @@ const App = () => (
       <Switch>
         <Route path={RouterPath.Register} component={RegisterUser} />
         <Route path={RouterPath.Dashboard} component={Dashboard} />
-        <Route path={RouterPath.InsuranceDetails} component={InsuranceDetails} />
+        <Route path={RouterPath.InsuranceDetails} component={InsuranceInfo} />
         <Route path={RouterPath.CreateConsent} component={CreateConsent} />
       </Switch>
     </Router>

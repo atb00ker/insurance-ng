@@ -10,7 +10,7 @@ import ServerRequestError from '../../components/ContentState/ServerRequestError
 import UserProfile from '../../components/FIData/UserProfile';
 import { IFIData } from '../../interfaces/IFIData';
 import InsuranceCard from '../../components/FIData/InsuranceCard';
-import { InsuranceTypes } from '../../enums/FIData';
+import { InsuranceTypes } from '../../enums/Insurance';
 import FiDataWait from '../../components/ContentState/FIDataWait';
 
 const Dashboard: React.FC = () => {
@@ -37,8 +37,8 @@ const Dashboard: React.FC = () => {
         })
         .catch(error => {
           console.error(error);
-          setShowLoader(false);
           setShowError(true);
+          setShowLoader(false);
         });
     });
   };

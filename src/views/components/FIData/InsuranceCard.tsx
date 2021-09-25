@@ -6,16 +6,24 @@ import Button from 'react-bootstrap/Button';
 import { Link, useHistory } from 'react-router-dom';
 import { RouterPath } from '../../enums/UrlPath';
 
-const InsuranceCard: React.FC<{ fiData: IFIData ,insurance: IFIInsurance }> = ({ fiData, insurance }) => {
+const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({ fiData, insurance }) => {
   const history = useHistory();
   const recommend = 'Recommended plan',
+    activationInProgress = 'Application under review...',
+    activePlan = 'Active Plan',
     highlyRecommend = 'Highly recommended plan',
     doNotRecommend = 'Not recommended plan',
     notApplicable = 'You cannot purchase this plan';
   let recommendedText = recommend,
     cardColor = 'danger';
 
-  if (insurance.account_id != '') {
+  if (insurance.is_insuranceng_account && insurance.account_id != '') {
+    recommendedText = activePlan;
+    cardColor = 'success';
+  } else if (insurance.is_insuranceng_account && insurance.account_id == '') {
+    recommendedText = activationInProgress;
+    cardColor = 'success';
+  } else if (insurance.account_id != '') {
     recommendedText = highlyRecommend;
     cardColor = 'primary';
   } else if (insurance.score >= 0.78) {
@@ -32,14 +40,6 @@ const InsuranceCard: React.FC<{ fiData: IFIData ,insurance: IFIInsurance }> = ({
     cardColor = 'danger';
   }
 
-  const computeCover = (cost: number, score: number): string => {
-    return Math.ceil(cost + (cost * score) / 15).toLocaleString('en-IN');
-  };
-
-  const computePremium = (cost: number, score: number): string => {
-    return Math.ceil(cost - (cost * score) / 25).toLocaleString('en-IN');
-  };
-
   return (
     <>
       <Col className='mt-4' md='10' lg='5'>
@@ -51,31 +51,52 @@ const InsuranceCard: React.FC<{ fiData: IFIData ,insurance: IFIInsurance }> = ({
             </Card.Subtitle>
             <Card.Text>
               {insurance.description} <br />
-              {insurance.account_id != '' && (
+              {insurance.is_insuranceng_account && (
+                <>
+                  We are offering you a cover of
+                  <span className={`text-${cardColor}`}>
+                    {' '}
+                    ₹{insurance.current_cover.toLocaleString('en-IN')}
+                  </span>{' '}
+                  for a yearly premium of
+                  <span className={`text-${cardColor}`}>
+                    {' '}
+                    ₹{insurance.current_premium.toLocaleString('en-IN')}
+                  </span>
+                  . For initiating claims, please contact your agent or contact help line.
+                </>
+              )}
+              {!insurance.is_insuranceng_account && insurance.account_id != '' && (
                 <>
                   You current have insurance provides a cover of
-                  <span className={`text-${cardColor}`}> ₹{insurance.current_cover},000</span> for a premium
-                  of <span className={`text-${cardColor}`}>₹{insurance.current_premium},000</span>, we can
-                  offer a cover of{' '}
                   <span className={`text-${cardColor}`}>
-                    ₹{computeCover(insurance.offer_cover, insurance.score)}
+                    {' '}
+                    ₹{insurance.current_cover.toLocaleString('en-IN')}
                   </span>{' '}
                   for a premium of{' '}
                   <span className={`text-${cardColor}`}>
-                    ₹{computePremium(insurance.offer_premium, insurance.score)}
+                    ₹{insurance.current_premium.toLocaleString('en-IN')}
+                  </span>
+                  , we can offer a cover of{' '}
+                  <span className={`text-${cardColor}`}>
+                    ₹{insurance.offer_cover.toLocaleString('en-IN')}
+                  </span>{' '}
+                  for a premium of{' '}
+                  <span className={`text-${cardColor}`}>
+                    ₹{insurance.offer_premium.toLocaleString('en-IN')}
                   </span>
                   .
                 </>
               )}
-              {insurance.account_id == '' && (
+              {!insurance.is_insuranceng_account && insurance.account_id == '' && (
                 <>
                   You are currently not insured, based on your information, we suggest getting a cover of{' '}
                   <span className={`text-${cardColor}`}>
-                    ₹{computeCover(insurance.offer_cover, insurance.score)}
+                    ₹{insurance.offer_cover.toLocaleString('en-IN')}
                   </span>{' '}
                   only for a premium of{' '}
                   <span className={`text-${cardColor}`}>
-                    ₹{computePremium(insurance.offer_premium, insurance.score)}
+                    ₹{insurance.offer_premium.toLocaleString('en-IN')}
                   </span>
                   .
                 </>

@@ -9,7 +9,7 @@ func InitInsuranceSeed() {
 		Cover:            10000000,
 		Premium:          90000,
 		Description:      "All insurance packages into one, you pay one premium and enjoy the benefits of all the plans we offer.",
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	medical_policy := models.Insurance{
 		Title:            "Medical Plan",
@@ -17,7 +17,7 @@ func InitInsuranceSeed() {
 		Cover:            100000,
 		Premium:          21000,
 		Description:      "We cover your medical emergencies, quickly and without the need to difficult and long claim steps.",
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	motor_policy := models.Insurance{
 		Title:            "Motor Plan",
@@ -25,7 +25,7 @@ func InitInsuranceSeed() {
 		Type:             models.OfferePlansMotorPlan,
 		Cover:            150000,
 		Premium:          7000,
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	family_policy := models.Insurance{
 		Title:            "Family Plan",
@@ -33,7 +33,7 @@ func InitInsuranceSeed() {
 		Type:             models.OfferePlansFamilyPlan,
 		Cover:            200000,
 		Premium:          25000,
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	travel_policy := models.Insurance{
 		Title:            "Travel Plan",
@@ -41,7 +41,7 @@ func InitInsuranceSeed() {
 		Type:             models.OfferePlansTravelPlan,
 		Cover:            20000,
 		Premium:          2000,
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	term_policy := models.Insurance{
 		Title:            "Term Plan",
@@ -49,15 +49,15 @@ func InitInsuranceSeed() {
 		Type:             models.OfferePlansTermPlan,
 		Cover:            3000000,
 		Premium:          28500,
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 	children_policy := models.Insurance{
 		Title:            "Children's Plan",
 		Type:             models.OfferePlansChildrenPlan,
 		Description:      "You can get seperate insurance for your children. We advice having enough for their adulthhood.",
-		Cover:            100000,
-		Premium:          20000,
-		YoyDeductionRate: 1.2,
+		Cover:            1600000,
+		Premium:          28500,
+		YoyDeductionRate: 25.2,
 	}
 	pension_policy := models.Insurance{
 		Title:            "Pension Plan",
@@ -65,7 +65,7 @@ func InitInsuranceSeed() {
 		Cover:            400000,
 		Premium:          10000,
 		Description:      "Your income for the old age when you retire, planned for you ahead of time.",
-		YoyDeductionRate: 1.2,
+		YoyDeductionRate: 25.2,
 	}
 
 	createInsuranceSeed(all_policy)

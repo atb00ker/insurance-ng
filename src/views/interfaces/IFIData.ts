@@ -18,6 +18,7 @@ export interface IFIUserData {
 
 export interface IFIInsurance {
   uuid: string;
+  type: string;
   title: string;
   description: string;
   account_id: string;
@@ -26,5 +27,7 @@ export interface IFIInsurance {
   current_cover: number;
   offer_premium: number;
   offer_cover: number;
-  type: string;
+  is_active: boolean;
+  yoy_deduction_rate: number;
+  is_insuranceng_account: string;
 }
