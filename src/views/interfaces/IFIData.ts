@@ -24,6 +24,8 @@ export interface IFIInsurance {
   account_id: string;
   score: number;
   current_premium: number;
+  clauses: Array<string>;
+  current_clauses: Array<string>;
   current_cover: number;
   offer_premium: number;
   offer_cover: number;

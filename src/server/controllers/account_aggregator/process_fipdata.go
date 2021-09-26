@@ -66,23 +66,12 @@ func getHolderField(allFipData []fipDataCollection, field string) string {
 					return fieldValue.String()
 				}
 			}
-			// relfectedHolder := reflect.ValueOf(fipDataItem.Account.Profile.Holders.Holder)
-			// fieldValuePtr := reflect.Indirect(relfectedHolder).FieldByName(field)
-			// fieldValue := fieldValuePtr.String()
-			// if fieldValue != "" {
-			// 	// Return as soon as we find a name
-			// 	// We can match for mobile number to ensure we can
-			// 	// picking the correct person's defails but for
-			// 	// mock data, that is not required.
-			// 	return fieldValue
-			// }
 		}
 	}
 	return ""
 }
 
 func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID) error {
-
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
 			if fipDataItem.Account.Type == "insurance_policies" {
@@ -93,6 +82,7 @@ func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId 
 					Type:          fipDataItem.Account.Summary.PolicyType,
 					Premium:       premium,
 					Cover:         cover,
+					Clauses:       models.InsuranceApnaMockedClauses,
 					AccountId:     fipDataItem.Account.MaskedAccNumber,
 				}
 				result := config.Database.Create(&insurance)

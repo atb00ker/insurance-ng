@@ -51,7 +51,6 @@ const InsuranceInfo: React.FC = () => {
     for (let index = 1; index < 11; index++) {
       graphColumns.push([index, insuranceInfo.offer_cover + incrementRate]);
       incrementRate = incrementRate + incrementRate;
-      console.log(incrementRate)
     }
     return graphColumns;
   }, [insuranceInfo]);
@@ -79,6 +78,7 @@ const InsuranceInfo: React.FC = () => {
     dataResponse
       .then((response: any) => {
         const data: IFIData = response?.data;
+        console.log(response?.data)
         if (data?.status) {
           setShowError(false);
           setShowLoader(false);
@@ -94,6 +94,32 @@ const InsuranceInfo: React.FC = () => {
         setShowLoader(false);
       });
   };
+
+  const getClauseTableColumns = (insuranceInfo: IFIInsurance): React.ReactNode => {
+    const noOfClauses = insuranceInfo.clauses?.length > insuranceInfo.current_clauses?.length ?
+      insuranceInfo.clauses?.length : insuranceInfo.current_clauses?.length || insuranceInfo.clauses?.length;
+    let tableRow = []
+    for (let index = 0; index < noOfClauses; index++) {
+      tableRow.push(<tr key={index}>
+        <td>{index + 1}.</td>
+        {!insuranceInfo.is_insuranceng_account && insuranceInfo.current_clauses?.length && <td dangerouslySetInnerHTML={{__html: insuranceInfo.current_clauses[index]?.replace(/(\d+%?)|(\S[A-Z]+\S)/g, function(value) {
+            if (value === "SLA")
+              return value
+            return `<span class="text-danger">${value}</span>`
+          })
+        }}>
+        </td>}
+        <td dangerouslySetInnerHTML={{__html: insuranceInfo.clauses[index]?.replace(/(\d+%?)|(\S[A-Z]+\S)/g, function(value) {
+            if (value === "SLA")
+              return value
+            return `<span class="text-success">${value}</span>`
+          })
+        }}>
+        </td>
+      </tr>)
+    }
+    return tableRow;
+  }
 
   return (
     <Container>
@@ -200,22 +226,12 @@ const InsuranceInfo: React.FC = () => {
                 <thead>
                   <tr>
                     <th className='text-center'>#</th>
+                    {!insuranceInfo.is_insuranceng_account && insuranceInfo.current_clauses?.length && <th className='text-center'>Current Clauses</th>}
                     <th className='text-center'>Clauses</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1.</td>
-                    <td>In case of emergency, the transaction will be completed with 24 hours.</td>
-                  </tr>
-                  <tr>
-                    <td>2.</td>
-                    <td>In case of emergency, the transaction will be completed with 24 hours.</td>
-                  </tr>
-                  <tr>
-                    <td>3.</td>
-                    <td>In case of emergency, the transaction will be completed with 24 hours.</td>
-                  </tr>
+                  {getClauseTableColumns(insuranceInfo)}
                 </tbody>
               </Table>
             </Col>

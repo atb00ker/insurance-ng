@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const (
@@ -36,19 +37,21 @@ type userData struct {
 }
 
 type insuranceOffers struct {
-	Id                uuid.UUID `json:"uuid"`
-	AccountId         string    `json:"account_id"`
-	Type              string    `json:"type"`
-	Title             string    `json:"title"`
-	Description       string    `json:"description"`
-	Score             float32   `json:"score"`
-	CurrentPremium    float64   `json:"current_premium"`
-	CurrentCover      float64   `json:"current_cover"`
-	OfferedPremium    float64   `json:"offer_premium"`
-	OfferedCover      float64   `json:"offer_cover"`
-	YoyDeductionRate  float32   `json:"yoy_deduction_rate"`
-	IsInsuranceNgAcct bool      `json:"is_insuranceng_account"`
-	IsActive          bool      `json:"is_active"`
+	Id                uuid.UUID      `json:"uuid"`
+	AccountId         string         `json:"account_id"`
+	Type              string         `json:"type"`
+	Title             string         `json:"title"`
+	Description       string         `json:"description"`
+	Score             float32        `json:"score"`
+	CurrentPremium    float64        `json:"current_premium"`
+	CurrentCover      float64        `json:"current_cover"`
+	OfferedPremium    float64        `json:"offer_premium"`
+	OfferedCover      float64        `json:"offer_cover"`
+	YoyDeductionRate  float32        `json:"yoy_deduction_rate"`
+	Clauses           pq.StringArray `json:"clauses"`
+	CurrentClauses    pq.StringArray `json:"current_clauses"`
+	IsInsuranceNgAcct bool           `json:"is_insuranceng_account"`
+	IsActive          bool           `json:"is_active"`
 }
 
 type userScoreChResp struct {

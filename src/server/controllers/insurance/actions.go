@@ -67,6 +67,8 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 			Score:             insuranceScore,
 			CurrentPremium:    existingInsurance.Premium,
 			CurrentCover:      existingInsurance.Cover,
+			Clauses:           insuranceInfo.Clauses,
+      CurrentClauses:    existingInsurance.Clauses,
 			OfferedPremium:    getOfferPremium(insuranceInfo.Premium, float64(insuranceScore)),
 			OfferedCover:      getOfferCover(insuranceInfo.Cover, float64(insuranceScore)),
 			YoyDeductionRate:  insuranceInfo.YoyDeductionRate,
@@ -136,7 +138,6 @@ func getAllInsuranceOffers(insuranceAvailableChannel chan insuranceChResp) {
 }
 
 func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
-
 	var userConsent models.UserConsents
 	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
 		userId).Take(&userConsent); result.Error != nil {
@@ -171,6 +172,7 @@ func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
 		Cover:             getOfferCover(insurance.Cover, float64(insuranceScore)),
 		IsActive:          insuranceActivate,
 		AccountId:         insuranceAcctId,
+		Clauses:           insurance.Clauses,
 		IsInsuranceNgAcct: true,
 	}
 
