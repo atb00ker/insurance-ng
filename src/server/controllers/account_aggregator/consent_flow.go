@@ -103,7 +103,7 @@ func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, ex
 
 	// We delete here instead of updating because we want to delete
 	// cascade all FIP the stored with this user consent.
-	config.Database.Where("customer_id = ?", consent.Customer.Id).Delete(&userConsent)
+	config.Database.Where("user_id = ?", userId).Delete(&userConsent)
 	return config.Database.Create(&userConsent)
 }
 

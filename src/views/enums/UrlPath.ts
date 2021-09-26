@@ -2,6 +2,7 @@ export enum RouterPath {
   CreateConsent = '/',
   Register = '/register/',
   Dashboard = '/dashboard/',
+  About = '/about/',
   InsuranceDetails = '/insurance/:insurance_uuid',
 }
 

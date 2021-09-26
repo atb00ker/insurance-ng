@@ -7,7 +7,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { IFIUserData } from '../../interfaces/IFIData';
 import Row from 'react-bootstrap/esm/Row';
-import ProfileImage from './../../assets/images/default-profile-picture-female.jpeg';
+import ProfileImageFemale from './../../assets/images/default-profile-picture-female.jpeg';
+import ProfileImageMale from './../../assets/images/default-profile-picture.jpeg';
 import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../services/svgIcons';
 import { InsuranceTypes } from '../../enums/Insurance';
 import { IUserProfileScores } from '../../interfaces/IUser';
@@ -32,7 +33,10 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
           <Card.Body>
             <Row className='justify-content-center'>
               <Col sm='12' md='4' className='vertical-center-relative-image text-center'>
-                <Image style={{ marginTop: '20px' }} src={ProfileImage} height='150px' roundedCircle />
+                {fiData.name.includes("Ramkrishna") && <Image style={{ marginTop: '20px' }}
+                src={ProfileImageMale} height='150px' roundedCircle />}
+                {!fiData.name.includes("Ramkrishna") && <Image style={{ marginTop: '20px' }}
+                src={ProfileImageFemale} height='150px' roundedCircle />}
               </Col>
               <Col sm='12' md='8' className='mt-3'>
                 <Card.Title>{fiData.name}</Card.Title>
