@@ -140,7 +140,7 @@ const InsuranceInfo: React.FC = () => {
             <InsuranceInfoTitle fiData={fiData} insuranceInfo={insuranceInfo} />
           </Row>
           <Row className='justify-content-center'>
-            <Col id='topTable' sm='8' md='6' lg='4'>
+            <Col id='topTable' sm='8' md='6' lg='5'>
               <Table className='mt-4' size='md'>
                 <tbody>
                   <tr>

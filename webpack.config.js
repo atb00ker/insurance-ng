@@ -81,7 +81,7 @@ module.exports = {
   plugins: [
     new Dotenv(),
     new HtmlWebpackPlugin({
-      favicon: __dirname +  '/src/views/assets/icons/logo.png',
+      favicon: __dirname +  '/src/views/assets/icons/favicon64.png',
       template: __dirname + '/src/views/index.html',
       filename: 'index.html',
       inject: 'body'

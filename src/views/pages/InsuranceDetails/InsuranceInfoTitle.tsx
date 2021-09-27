@@ -22,7 +22,7 @@ const InsuranceInfoTitle: React.FC<{ fiData: IFIData; insuranceInfo: IFIInsuranc
             });
             return;
           }}
-          style={{ minWidth: '70px' }}
+          style={{ minWidth: '80px' }}
           variant='outline-primary'
           className='btn-sm me-2 mb-2 buttons-height'
         >

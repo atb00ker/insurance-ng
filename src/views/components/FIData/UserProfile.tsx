@@ -39,7 +39,7 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
                 src={ProfileImageFemale} height='150px' roundedCircle />}
               </Col>
               <Col sm='12' md='8' className='mt-3'>
-                <Card.Title>{fiData.name}</Card.Title>
+                <Card.Title className="roboto-bold">{fiData.name}</Card.Title>
                 <table>
                   <tbody>
                     <tr>

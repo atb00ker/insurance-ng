@@ -3,7 +3,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
 import Button from 'react-bootstrap/Button';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { RouterPath } from '../../enums/UrlPath';
 
 const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({ fiData, insurance }) => {
@@ -49,7 +49,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
             <Card.Subtitle className='mb-2 text-muted'>
               {insurance.account_id.length ? insurance.account_id : '-'}
             </Card.Subtitle>
-            <Card.Text>
+            <Card.Text className="roboto-regular" style={{ overflow:'hidden', height: 120 }}>
               {insurance.description} <br />
               {insurance.is_insuranceng_account && (
                 <>
@@ -111,6 +111,9 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
                 style={{ marginLeft: 'auto' }}
                 variant='primary'
                 onClick={() => {
+                  // Because we are using history API to change
+                  // page here, we need to scroll up manually.
+                  window.scrollTo(0, 0);
                   history.push({
                     pathname: RouterPath.InsuranceDetails.replace(':insurance_uuid', insurance.uuid),
                     state: fiData,
