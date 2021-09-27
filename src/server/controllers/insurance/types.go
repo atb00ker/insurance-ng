@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"github.com/lib/pq"
 )
 
@@ -71,4 +72,18 @@ type userConsentChResp struct {
 type insuranceChResp struct {
 	result []*models.Insurance
 	err    error
+}
+
+// Dashboard Websocket //
+
+type Websocket struct {
+	clients    map[*string]*Client
+	register   chan *Client
+	unregister chan *Client
+}
+
+type Client struct {
+	Id         *string
+	websocket  *Websocket
+	connection *websocket.Conn
 }

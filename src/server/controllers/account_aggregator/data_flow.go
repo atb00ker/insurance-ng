@@ -40,8 +40,8 @@ func createAndSaveSessionDetails(userId string) (err error) {
 	// hackathon, hence, for the time being, we start the FI
 	// notification steps here, even if we don't receive
 	// the said notification. Not required in production.
-	// config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
-	// saveFipData(updatedUserConsent.SessionId)
+	config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
+	saveFipData(updatedUserConsent.SessionId)
 	return
 }
 

@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	InsurancePurchase = "/api/insurance/purchase/"
-	UrlGetUserData    = "/api/insurance/"
+	InsurancePurchase    = "/api/insurance/purchase/"
+	UrlGetUserData       = "/api/insurance/"
+	UrlWaitForProcessing = "/api/ws/insurance/"
 )
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
@@ -57,4 +58,15 @@ func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Reques
 
 	respMessage, _ := json.Marshal(userData)
 	response.Write(respMessage)
+}
+
+func WaitForDataProcessingWebsocket(websocket Websocket, response http.ResponseWriter, request *http.Request) {
+	connection, err := wsUpgrader.Upgrade(response, request, nil)
+	if err != nil {
+		return
+	}
+	client := &Client{websocket: &websocket, connection: connection}
+	client.websocket.register <- client
+
+	go client.websocketDataFetchedSignal()
 }

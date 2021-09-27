@@ -2,6 +2,7 @@ package account_aggregator
 
 import (
 	"insurance-ng/src/server/config"
+	"insurance-ng/src/server/controllers/insurance"
 	"insurance-ng/src/server/models"
 	"reflect"
 	"strconv"
@@ -48,6 +49,8 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		userConsent.Id).Update("data_fetched", true); result.Error != nil {
 		return result.Error
 	}
+
+	insurance.WaitForProcessing <- userConsent.UserId
 	return nil
 }
 

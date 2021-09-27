@@ -68,7 +68,7 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 			CurrentPremium:    existingInsurance.Premium,
 			CurrentCover:      existingInsurance.Cover,
 			Clauses:           insuranceInfo.Clauses,
-      CurrentClauses:    existingInsurance.Clauses,
+			CurrentClauses:    existingInsurance.Clauses,
 			OfferedPremium:    getOfferPremium(insuranceInfo.Premium, float64(insuranceScore)),
 			OfferedCover:      getOfferCover(insuranceInfo.Cover, float64(insuranceScore)),
 			YoyDeductionRate:  insuranceInfo.YoyDeductionRate,

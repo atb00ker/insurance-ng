@@ -11,5 +11,6 @@ export enum ServerPath {
   CreateConsent = '/api/account_aggregator/consent/',
   ConsentStatus = '/api/account_aggregator/consent/status/',
   GetUserData = '/api/insurance/',
+  DataWebsocket = '/api/ws/insurance/',
   InsurancePurchase = '/api/insurance/purchase/',
 }

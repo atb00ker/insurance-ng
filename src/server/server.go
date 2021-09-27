@@ -17,6 +17,8 @@ import (
 )
 
 func main() {
+	websocket := insurance.NewWebocket()
+	go websocket.Init()
 	muxDispatcher := mux.NewRouter()
 	config.LoadEnv()
 	config.ConnectToDb()
@@ -26,8 +28,10 @@ func main() {
 	// Insurance
 	muxDispatcher.Handle(insurance.InsurancePurchase,
 		jwtAuth(insurance.InsurancePurchaseHandler)).Methods("OPTIONS", "POST")
-    muxDispatcher.Handle(insurance.UrlGetUserData,
-      jwtAuth(insurance.GetUserData)).Methods("OPTIONS", "GET")
+	muxDispatcher.Handle(insurance.UrlGetUserData,
+		jwtAuth(insurance.GetUserData)).Methods("OPTIONS", "GET")
+	muxDispatcher.Handle(insurance.UrlWaitForProcessing,
+		insuranceWebsocket(insurance.WaitForDataProcessingWebsocket, websocket))
 	// Account Aggregator
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
 		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
@@ -56,5 +60,15 @@ func setuAuth(controller func(http.ResponseWriter, *http.Request)) *negroni.Negr
 	return negroni.New(
 		negroni.HandlerFunc(middleware.NewSetuValidateMiddleware().HandlerWithNext),
 		negroni.Wrap(http.HandlerFunc(controller)),
+	)
+}
+
+func insuranceWebsocket(controller func(websocket insurance.Websocket, response http.ResponseWriter,
+	request *http.Request), websocket *insurance.Websocket) *negroni.Negroni {
+	return negroni.New(
+		middleware.CorsMiddleware(),
+		negroni.Wrap(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+			controller(*websocket, response, request)
+		})),
 	)
 }

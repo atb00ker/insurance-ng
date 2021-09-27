@@ -87,10 +87,10 @@ func FINotification(response http.ResponseWriter, request *http.Request) {
 	// hackathon, hence, for the time being, I am commenting this
 	// out and focusing and trigger this notification automatically
 	// after consent request.
-	if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
-		HandleNotificationError(response, err)
-		return
-	}
+	// if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
+	// 	HandleNotificationError(response, err)
+	// 	return
+	// }
 
 	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {
