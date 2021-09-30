@@ -34,7 +34,12 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
             <Row className='justify-content-center'>
               <Col sm='12' md='4' className='vertical-center-relative-image text-center'>
                 {fiData.name.includes('Ramkrishna') && (
-                  <Image style={{ marginTop: '20px' }} src={ProfileImageMale} height='150px' roundedCircle />
+                  <Image
+                    style={{ marginTop: '20px' }}
+                    src={ProfileImageMale}
+                    height='150px'
+                    roundedCircle
+                  />
                 )}
                 {!fiData.name.includes('Ramkrishna') && (
                   <Image

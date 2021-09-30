@@ -69,9 +69,9 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 			FetchType:     FetchTypeOnetime,
 			ConsentTypes:  []string{ConsentTypesProfile, ConsentTypesSummary, ConsentTypesTransaction},
 			FiTypes: []string{
-				FiTypesDeposit, FiTypesInsurancePolicies, FiTypesMutualFunds, FiTypesNPS,
-				FiTypesSIP, FiTypesGovernmentSecrities, FiTypesEquities, FiTypesTermDeposit,
-				FiTypesRecurringDeposit, FiTypesPPF,
+				FiTypesDeposit, FiTypesInsurancePolicies, FiTypesMutualFunds,
+				FiTypesTermDeposit, FiTypesRecurringDeposit, FiTypesPPF,
+				// FiTypesNPS, FiTypesSIP, FiTypesGovernmentSecrities, FiTypesEquities,
 			},
 			DataConsumer: idType{
 				Id: "FIU",

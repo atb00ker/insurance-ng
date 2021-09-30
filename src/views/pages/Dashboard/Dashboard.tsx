@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
   }, [auth.isReady, readyState]);
 
   useEffect(() => {
-    if (lastMessage?.data === 'consent-not-started') {
+    if (['data-not-shared', 'consent-not-started'].includes(lastMessage?.data)) {
       changePageState(PageState.Waiting);
     } else if (lastMessage?.data === 'false') {
       changePageState(PageState.Processing);

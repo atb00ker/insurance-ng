@@ -6,6 +6,7 @@ import (
 	"insurance-ng/src/server/models"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,29 +15,31 @@ import (
 func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	userConsent models.UserConsents) error {
 
-	name := getHolderField(allFipData, "Name")
-	dob, _ := time.Parse("02-01-2006", getHolderField(allFipData, "Dob"))
-	panCard := getHolderField(allFipData, "Pan")
-	ckycCompliance, _ := strconv.ParseBool(getHolderField(allFipData, "CkycCompliance"))
+	sharedDataSources := getSharedDataSources(allFipData)
+	name := getDepositHolderField(allFipData, "Name")
+	dob, _ := time.Parse("02-01-2006", getDepositHolderField(allFipData, "Dob"))
+	panCard := getDepositHolderField(allFipData, "Pan")
+	ckycCompliance, _ := strconv.ParseBool(getDepositHolderField(allFipData, "CkycCompliance"))
 
 	planInformation := models.UserScores{
-		UserConsentId:   userConsent.Id,
-		Name:            name,
-		DateOfBirth:     dob,
-		PanCard:         panCard,
-		CkycCompliance:  ckycCompliance,
-		AgeScore:        getAgeScore(dob),
-		WealthScore:     getWealthPlanScore(allFipData),
-		DebtScore:       getDebtPlanScore(allFipData),
-		MedicalScore:    getMedicalPlanScore(allFipData),
-		InvestmentScore: getInvestmentScore(allFipData),
-		PensionScore:    getPensionPlanScore(allFipData),
-		FamilyScore:     getFamilyPlanScore(allFipData),
-		ChildrenScore:   getChildrenPlanScore(allFipData),
-		MotorScore:      getMotorPlanScore(allFipData),
-		TermScore:       getTermPlanScore(allFipData),
-		TravelScore:     getTravelPlanScore(allFipData),
-		AllScore:        getAllPlanScore(allFipData),
+		UserConsentId:     userConsent.Id,
+		Name:              name,
+		DateOfBirth:       dob,
+		PanCard:           panCard,
+		CkycCompliance:    ckycCompliance,
+		SharedDataSources: sharedDataSources,
+		AgeScore:          getAgeScore(dob),
+		WealthScore:       getWealthPlanScore(allFipData),
+		DebtScore:         getDebtPlanScore(allFipData),
+		MedicalScore:      getMedicalPlanScore(allFipData),
+		InvestmentScore:   getInvestmentScore(allFipData),
+		PensionScore:      getPensionPlanScore(allFipData),
+		FamilyScore:       getFamilyPlanScore(allFipData),
+		ChildrenScore:     getChildrenPlanScore(allFipData),
+		MotorScore:        getMotorPlanScore(allFipData),
+		TermScore:         getTermPlanScore(allFipData),
+		TravelScore:       getTravelPlanScore(allFipData),
+		AllScore:          getAllPlanScore(allFipData),
 	}
 	// We can to this in go routines to make this section faster.
 	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id); err != nil {
@@ -54,14 +57,37 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	return nil
 }
 
-func getHolderField(allFipData []fipDataCollection, field string) string {
+func getSharedDataSources(allFipData []fipDataCollection) int16 {
+	var records int16 = 0
+	basicRequirements := map[string]bool{
+		strings.ToLower(FiTypesInsurancePolicies): false,
+		strings.ToLower(FiTypesDeposit):           false,
+	}
+
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
-			// Problem in the Setu API's new version
-			for _, holder := range fipDataItem.Account.Profile.Holders.Holder {
-				relfectedHolder := reflect.ValueOf(holder)
-				fieldValue := reflect.Indirect(relfectedHolder).FieldByName(field)
-				if fieldValue.String() != "" {
+			delete(basicRequirements, fipDataItem.Account.Type)
+			records++
+		}
+	}
+
+	if len(basicRequirements) != 0 {
+		// Basic account are not shared, we will not consider it a
+		// valid consent request.
+		return 0
+	}
+
+	return records
+}
+
+func getDepositHolderField(allFipData []fipDataCollection, field string) string {
+	for _, fipData := range allFipData {
+		for _, fipDataItem := range fipData.FipData {
+			if fipDataItem.Account.Type == strings.ToLower(FiTypesDeposit) {
+				// Problem in the Setu API's new version
+				for _, holder := range fipDataItem.Account.Profile.Holders.Holder {
+					relfectedHolder := reflect.ValueOf(holder)
+					fieldValue := reflect.Indirect(relfectedHolder).FieldByName(field)
 					// Return as soon as we find a name
 					// We can match for mobile number to ensure we can
 					// picking the correct person's defails but for
@@ -77,7 +103,7 @@ func getHolderField(allFipData []fipDataCollection, field string) string {
 func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID) error {
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
-			if fipDataItem.Account.Type == "insurance_policies" {
+			if fipDataItem.Account.Type == strings.ToLower(FiTypesInsurancePolicies) {
 				premium, _ := strconv.ParseFloat(fipDataItem.Account.Summary.PremiumAmount, 32)
 				cover, _ := strconv.ParseFloat(fipDataItem.Account.Summary.CoverAmount, 32)
 				insurance := models.UserInsurance{

@@ -3,6 +3,7 @@ package account_aggregator
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/models"
@@ -98,6 +99,10 @@ func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 	}
 
 	err = json.Unmarshal(respBytes, &sessionData)
+	if sessionData.ErrorCode != "" {
+		return sessionData, errors.New(sessionData.ErrorMsg)
+	}
+
 	return
 }
 

@@ -1,6 +1,7 @@
 package insurance
 
 import (
+	"fmt"
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/models"
 	"log"
@@ -71,6 +72,14 @@ func (client *Client) websocketDataFetchedSignal() {
 			return
 		}
 
+		if client.checkUserScore(userConsent) == 0 {
+			// Not enough data sources are shared.
+			if err = websocketResponse(client, []byte("data-not-shared")); err != nil {
+				return
+			}
+			continue
+		}
+
 		// If the data is ready, send the signal for the same.
 		if err := websocketResponse(client, []byte(strconv.FormatBool(userConsent.DataFetched))); err != nil {
 			return
@@ -85,10 +94,29 @@ func (client *Client) websocketDataFetchedSignal() {
 				}
 			}
 
+			if client.checkUserScore(userConsent) == 0 {
+				// Not enough data sources are shared.
+				if err = websocketResponse(client, []byte("data-not-shared")); err != nil {
+					return
+				}
+				continue
+			}
+
 			// We are ready to show data.
 			if err := websocketResponse(client, []byte(strconv.FormatBool(true))); err != nil {
 				return
 			}
 		}
 	}
+}
+
+func (client *Client) checkUserScore(userConsent models.UserConsents) int16 {
+	var userScores models.UserScores
+	if result := config.Database.Model(&models.UserScores{}).Where("user_consent_id = ?",
+		userConsent.Id).Take(&userScores); result.Error != nil {
+		return -1
+	}
+
+	fmt.Println(userScores.SharedDataSources)
+	return userScores.SharedDataSources
 }

@@ -208,6 +208,8 @@ type setuFiSessionResponse struct {
 	Txnid     uuid.UUID `json:"txnid"`
 	SessionId uuid.UUID `json:"sessionId"`
 	ConsentId uuid.UUID `json:"consentId"`
+	ErrorCode string    `json:"errorCode"`
+	ErrorMsg  string    `json:"errorMsg"`
 }
 
 type fiConsent struct {
