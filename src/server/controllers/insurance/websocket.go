@@ -59,16 +59,20 @@ func (client *Client) websocketDataFetchedSignal() {
 		var userConsent models.UserConsents
 		if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
 			userId).Take(&userConsent); result.Error != nil {
+
+			if result.Error.Error() == "record not found" {
+				if err := websocketResponse(client, []byte("consent-not-started")); err != nil {
+					return
+				}
+				// If the consent is not even started, we don't
+				// need to wait for the next signal.
+				continue
+			}
 			return
 		}
 
-		response, err := client.connection.NextWriter(websocket.TextMessage)
-		if err != nil {
-			return
-		}
-
-		response.Write([]byte(strconv.FormatBool(userConsent.DataFetched)))
-		if err := response.Close(); err != nil {
+		// If the data is ready, send the signal for the same.
+		if err := websocketResponse(client, []byte(strconv.FormatBool(userConsent.DataFetched))); err != nil {
 			return
 		}
 
@@ -81,12 +85,8 @@ func (client *Client) websocketDataFetchedSignal() {
 				}
 			}
 
-			response, err := client.connection.NextWriter(websocket.TextMessage)
-			if err != nil {
-				return
-			}
-			response.Write([]byte(strconv.FormatBool(true)))
-			if err := response.Close(); err != nil {
+			// We are ready to show data.
+			if err := websocketResponse(client, []byte(strconv.FormatBool(true))); err != nil {
 				return
 			}
 		}

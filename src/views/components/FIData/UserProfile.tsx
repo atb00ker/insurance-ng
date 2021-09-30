@@ -9,7 +9,7 @@ import { IFIUserData } from '../../interfaces/IFIData';
 import Row from 'react-bootstrap/esm/Row';
 import ProfileImageFemale from './../../assets/images/default-profile-picture-female.jpeg';
 import ProfileImageMale from './../../assets/images/default-profile-picture.jpeg';
-import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../services/svgIcons';
+import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../helpers/svgIcons';
 import { InsuranceTypes } from '../../enums/Insurance';
 import { IUserProfileScores } from '../../interfaces/IUser';
 

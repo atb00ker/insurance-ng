@@ -16,6 +16,7 @@ export const registerUserRequest = (jwt: string): Promise<any> => {
   return axios.get(ServerPath.Register, getJwtHeader(jwt)).catch((error: any) => {
     const url = new URL(ServerPath.Register, axios.defaults.baseURL).toString();
     console.error(`Cant't get ${url} because ${error}`);
+    throw error;
   });
 };
 
@@ -25,6 +26,7 @@ export const createConsentRequest = (phoneNumber: string, jwt: string): Promise<
     .catch((error: any) => {
       const url = new URL(ServerPath.CreateConsent, axios.defaults.baseURL).toString();
       console.error(`Cant't get ${url} because ${error}`);
+      throw error;
     });
 };
 
@@ -32,6 +34,7 @@ export const getConsentStatus = (jwt: string): Promise<any> => {
   return axios.get(ServerPath.ConsentStatus, getJwtHeader(jwt)).catch((error: any) => {
     const url = new URL(ServerPath.ConsentStatus, axios.defaults.baseURL).toString();
     console.error(`Cant't get ${url} because ${error}`);
+    throw error;
   });
 };
 
@@ -39,6 +42,7 @@ export const getDashboardData = (jwt: string): Promise<any> => {
   return axios.get(ServerPath.GetUserData, getJwtHeader(jwt)).catch((error: any) => {
     const url = new URL(ServerPath.GetUserData, axios.defaults.baseURL).toString();
     console.error(`Cant't get ${url} because ${error}`);
+    throw error;
   });
 };
 
@@ -46,6 +50,7 @@ export const createPurchaseRequest = (uuid: string, jwt: string): Promise<any> =
   return axios.post(ServerPath.InsurancePurchase, { uuid: uuid }, getJwtHeader(jwt)).catch((error: any) => {
     const url = new URL(ServerPath.InsurancePurchase, axios.defaults.baseURL).toString();
     console.error(`Cant't get ${url} because ${error}`);
+    throw error;
   });
 };
 

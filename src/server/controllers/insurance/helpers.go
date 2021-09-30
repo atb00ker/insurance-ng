@@ -3,6 +3,8 @@ package insurance
 import (
 	"insurance-ng/src/server/models"
 	"math"
+
+	"github.com/gorilla/websocket"
 )
 
 func GetScoreForType(userScore *models.UserScores, insuranceType string) float32 {
@@ -33,4 +35,18 @@ func getOfferPremium(premium float64, score float64) float64 {
 
 func getOfferCover(cover float64, score float64) float64 {
 	return math.Floor(cover + ((cover * score) / 15))
+}
+
+func websocketResponse(client *Client, message []byte) (err error) {
+	response, err := client.connection.NextWriter(websocket.TextMessage)
+	if err != nil {
+		return
+	}
+
+	response.Write(message)
+	if err = response.Close(); err != nil {
+		return
+	}
+
+	return nil
 }

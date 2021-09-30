@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import './CreateConsent.scss';
 import CreateConsentImage from '../../components/ContentState/CreateConsentImage';
 import CreateConsentForm from '../../components/CreateConsentSection/CreateConsentForm';
-import { createConsentRequest, getPathToDashboard } from '../../services/axios';
+import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import { AuthContext } from '../../components/Auth/AuthProvider';
 import { IAuth } from '../../interfaces/IUser';

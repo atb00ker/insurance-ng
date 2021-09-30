@@ -5,13 +5,13 @@ import Row from 'react-bootstrap/Row';
 import { useHistory, useLocation } from 'react-router-dom';
 import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
-import { createPurchaseRequest, getDashboardData } from '../../services/axios';
+import { createPurchaseRequest, getDashboardData } from '../../helpers/axios';
 import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
 import ServerRequestError from '../../components/ContentState/ServerRequestError';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import Table from 'react-bootstrap/esm/Table';
 import Button from 'react-bootstrap/esm/Button';
-import { tickIcon } from '../../services/svgIcons';
+import { tickIcon } from '../../helpers/svgIcons';
 import { Chart } from 'react-google-charts';
 import InsuranceInfoTitle from './InsuranceInfoTitle';
 

@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import CompleteLogoImage from '../../assets/icons/complete-logo.jpg';
-import { openInNewTabIcon } from '../../services/svgIcons';
+import { openInNewTabIcon } from '../../helpers/svgIcons';
 
 const About: React.FC = () => {
   const hackathonUrl: string = 'https://free-your-data.devfolio.co/';
@@ -38,8 +38,8 @@ const About: React.FC = () => {
             To get the best out of our services, please allow access to your deposit accounts, investment
             accounts, debt information and existing insurances. <br />
           </p>
+          <h5>Data Collection</h5>
           <p>
-            <h5>Data Collection</h5>
             The data in this application is collected with the help of the Setu{' '}
             <a
               className='href-no-underline'
@@ -74,8 +74,8 @@ const About: React.FC = () => {
               can offer you.
             </li>
             <li>
-              Investment (SIP / Mutual Funds / Equities / Term deposit / Reoccurring Deposit / Govt Debts / PPF / NPS)
-              plan's summary helps us identify your future planning the financial maturity.
+              Investment (SIP / Mutual Funds / Equities / Term deposit / Reoccurring Deposit / Govt Debts /
+              PPF / NPS) plan's summary helps us identify your future planning the financial maturity.
             </li>
             <li>
               Debt (credit cards): Your total debt helps us understand your lifestyle and risk appetite.
@@ -97,7 +97,7 @@ const About: React.FC = () => {
             {authorEmailText}
           </a>{' '}
           or when you initiate another data consent request similar to this one. <br />
-          <h5 className="mt-3">Data Security</h5>
+          <h5 className='mt-3'>Data Security</h5>
           <p>
             Account Aggregator protocol ensures that the data is not visible to anyone except insurance-ng, it
             uses{' '}
@@ -114,17 +114,16 @@ const About: React.FC = () => {
             </a>{' '}
             to ensure your privacy.
           </p>
-          <h5 className="mt-3">Data Sharing</h5>
-          <p>
-            Your data is not shared with any third-party organization.
-          </p>
+          <h5 className='mt-3'>Data Sharing</h5>
+          <p>Your data is not shared with any third-party organization.</p>
         </Col>
         <Col sm='12' className='max-width-960'>
           <h3>Contact Us</h3>
           If you need any further information or support, please contact us at{' '}
           <a className='href-no-underline' href={`mailto:${authorEmail}`}>
             {authorEmailText}
-          </a>.
+          </a>
+          .
         </Col>
       </Row>
     </Container>

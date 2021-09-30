@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { getDashboardData } from '../../services/axios';
+import { getDashboardData } from '../../helpers/axios';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import { AuthContext } from '../../components/Auth/AuthProvider';
 import { IAuth } from '../../interfaces/IUser';
@@ -14,12 +14,16 @@ import InsuranceCard from '../../components/FIData/InsuranceCard';
 import { InsuranceTypes } from '../../enums/Insurance';
 import FiDataWait from '../../components/ContentState/FIDataWait';
 import { ServerPath } from '../../enums/UrlPath';
+import { delay } from '../../helpers/generic';
+import NoValidConsent from '../../components/ContentState/NoValidConsent';
+import { PageState } from '../../enums/PageStates';
 
 const Dashboard: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
   const [showError, setShowError] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [showProcessing, setShowProcessing] = useState(false);
+  const [showShareInfo, setShowShareInfo] = useState(false);
   const [fiData, setFIData] = useState({} as IFIData);
 
   const port = location.protocol === 'http:' ? process.env.REACT_APP_PORT : '443';
@@ -28,19 +32,24 @@ const Dashboard: React.FC = () => {
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl.toString());
 
   useEffect(() => {
-    // getDataFromServer();
+    // If the websocket connection fails for some reason,
+    // eg. machine doesn't support it, then we fallback to
+    // good ol' periodic polling.
     if (readyState === ReadyState.CLOSED) {
-      setShowError(true);
-      setShowLoader(false);
-      setShowProcessing(false);
-    } else if (auth.user.id && readyState === ReadyState.OPEN) sendMessage(auth.user.id);
+      getDataFromServer();
+    } else if (auth.user.id && readyState === ReadyState.OPEN) {
+      sendMessage(auth.user.id);
+    }
   }, [auth.isReady, readyState]);
 
   useEffect(() => {
-    if (lastMessage?.data === 'false') {
-      setShowLoader(false);
-      setShowProcessing(true);
-    } else if (lastMessage?.data === 'true') getDataFromServer();
+    if (lastMessage?.data === 'consent-not-started') {
+      changePageState(PageState.Waiting);
+    } else if (lastMessage?.data === 'false') {
+      changePageState(PageState.Processing);
+    } else if (lastMessage?.data === 'true') {
+      getDataFromServer();
+    }
   }, [lastMessage]);
 
   const sortedFiInsuranceList = useMemo(() => {
@@ -58,29 +67,39 @@ const Dashboard: React.FC = () => {
     auth.user.jwt().then((jwt: string) => {
       getDashboardData(jwt)
         .then(response => {
+          // Response validation
+          if (response === undefined) {
+            changePageState(PageState.Error);
+            return;
+          }
+
+          // If request was successful.
           const data: IFIData = response?.data;
           if (data?.status) {
             setFIData(data);
-            setShowProcessing(false);
+            changePageState(PageState.Data);
           } else {
-            setShowProcessing(true);
+            changePageState(PageState.Processing);
             setTimeout(() => getDataFromServer(), 5000);
           }
-          setShowLoader(false);
-          setShowError(false);
         })
         .catch(error => {
-          console.error(error);
-          setShowError(true);
-          setShowLoader(false);
-          setShowProcessing(false);
+          if (error?.response?.data?.error == 'record not found') changePageState(PageState.Waiting);
+          else changePageState(PageState.Error);
         });
     });
   };
 
+  const changePageState = (state: string) => {
+    setShowShareInfo(state == PageState.Waiting);
+    setShowError(state == PageState.Error);
+    setShowProcessing(state == PageState.Processing);
+    setShowLoader(state == PageState.Loading);
+  };
+
   return (
     <Container>
-      {!showError && !showLoader && !showProcessing && (
+      {!showError && !showLoader && !showProcessing && !showShareInfo && (
         <>
           <Row className='mt-1 mb-2 justify-content-center'>
             <UserProfile fiData={fiData.data} />
@@ -91,6 +110,14 @@ const Dashboard: React.FC = () => {
             ))}
           </Row>
         </>
+      )}
+
+      {!!showShareInfo && (
+        <Row className='mt-5'>
+          <Col sm='12'>
+            <NoValidConsent height='450px' imgHeight='400px' width='100%' />
+          </Col>
+        </Row>
       )}
 
       {!!showProcessing && (

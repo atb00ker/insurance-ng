@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { registerUserRequest } from '../../services/axios';
+import { registerUserRequest } from '../../helpers/axios';
 import { RouterPath } from '../../enums/UrlPath';
 import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
