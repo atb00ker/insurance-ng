@@ -49,7 +49,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
             <Card.Subtitle className='mb-2 text-muted'>
               {insurance.account_id.length ? insurance.account_id : '-'}
             </Card.Subtitle>
-            <Card.Text className="roboto-regular" style={{ overflow:'hidden', height: 120 }}>
+            <Card.Text className='roboto-regular' style={{ overflow: 'hidden', height: 120 }}>
               {insurance.description} <br />
               {insurance.is_insuranceng_account && (
                 <>

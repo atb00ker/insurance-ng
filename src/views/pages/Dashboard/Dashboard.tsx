@@ -33,16 +33,14 @@ const Dashboard: React.FC = () => {
       setShowError(true);
       setShowLoader(false);
       setShowProcessing(false);
-    } else if (auth.user.id && readyState === ReadyState.OPEN)
-      sendMessage(auth.user.id)
+    } else if (auth.user.id && readyState === ReadyState.OPEN) sendMessage(auth.user.id);
   }, [auth.isReady, readyState]);
 
   useEffect(() => {
-    if (lastMessage?.data === "false") {
+    if (lastMessage?.data === 'false') {
       setShowLoader(false);
       setShowProcessing(true);
-    } else if (lastMessage?.data === "true")
-      getDataFromServer();
+    } else if (lastMessage?.data === 'true') getDataFromServer();
   }, [lastMessage]);
 
   const sortedFiInsuranceList = useMemo(() => {

@@ -33,10 +33,13 @@ const (
 	// FI Types
 	FiTypesDeposit             = "DEPOSIT"
 	FiTypesMutualFunds         = "MUTUAL_FUNDS"
+	FiTypesCreditCard          = "CREDIT_CARD"
 	FiTypesInsurancePolicies   = "INSURANCE_POLICIES"
 	FiTypesTermDeposit         = "TERM_DEPOSIT"
 	FiTypesRecurringDeposit    = "RECURRING_DEPOSIT"
 	FiTypesSIP                 = "SIP"
+	FiTypesPPF                 = "PPF"
+	FiTypesNPS                 = "NPS"
 	FiTypesGovernmentSecrities = "GOVT_SECURITIES"
 	FiTypesEquities            = "EQUITIES"
 	FiTypesBonds               = "BONDS"

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"insurance-ng/src/server/config"
+	"insurance-ng/src/server/controllers"
 	"insurance-ng/src/server/models"
 	"time"
 
@@ -15,22 +16,12 @@ import (
 // Create Consent
 func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCreateConsentResponse,
 	consentExpire time.Time, err error) {
-	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
-	// I have reported, but until those bugs are fixed, we have to comment this and
-	// use the hack below.
-	// startTime := time.Now().Format(time.RFC3339)
-	// endTime := time.Now().Add(time.Minute * 15).Format(time.RFC3339)
-	startTime := time.Now()
-	endTime := time.Now().Add(time.Minute * 15)
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
-		startTime.Year(), startTime.Month(), startTime.Day(),
-		startTime.Hour(), startTime.Minute(), startTime.Second())
-	endTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
-		endTime.Year(), endTime.Month(), endTime.Day(),
-		endTime.Hour(), endTime.Minute(), endTime.Second())
 	customerId := fmt.Sprintf("%s@setu-aa", phone)
 	consentUuid := uuid.New()
-	consentBody := createConsentBody(consentUuid, startTimeHack, endTimeHack, customerId)
+	startTime := time.Now()
+	endTime := time.Now().Add(time.Minute * 15)
+
+	consentBody := createConsentBody(consentUuid, startTime, endTime, customerId)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, consentBody)
 	setuRequestBody, err := json.Marshal(consentBody)
 	if err != nil {
@@ -50,20 +41,38 @@ func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCre
 	return
 }
 
-func createConsentBody(uuid uuid.UUID, startTime string, endTime string,
-	customerId string) setuCreateConsentRequest {
+func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, customerId string) setuCreateConsentRequest {
+
+	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
+	// I have reported, but until those bugs are fixed, we have to comment this and
+	// use the hack below.
+	// startTime := time.Now().Format(time.RFC3339)
+	// endTime := time.Now().Add(time.Minute * 15).Format(time.RFC3339)
+	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		startTime.Year(), startTime.Month(), startTime.Day(),
+		startTime.Hour(), startTime.Minute(), startTime.Second())
+	fromTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		endTime.Year()-5, endTime.Month(), endTime.Day(),
+		endTime.Hour(), endTime.Minute(), endTime.Second())
+	endTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+		endTime.Year(), endTime.Month(), endTime.Day(),
+		endTime.Hour(), endTime.Minute(), endTime.Second())
 
 	requestBody := setuCreateConsentRequest{
 		Ver:       "1.0",
-		Timestamp: startTime,
+		Timestamp: startTimeHack,
 		Txnid:     uuid,
 		ConsentDetail: consentDetails{
-			ConsentStart:  startTime,
-			ConsentExpiry: endTime,
+			ConsentStart:  startTimeHack,
+			ConsentExpiry: endTimeHack,
 			ConsentMode:   ConsentModeView,
 			FetchType:     FetchTypeOnetime,
 			ConsentTypes:  []string{ConsentTypesProfile, ConsentTypesSummary, ConsentTypesTransaction},
-			FiTypes:       []string{FiTypesDeposit, FiTypesInsurancePolicies, FiTypesMutualFunds},
+			FiTypes: []string{
+				FiTypesDeposit, FiTypesInsurancePolicies, FiTypesMutualFunds, FiTypesNPS,
+				FiTypesSIP, FiTypesGovernmentSecrities, FiTypesEquities, FiTypesTermDeposit,
+				FiTypesRecurringDeposit, FiTypesPPF,
+			},
 			DataConsumer: idType{
 				Id: "FIU",
 			},
@@ -73,12 +82,12 @@ func createConsentBody(uuid uuid.UUID, startTime string, endTime string,
 			Purpose: purpose{
 				Code:   fmt.Sprint(PurposeOneTime),
 				RefUri: "https://api.rebit.org.in/aa/purpose/105.xml",
-				Text:   "Management System",
+				Text:   controllers.DataEndpointsExplainationInParagraph,
 				Category: purposeCategory{
 					Type: "string",
 				},
 			},
-			FIDataRange: fIDataRange{From: "1947-08-15T00:00:00.153Z", To: endTime},
+			FIDataRange: fIDataRange{From: fromTimeHack, To: endTimeHack},
 			DataLife:    dataTimeRange{Unit: "DAY", Value: 1},
 			Frequency:   dataTimeRange{Unit: "DAY", Value: 1},
 			DataFilter:  []dataFilter{},

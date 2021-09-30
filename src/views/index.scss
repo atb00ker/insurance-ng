@@ -37,6 +37,10 @@ select {
   height: 50px;
 }
 
+.href-no-underline {
+  text-decoration: unset;
+}
+
 .button-href {
   text-decoration: unset;
   color: white;

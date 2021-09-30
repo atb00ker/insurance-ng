@@ -33,13 +33,20 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
           <Card.Body>
             <Row className='justify-content-center'>
               <Col sm='12' md='4' className='vertical-center-relative-image text-center'>
-                {fiData.name.includes("Ramkrishna") && <Image style={{ marginTop: '20px' }}
-                src={ProfileImageMale} height='150px' roundedCircle />}
-                {!fiData.name.includes("Ramkrishna") && <Image style={{ marginTop: '20px' }}
-                src={ProfileImageFemale} height='150px' roundedCircle />}
+                {fiData.name.includes('Ramkrishna') && (
+                  <Image style={{ marginTop: '20px' }} src={ProfileImageMale} height='150px' roundedCircle />
+                )}
+                {!fiData.name.includes('Ramkrishna') && (
+                  <Image
+                    style={{ marginTop: '20px' }}
+                    src={ProfileImageFemale}
+                    height='150px'
+                    roundedCircle
+                  />
+                )}
               </Col>
               <Col sm='12' md='8' className='mt-3'>
-                <Card.Title className="roboto-bold">{fiData.name}</Card.Title>
+                <Card.Title className='roboto-bold'>{fiData.name}</Card.Title>
                 <table>
                   <tbody>
                     <tr>

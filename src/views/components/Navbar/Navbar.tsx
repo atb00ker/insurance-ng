@@ -25,30 +25,25 @@ const Navbar = () => {
             {auth.isReady && auth.isAuthenticated && (
               <>
                 <Link to={RouterPath.CreateConsent}>
-                  <Button className='m-1 me-1 btn-sm' variant='primary' disabled>
+                  <Button className='m-1 me-1 btn-sm' variant='primary'>
                     Home
                   </Button>
                 </Link>
                 <Link to={RouterPath.Dashboard}>
-                  <Button className='m-1 me-1 btn-sm' variant='primary' disabled>
+                  <Button className='m-1 me-1 btn-sm' variant='primary'>
                     Dashboard
                   </Button>
                 </Link>
-                {/* <Link to={RouterPath.About}>
-                  <Button className='m-1 me-1 btn-sm' variant='primary' disabled>
+                <Link to={RouterPath.About}>
+                  <Button className='m-1 me-1 btn-sm' variant='primary'>
                     About
                   </Button>
-                </Link> */}
+                </Link>
               </>
             )}
             <div style={{ flex: '1 1 auto' }}></div>
             {!auth.isReady && (
-              <Button
-                className='m-1 me-4 btn-sm'
-                variant='primary'
-                disabled
-                onClick={() => auth.loginWithRedirect()}
-              >
+              <Button className='m-1 me-4 btn-sm' variant='primary' onClick={() => auth.loginWithRedirect()}>
                 Loading
               </Button>
             )}
