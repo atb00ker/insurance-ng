@@ -43,15 +43,14 @@ type Insurance struct {
 
 type UserInsurance struct {
 	Id                uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
-	UserConsentId     uuid.UUID      `json:"consent_id"`
 	Type              string         `json:"type"`
+	Pancard           string         `json:"pancard"`
 	Premium           float64        `json:"premium"`
 	Cover             float64        `json:"cover"`
 	IsActive          bool           `json:"is_active"`
 	AccountId         string         `json:"account_id"`
 	Clauses           pq.StringArray `json:"clauses" gorm:"type:text[]"`
 	IsInsuranceNgAcct bool           `json:"is_insuranceng_account"`
-	UserConsent       UserConsents   `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
 	gorm.Model
 }
 

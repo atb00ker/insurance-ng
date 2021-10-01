@@ -137,7 +137,7 @@ func getTravelPlanScore(allFipData []fipDataCollection, sharedDataSources int16)
 	// - wealth score (calculated above) -- indicates the type of safety / luxury in the trip.
 	// - deposit:transactions.transaction -- indicate country / places travelling to in the near future,
 	// frequency of travel.
-	return 0.3 + float32(sharedDataSources)/50
+	return 0.3
 }
 
 func getAllPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {

@@ -14,8 +14,10 @@ import Button from 'react-bootstrap/esm/Button';
 import { tickIcon } from '../../helpers/svgIcons';
 import { Chart } from 'react-google-charts';
 import InsuranceInfoTitle from './InsuranceInfoTitle';
+import { RouterPath } from '../../enums/UrlPath';
 
 const InsuranceInfo: React.FC = () => {
+  const history = useHistory();
   const auth: IAuth = useContext(AuthContext);
   const location = useLocation();
   const [insuranceInfo, setInsuranceInfo] = useState({} as IFIInsurance);
@@ -60,6 +62,10 @@ const InsuranceInfo: React.FC = () => {
       fiData.data.insurance.find(insurance => insurance.uuid === uuid) || ({} as IFIInsurance);
     setInsuranceInfo(insurance);
     setFiData(fiData);
+    history.push({
+      pathname: RouterPath.InsuranceDetails.replace(':insurance_uuid', insurance.uuid),
+      state: fiData,
+    });
   };
 
   const getDataFromServer = (uuid: string) => {
@@ -78,7 +84,6 @@ const InsuranceInfo: React.FC = () => {
     dataResponse
       .then((response: any) => {
         const data: IFIData = response?.data;
-        console.log(response?.data);
         if (data?.status) {
           setShowError(false);
           setShowLoader(false);

@@ -33,15 +33,14 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 
 	userPlanScoresCh := make(chan userScoreChResp, 1)
 	go getUserPlanScore(userConsent.result.Id, userPlanScoresCh)
-	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
-	go getUserInsurances(userConsent.result.Id, userExistingInsuranceCh)
-
 	userScore := <-userPlanScoresCh
 	if userScore.err != nil {
 		err = insuranceAvailable.err
 		return
 	}
 
+	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
+	go getUserInsurances(userScore.result.Pancard, userExistingInsuranceCh)
 	userExistingInsurance := <-userExistingInsuranceCh
 	if userExistingInsurance.err != nil {
 		err = userConsent.err
@@ -85,7 +84,7 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 		Data: userData{
 			Name:              userScore.result.Name,
 			DateOfBirth:       userScore.result.DateOfBirth,
-			Pancard:           userScore.result.PanCard,
+			Pancard:           userScore.result.Pancard,
 			Phone:             regexPattern.ReplaceAllString(userConsent.result.CustomerId, ""),
 			SharedDataSources: userScore.result.SharedDataSources,
 			CkycCompliance:    userScore.result.CkycCompliance,
@@ -101,9 +100,9 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 	return
 }
 
-func getUserInsurances(consentId uuid.UUID, userExistingInsuranceCh chan userInsurancesChResp) {
+func getUserInsurances(pancard string, userExistingInsuranceCh chan userInsurancesChResp) {
 	var userExistingInsurance []*models.UserInsurance
-	result := config.Database.Where("user_consent_id = ?", consentId).Find(&userExistingInsurance)
+	result := config.Database.Where("pancard = ?", pancard).Find(&userExistingInsurance)
 
 	userExistingInsuranceCh <- userInsurancesChResp{
 		result: userExistingInsurance,
@@ -170,17 +169,17 @@ func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
 		insuranceAcctId = controllers.GetRandomString(10)
 	}
 	newInsurance := models.UserInsurance{
-		UserConsentId:     userConsent.Id,
 		Type:              insurance.Type,
 		Premium:           getOfferPremium(insurance.Premium, float64(insuranceScore)),
 		Cover:             getOfferCover(insurance.Cover, float64(insuranceScore)),
 		IsActive:          insuranceActivate,
 		AccountId:         insuranceAcctId,
+		Pancard:           userScore.Pancard,
 		Clauses:           insurance.Clauses,
 		IsInsuranceNgAcct: true,
 	}
 
-	if config.Database.Where("user_consent_id = ?", userConsent.Id).Where("type = ?",
+	if config.Database.Where("pancard = ?", userScore.Pancard).Where("type = ?",
 		insurance.Type).Updates(&newInsurance).RowsAffected == 0 {
 		if result := config.Database.Create(&newInsurance); result.Error != nil {
 			err = result.Error

@@ -171,6 +171,19 @@ func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse) {
 	return
 }
 
+func deleteUserConsent(userConsent models.UserConsents) {
+	// We delete here instead of updating because we want to delete
+	// cascade all FIP the stored with this user consent.
+	var userScore models.UserScores
+	config.Database.Model(&models.UserScores{}).Where("user_consent_id = ?",
+		userConsent.Id).Take(&userScore)
+
+	config.Database.Where("pancard = ?", userScore.Pancard).Where(
+		"is_insuranceng_account <> ?", 1).Delete(&models.UserInsurance{})
+
+	config.Database.Where("user_id = ?", userConsent.UserId).Delete(&userConsent)
+}
+
 func sendRequestToRahasya(urlPath string, reqType string, payload []byte) (response []byte, err error) {
 	rahasyaApi, err := url.Parse(os.Getenv("APP_RAHASYA_AA_ENDPOINT"))
 	if err != nil {

@@ -12,7 +12,7 @@ type UserScores struct {
 	UserConsentId     uuid.UUID    `json:"consent_id"`
 	Name              string       `json:"name"`
 	DateOfBirth       time.Time    `json:"date_of_birth"`
-	PanCard           string       `json:"pan_card"`
+	Pancard           string       `json:"pan_card"`
 	CkycCompliance    bool         `json:"ckyc_compliance"`
 	AgeScore          float32      `json:"age_score"`
 	WealthScore       float32      `json:"wealth_score"`

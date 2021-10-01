@@ -25,7 +25,7 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		UserConsentId:     userConsent.Id,
 		Name:              name,
 		DateOfBirth:       dob,
-		PanCard:           panCard,
+		Pancard:           panCard,
 		CkycCompliance:    ckycCompliance,
 		SharedDataSources: sharedDataSources,
 		AgeScore:          getAgeScore(dob),
@@ -42,7 +42,7 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		AllScore:          getAllPlanScore(allFipData, sharedDataSources),
 	}
 	// We can to this in go routines to make this section faster.
-	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id); err != nil {
+	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id, panCard); err != nil {
 		return err
 	}
 	if result := config.Database.Create(&planInformation); result.Error != nil {
@@ -100,23 +100,35 @@ func getDepositHolderField(allFipData []fipDataCollection, field string) string 
 	return ""
 }
 
-func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID) error {
+func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID,
+	pancard string) error {
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
 			if fipDataItem.Account.Type == strings.ToLower(FiTypesInsurancePolicies) {
 				premium, _ := strconv.ParseFloat(fipDataItem.Account.Summary.PremiumAmount, 32)
 				cover, _ := strconv.ParseFloat(fipDataItem.Account.Summary.CoverAmount, 32)
 				insurance := models.UserInsurance{
-					UserConsentId: consendId,
-					Type:          fipDataItem.Account.Summary.PolicyType,
-					Premium:       premium,
-					Cover:         cover,
-					Clauses:       models.InsuranceApnaMockedClauses,
-					AccountId:     fipDataItem.Account.MaskedAccNumber,
+					Type:      fipDataItem.Account.Summary.PolicyType,
+					Premium:   premium,
+					Cover:     cover,
+					IsActive:  true,
+					Pancard:   pancard,
+					Clauses:   models.InsuranceApnaMockedClauses,
+					AccountId: fipDataItem.Account.MaskedAccNumber,
 				}
-				result := config.Database.Create(&insurance)
-				if result.Error != nil {
-					return result.Error
+
+				var existingInsurance models.UserInsurance
+				if existingRecord := config.Database.Where("type = ?",
+					insurance.Type).Where("pancard = ?",
+					pancard).Take(&existingInsurance); existingRecord.Error != nil {
+					if existingRecord.Error.Error() == "record not found" {
+						result := config.Database.Create(&insurance)
+						if result.Error != nil {
+							return result.Error
+						}
+					} else {
+						return existingRecord.Error
+					}
 				}
 			}
 		}
