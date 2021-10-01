@@ -4,6 +4,7 @@ import (
 	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/controllers"
 	"insurance-ng/src/server/models"
+	"regexp"
 
 	"github.com/google/uuid"
 )
@@ -78,18 +79,21 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 		})
 	}
 
+	regexPattern := regexp.MustCompile("@.*$")
 	responseData = getUserDataResponse{
 		Status: true,
 		Data: userData{
-			Name:            userScore.result.Name,
-			DateOfBirth:     userScore.result.DateOfBirth,
-			Pancard:         userScore.result.PanCard,
-			CkycCompliance:  userScore.result.CkycCompliance,
-			AgeScore:        userScore.result.AgeScore,
-			WealthScore:     userScore.result.WealthScore,
-			DebtScore:       userScore.result.DebtScore,
-			InvestmentScore: userScore.result.InvestmentScore,
-			InsuranceOffers: insuranceOffered,
+			Name:              userScore.result.Name,
+			DateOfBirth:       userScore.result.DateOfBirth,
+			Pancard:           userScore.result.PanCard,
+			Phone:             regexPattern.ReplaceAllString(userConsent.result.CustomerId, ""),
+			SharedDataSources: userScore.result.SharedDataSources,
+			CkycCompliance:    userScore.result.CkycCompliance,
+			AgeScore:          userScore.result.AgeScore,
+			WealthScore:       userScore.result.WealthScore,
+			DebtScore:         userScore.result.DebtScore,
+			InvestmentScore:   userScore.result.InvestmentScore,
+			InsuranceOffers:   insuranceOffered,
 		},
 		Error: nil,
 	}

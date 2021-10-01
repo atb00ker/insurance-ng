@@ -26,15 +26,17 @@ type getUserDataResponse struct {
 }
 
 type userData struct {
-	Name            string            `json:"name"`
-	DateOfBirth     time.Time         `json:"date_of_birth"`
-	Pancard         string            `json:"pancard"`
-	CkycCompliance  bool              `json:"ckyc_compliance"`
-	AgeScore        float32           `json:"age_score"`
-	WealthScore     float32           `json:"wealth_score"`
-	DebtScore       float32           `json:"debt_score"`
-	InvestmentScore float32           `json:"investment_score"`
-	InsuranceOffers []insuranceOffers `json:"insurance"`
+	Name              string            `json:"name"`
+	DateOfBirth       time.Time         `json:"date_of_birth"`
+	Pancard           string            `json:"pancard"`
+	Phone             string            `json:"phone"`
+	CkycCompliance    bool              `json:"ckyc_compliance"`
+	AgeScore          float32           `json:"age_score"`
+	WealthScore       float32           `json:"wealth_score"`
+	DebtScore         float32           `json:"debt_score"`
+	InvestmentScore   float32           `json:"investment_score"`
+	InsuranceOffers   []insuranceOffers `json:"insurance"`
+	SharedDataSources int16             `json:"shared_data_sources"`
 }
 
 type insuranceOffers struct {

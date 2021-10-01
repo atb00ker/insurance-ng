@@ -102,7 +102,7 @@ const Dashboard: React.FC = () => {
       {!showError && !showLoader && !showProcessing && !showShareInfo && (
         <>
           <Row className='mt-1 mb-2 justify-content-center'>
-            <UserProfile fiData={fiData.data} />
+            <UserProfile changePageState={changePageState} fiData={fiData.data} />
           </Row>
           <Row className='mt-1 mb-5 justify-content-center'>
             {sortedFiInsuranceList.map(insurance => (

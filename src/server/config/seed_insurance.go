@@ -21,7 +21,7 @@ func InitInsuranceSeed() {
 		Premium:          21000,
 		Description:      "We cover your medical emergencies, quickly and without the need to difficult and long claim steps.",
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 7.2,
+		YoyDeductionRate: 4.2,
 	}
 	motor_policy := models.Insurance{
 		Title:            "Motor Plan",
@@ -39,7 +39,7 @@ func InitInsuranceSeed() {
 		Cover:            200000,
 		Premium:          15000,
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 15.2,
+		YoyDeductionRate: 7.2,
 	}
 	travel_policy := models.Insurance{
 		Title:            "Travel Plan",
@@ -48,7 +48,7 @@ func InitInsuranceSeed() {
 		Cover:            20000,
 		Premium:          2000,
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 0.8,
+		YoyDeductionRate: 0.3,
 	}
 	term_policy := models.Insurance{
 		Title:            "Term Plan",
@@ -57,7 +57,7 @@ func InitInsuranceSeed() {
 		Cover:            3000000,
 		Premium:          28500,
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 15.2,
+		YoyDeductionRate: 9.2,
 	}
 	children_policy := models.Insurance{
 		Title:            "Children's Plan",
@@ -66,7 +66,7 @@ func InitInsuranceSeed() {
 		Cover:            1600000,
 		Premium:          28500,
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 7.2,
+		YoyDeductionRate: 4.2,
 	}
 	pension_policy := models.Insurance{
 		Title:            "Pension Plan",
@@ -75,7 +75,7 @@ func InitInsuranceSeed() {
 		Premium:          10000,
 		Description:      "Your income for the old age when you retire, planned for you ahead of time.",
 		Clauses:          models.InsuranceNGMockedClauses,
-		YoyDeductionRate: 15.2,
+		YoyDeductionRate: 1.2,
 	}
 
 	createInsuranceSeed(all_policy)

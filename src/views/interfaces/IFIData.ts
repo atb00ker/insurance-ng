@@ -13,6 +13,8 @@ export interface IFIUserData {
   wealth_score: number;
   debt_score: number;
   investment_score: number;
+  phone: string;
+  shared_data_sources: number;
   insurance: IFIInsurance[];
 }
 

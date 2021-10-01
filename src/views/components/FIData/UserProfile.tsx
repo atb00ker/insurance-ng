@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
@@ -9,11 +9,29 @@ import { IFIUserData } from '../../interfaces/IFIData';
 import Row from 'react-bootstrap/esm/Row';
 import ProfileImageFemale from './../../assets/images/default-profile-picture-female.jpeg';
 import ProfileImageMale from './../../assets/images/default-profile-picture.jpeg';
-import { errorIcon, notApplicableIcon, questionIcon, tickIcon, warnIcon } from '../../helpers/svgIcons';
+import {
+  errorIcon,
+  notApplicableIcon,
+  questionIcon,
+  rightArrowInCircle,
+  tickIcon,
+  warnIcon,
+} from '../../helpers/svgIcons';
 import { InsuranceTypes } from '../../enums/Insurance';
-import { IUserProfileScores } from '../../interfaces/IUser';
+import { IAuth, IUserProfileScores } from '../../interfaces/IUser';
+import Button from 'react-bootstrap/esm/Button';
+import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
+import { AuthContext } from '../Auth/AuthProvider';
+import { RouterPath } from '../../enums/UrlPath';
+import { PageState } from '../../enums/PageStates';
 
-const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
+export interface IUserProfile {
+  changePageState: (state: string) => void;
+  fiData: IFIUserData;
+}
+
+const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData }) => {
+  const auth: IAuth = useContext(AuthContext);
   const getIconForScore = (score: number) => {
     if (score > 0.78) {
       return tickIcon();
@@ -26,20 +44,32 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
     }
   };
 
+  const handleCreateConsentSubmit = (event: any) => {
+    event.preventDefault();
+    changePageState(PageState.Loading);
+    auth.user.jwt().then(jwt => {
+      createConsentRequest(fiData.phone, jwt)
+        .then(response => {
+          const consent_handle = response.data['consent_handle'];
+          if (consent_handle)
+            globalThis.window.location.href = `https://anumati.setu.co/${consent_handle}?redirect_url=${getPathToDashboard()}`;
+        })
+        .catch(error => {
+          console.log(error);
+          changePageState(PageState.Error);
+        });
+    });
+  };
+
   return (
     <>
       <Col className='mt-4' sm='12' md='10'>
         <Card className='border'>
           <Card.Body>
             <Row className='justify-content-center'>
-              <Col sm='12' md='4' className='vertical-center-relative-image text-center'>
+              <Col sm='12' md='4' className='text-center'>
                 {fiData.name.includes('Ramkrishna') && (
-                  <Image
-                    style={{ marginTop: '20px' }}
-                    src={ProfileImageMale}
-                    height='150px'
-                    roundedCircle
-                  />
+                  <Image style={{ marginTop: '20px' }} src={ProfileImageMale} height='150px' roundedCircle />
                 )}
                 {!fiData.name.includes('Ramkrishna') && (
                   <Image
@@ -130,6 +160,18 @@ const UserProfile: React.FC<{ fiData: IFIUserData }> = ({ fiData }) => {
                   </tbody>
                 </Table>
               </Col>
+              {fiData.shared_data_sources < 5 && (
+                <Col sm='12'>
+                  <Button
+                    onClick={event => handleCreateConsentSubmit(event)}
+                    className='float-end btn-sm'
+                    variant='outline-primary'
+                  >
+                    Share more financial information for lower <br />
+                    premiums {rightArrowInCircle()}
+                  </Button>
+                </Col>
+              )}
             </Row>
           </Card.Body>
         </Card>

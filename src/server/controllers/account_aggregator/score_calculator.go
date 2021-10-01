@@ -14,10 +14,10 @@ func getAgeScore(dob time.Time) float32 {
 	// which factors in medical and term insurance.
 	// Datapoints:
 	// - profile.holders[0].holder.dob
-	return 0.96
+	return 0.81
 }
 
-func getMedicalPlanScore(allFipData []fipDataCollection) float32 {
+func getMedicalPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Like it or not, your medical state largely depends on your
 	// lifestyle, profession and quality of life.
 	// Datapoints:
@@ -30,10 +30,10 @@ func getMedicalPlanScore(allFipData []fipDataCollection) float32 {
 	//                                     /hedonistic would rank lower and family spending patterns higher
 	// - deposit:profile.holders[0].holder.address (place of living, reflects quality of life, proxymity to
 	//                                              emergency services, financial security)
-	return 0.85
+	return 0.85 + float32(sharedDataSources)/50
 }
 
-func getWealthPlanScore(allFipData []fipDataCollection) float32 {
+func getWealthPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your financial status in the society can indicate a lot about
 	// many aspects of your life, including the lenght of it.
 	// Datapoints:
@@ -46,20 +46,20 @@ func getWealthPlanScore(allFipData []fipDataCollection) float32 {
 	//                                      likely to be more mature in other aspects of life as well.
 	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
 	//                                      future security)
-	return 0.73
+	return 0.73 + float32(sharedDataSources)/50
 }
 
-func getDebtPlanScore(allFipData []fipDataCollection) float32 {
+func getDebtPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your financial status in the society can indicate a lot about
 	// many aspects of your life, including the lenght of it.
 	// Datapoints:
 	// - deposit:summary.currentBalance
 	// - deposit:transactions.transaction (spending patterns can indicate the future possibility of debt)
 	// - credit_card:summary.currentDue (Debt can be a good indictor of financial security and maturity)
-	return 0.69
+	return 0.69 + float32(sharedDataSources)/50
 }
 
-func getInvestmentScore(allFipData []fipDataCollection) float32 {
+func getInvestmentScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your investments gives insights about the person's future planning and maturity.
 	// Datapoints:
 	// - term-deposite/reoccuring-deposites/govt-debts/ppf/nfs:summary.holdings.currentValue (Investments indicate
@@ -67,10 +67,10 @@ func getInvestmentScore(allFipData []fipDataCollection) float32 {
 	//                                      likely to be more mature in other aspects of life as well.
 	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
 	//                                      future security)
-	return 0.76
+	return 0.76 + float32(sharedDataSources)/50
 }
 
-func getPensionPlanScore(allFipData []fipDataCollection) float32 {
+func getPensionPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// For suggesting the pension we need to know the financial-social situation of the individual.
 	// Datapoints:
 	// - age score (calculated above)
@@ -81,20 +81,20 @@ func getPensionPlanScore(allFipData []fipDataCollection) float32 {
 	//                                      likely to be more mature in other aspects of life as well.
 	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
 	//                                      future security)
-	return 0.71
+	return 0.71 + float32(sharedDataSources)/50
 }
 
-func getFamilyPlanScore(allFipData []fipDataCollection) float32 {
+func getFamilyPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Family plan would be very similar to the medical insurance plan calculated above.
 	// Datapoints:
 	// - age score (calculated above)
 	// - wealth score (calculated above)
 	// - medical plan score (calculated above)
 	// - debt score (calculated above)
-	return 0.70
+	return 0.70 + float32(sharedDataSources)/50
 }
 
-func getChildrenPlanScore(allFipData []fipDataCollection) float32 {
+func getChildrenPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Children's plan would be very similar to the medical & family insurance plan calculated above.
 	// Datapoints:
 	// - age score (calculated above)
@@ -102,10 +102,10 @@ func getChildrenPlanScore(allFipData []fipDataCollection) float32 {
 	// - medical plan score (calculated above)
 	// - debt score (calculated above)
 	// - family score (calculated above)
-	return 0.81
+	return 0.81 + float32(sharedDataSources)/50
 }
 
-func getMotorPlanScore(allFipData []fipDataCollection) float32 {
+func getMotorPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Children's plan would be very similar to the medical & family insurance plan calculated above.
 	// Datapoints:
 	// - wealth score (calculated above) -- will indicate the reasonable amount spend on the vehicle.
@@ -115,7 +115,7 @@ func getMotorPlanScore(allFipData []fipDataCollection) float32 {
 	return 0
 }
 
-func getTermPlanScore(allFipData []fipDataCollection) float32 {
+func getTermPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Term insurance rates boil down to life expentency, which is affected by your quality of life
 	// and financial status
 	// Datapoints:
@@ -127,20 +127,20 @@ func getTermPlanScore(allFipData []fipDataCollection) float32 {
 	//                                     /hedonistic would rank lower and family spending patterns higher
 	// - deposit:profile.holders[0].holder.address (place of living, reflects quality of life, proxymity to
 	//                                              emergency services, financial security)
-	return 0.6
+	return 0.6 + float32(sharedDataSources)/50
 }
 
-func getTravelPlanScore(allFipData []fipDataCollection) float32 {
+func getTravelPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Travel plan depends highly on the previous travel experience, frequency of travel,
 	// country of travel.
 	// Datapoints:
 	// - wealth score (calculated above) -- indicates the type of safety / luxury in the trip.
 	// - deposit:transactions.transaction -- indicate country / places travelling to in the near future,
 	// frequency of travel.
-	return 0.3
+	return 0.3 + float32(sharedDataSources)/50
 }
 
-func getAllPlanScore(allFipData []fipDataCollection) float32 {
+func getAllPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// A plan to cover all plans depends on the factors discussed above.
 	// Datapoints:
 	// - Age Score (calculated above)
@@ -154,5 +154,5 @@ func getAllPlanScore(allFipData []fipDataCollection) float32 {
 	// - Motor Score (calculated above)
 	// - Term Score (calculated above)
 	// - Travel Score (calculated above)
-	return 0.79
+	return 0.79 + float32(sharedDataSources)/50
 }
