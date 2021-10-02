@@ -1,21 +1,21 @@
 version: '3.6'
 
 services:
-  # server:
-  #   image: atb00ker/insurance-ng
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./private.pem:/go/src/app/private.pem:ro
-  #     - ./.env:/go/src/app/.env:ro
-  #     - react_data:/go/src/app/dist/
-  #   ports:
-  #     - 3000:3000
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - db
+  server:
+    image: atb00ker/insurance-ng
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./private.pem:/go/src/app/private.pem:ro
+      - ./.env:/go/src/app/.env:ro
+      - react_data:/go/src/app/dist/
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    depends_on:
+      - db
 
   db:
     image: postgres:alpine
@@ -31,17 +31,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # nginx:
-  #   image: nginx:alpine
-  #   ports:
-  #     - 8010:80
-  #   volumes:
-  #     - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  #     - react_data:/etc/nginx/conf.d/dist/
-  #   entrypoint: [nginx, '-g', 'daemon off;']
-  #   depends_on:
-  #     - db
-  #     - server
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 8010:80
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - react_data:/etc/nginx/conf.d/dist/
+    entrypoint: [nginx, '-g', 'daemon off;']
+    depends_on:
+      - db
+      - server
 
   adminer:
     image: adminer

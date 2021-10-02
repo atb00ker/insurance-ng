@@ -134,8 +134,10 @@ func updateUserConsentForStatusChange(consent consentNotifierStatus) error {
 		return result.Error
 	}
 
-	err := updateSignedConsent(userConsent)
-	return err
+	if consent.ConsentStatus == models.ConsentStatusActive {
+		return updateSignedConsent(userConsent)
+	}
+	return nil
 }
 
 func updateSignedConsent(userConsent models.UserConsents) (err error) {

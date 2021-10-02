@@ -40,7 +40,7 @@ const InsuranceInfo: React.FC = () => {
   const premiumGraph: [number, number][] = useMemo(() => {
     let deductionRate = insuranceInfo.yoy_deduction_rate,
       graphColumns: [number, number][] = [];
-    for (let index = 1; index < 11; index++) {
+    for (let index = 1; index < 6; index++) {
       graphColumns.push([index, insuranceInfo.offer_premium - deductionRate]);
       deductionRate = deductionRate + deductionRate;
     }
@@ -50,7 +50,7 @@ const InsuranceInfo: React.FC = () => {
   const coverGraph: [number, number][] = useMemo(() => {
     let incrementRate = insuranceInfo.yoy_deduction_rate,
       graphColumns: [number, number][] = [];
-    for (let index = 1; index < 11; index++) {
+    for (let index = 1; index < 6; index++) {
       graphColumns.push([index, insuranceInfo.offer_cover + incrementRate]);
       incrementRate = incrementRate + incrementRate;
     }
@@ -85,6 +85,7 @@ const InsuranceInfo: React.FC = () => {
       .then((response: any) => {
         const data: IFIData = response?.data;
         if (data?.status) {
+          // TODO: Add common function
           setShowError(false);
           setShowLoader(false);
           setInsuranceState(data, uuid);

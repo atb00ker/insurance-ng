@@ -62,7 +62,7 @@ func InitInsuranceSeed() {
 	children_policy := models.Insurance{
 		Title:            "Children's Plan",
 		Type:             models.OfferePlansChildrenPlan,
-		Description:      "You can get seperate insurance for your children. We advice having enough for their adulthhood.",
+		Description:      "You can get separate insurance for your children. We advice having enough for their adulthhood.",
 		Cover:            1600000,
 		Premium:          28500,
 		Clauses:          models.InsuranceNGMockedClauses,

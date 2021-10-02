@@ -13,31 +13,6 @@ const (
 	UrlArtefactNotification = "/api/account_aggregator/FI/Notification"
 )
 
-func ConsentNotification(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Content-Type", "application/json")
-	decoder := json.NewDecoder(request.Body)
-	var requestJson setuConsentNotificationRequest
-	if err := decoder.Decode(&requestJson); err != nil {
-		controllers.HandleError(response, err.Error())
-		return
-	}
-
-	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification); err != nil {
-		HandleNotificationError(response, err)
-		return
-	}
-
-	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
-	if err != nil {
-		HandleNotificationError(response, err)
-		return
-	}
-
-	response.Header().Set("client_api_key", clientApi)
-	response.Header().Set("x-jws-signature", requestJws)
-	response.Write(setuResponseBody)
-}
-
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	userId, ok := controllers.GetUserIdentifier(response, request)
@@ -69,6 +44,31 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	})
 
 	response.Write(respMessage)
+}
+
+func ConsentNotification(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(request.Body)
+	var requestJson setuConsentNotificationRequest
+	if err := decoder.Decode(&requestJson); err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification); err != nil {
+		HandleNotificationError(response, err)
+		return
+	}
+
+	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
+	if err != nil {
+		HandleNotificationError(response, err)
+		return
+	}
+
+	response.Header().Set("client_api_key", clientApi)
+	response.Header().Set("x-jws-signature", requestJws)
+	response.Write(setuResponseBody)
 }
 
 // Data flow

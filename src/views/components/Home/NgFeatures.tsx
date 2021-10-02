@@ -65,7 +65,7 @@ const NgFeatures: React.FC = () => {
         image={SaveMoney1}
         imageWidth={550}
         title='Find Better Plans'
-        description='Compare your existing plans with our plans and easily switch to our plans when you find our offerings help you save money.'
+        description='Do you have an existing insurance, if there exists a better plan in the category, we will suggest it to you.'
       />
       <FeatureDisplayWhite
         image={ClauseDiscovery1}
@@ -77,7 +77,7 @@ const NgFeatures: React.FC = () => {
         image={SteppingToFuture1}
         imageWidth={650}
         title='See the future'
-        description='Your premiums change with time, see the future predictions for upto 5 years, predicted based on your financial status of the past 5 years!'
+        description='Your premiums change with time, see the future predictions for upto 5 years, predicted based on your financial status of the past 5 years.'
       />
       <Row className='cover-screen'>
         <Col sm='12' className='d-flex-center'>
@@ -88,7 +88,7 @@ const NgFeatures: React.FC = () => {
               </Col>
               <Col sm='12' className='d-flex-center text-center max-width-960'>
                 <h5>
-                  No long forms, full control on your data, quick and simple. <br />
+                  No long forms, full control on your data, quick and simple user experience. <br />
                   So, what are you waiting for?
                   <br />
                   {auth.isReady && !auth.isAuthenticated &&

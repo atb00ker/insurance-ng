@@ -21,7 +21,7 @@ const (
 )
 
 const (
-	ConsentStatusAction   = "ACTIVE"
+	ConsentStatusActive   = "ACTIVE"
 	ConsentStatusRejected = "REJECTED"
 	ConsentStatusRevoked  = "REVOKED"
 	ConsentStatusPaused   = "PAUSED"

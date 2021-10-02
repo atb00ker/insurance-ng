@@ -6,7 +6,8 @@
   "homepage": "https://github.com/atb00ker/insurance-ng#readme",
   "description": "insurance-ng",
   "scripts": {
-    "docker": "docker-compose up -d",
+    "docker-db": "docker-compose up -d postgres adminer",
+    "docker-prod": "docker-compose up -d postgres server nginx",
     "server": "env-cmd fresh -c gofresh.config",
     "react-start": "webpack serve --open --mode development",
     "react-build": "webpack --mode production",
