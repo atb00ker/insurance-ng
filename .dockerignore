@@ -1,6 +1,6 @@
 # Configurations
 .env.dev
-.eve.test
+.env.test
 
 # Go Environment
 tmp/
@@ -28,8 +28,9 @@ Thumbs.db
 *~
 .#*
 
-# Docker Ignore
-.git
+# Secrets
+deploy/
 
 # development
+.git
 ngrok

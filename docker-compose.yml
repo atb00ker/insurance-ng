@@ -2,12 +2,12 @@ version: '3.6'
 
 services:
   server:
-    image: atb00ker/insurance-ng
+    image: atb00ker/insurance-ng:latest
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./private.pem:/go/src/app/private.pem:ro
+      - ./deploy/private.pem:/go/src/app/private.pem:ro
       - ./.env:/go/src/app/.env:ro
       - react_data:/go/src/app/dist/
     ports:
@@ -34,10 +34,12 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - 8010:80
+      - 443:443
+    env_file:
+      - .env
     volumes:
-      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - react_data:/etc/nginx/conf.d/dist/
+      - ./deploy/nginx/:/etc/nginx/conf.d/:ro
+      - react_data:/etc/nginx/dist/
     entrypoint: [nginx, '-g', 'daemon off;']
     depends_on:
       - db

@@ -51,6 +51,7 @@ We are using 3 docker images: server, nginx and postgres.
 The images are connected in the following manner.
 
 ![Meta Workflow](./docs/meta-workflow.jpg)
+**Note:** Click on Image to zoom-in
 
 ### Backend Workflow
 
@@ -59,6 +60,7 @@ It also AA data response parsing logic and a websocket endpoint that reports whe
 The workflow for server image is as followed:
 
 ![Backend Workflow](./docs/backend-workflow.jpg)
+**Note:** Click on Image to zoom-in
 
 ### Database
 
@@ -71,6 +73,7 @@ We have 5 tables the store the following information:
 5. Insurance Table: All Insurances offered by Insurance NG.
 
 ![Database Design](./docs/complete-database-design.jpg)
+**Note:** Click on Image to zoom-in
 
 ## Setup
 
@@ -82,26 +85,26 @@ Create a copy of the `.env.example` file and rename it to `.env`.
 Now, we can manipulate the following variables to configure the application.
 You can find example values in the `.env.example` file itself.
 
-| Key                   | Description                                                              |
-| --------------------- | ------------------------------------------------------------------------ |
-| DB_USER               | PostgreSQL User                                                          |
-| DB_PASS               | PostgreSQL Password                                                      |
-| DB_NAME               | Database Table Name                                                      |
-| DB_PORT               | Database Port                                                            |
-| DB_HOST               | Database Host/Domain                                                     |
-| APP_PORT              | Port at which our backend will Run                                       |
-| APP_CORS              | Allowed CORS for backend                                                 |
-| APP_SETU_AA_ENDPOINT  | Setu AA URI                                                              |
-| APP_SETU_CLIENT_KEY   | Setu Client Key                                                          |
-| APP_SETU_AA_KEY       | Setu AA Key                                                              |
-| APP_JWS_AA_PRIVATEKEY | Path to the private Key used for JWS (Public key shared with Setu)       |
-| REACT_APP_PORT        | Port at which react find server (separate var helpful for reverse proxy) |
-| REACT_CORS            | CORS allowed from React End                                              |
-| AUTH0_DOMAIN          | Auth0 Application Domain                                                 |
-| AUTH0_CLIENT_ID       | Auth0 Application Client ID                                              |
-| AUTH0_REDIRECT_URI    | Auth0 redirect after login (eg. http://localhost:8010/register)          |
-| AUTH0_LOGOUT_URI      | Auth0 redirect after logout (eg. http://localhost:8010)                  |
-| DEBUG                 | Application Shows detailed logs when set to True                         |
+| Key                        | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| DB_USER                    | PostgreSQL User                                                          |
+| DB_PASS                    | PostgreSQL Password                                                      |
+| DB_NAME                    | Database Table Name                                                      |
+| DB_PORT                    | Database Port                                                            |
+| DB_HOST                    | Database Host/Domain                                                     |
+| APP_PORT                   | Port at which our backend will Run                                       |
+| APP_CORS                   | Allowed CORS for backend                                                 |
+| APP_SETU_AA_ENDPOINT       | Setu AA URI                                                              |
+| APP_SETU_CLIENT_KEY        | Setu Client Key                                                          |
+| APP_SETU_AA_KEY            | Setu AA Key                                                              |
+| APP_JWS_AA_PRIVATEKEY_PATH | Path to the private key used for JWS (Public key shared with Setu)       |
+| REACT_APP_PORT             | Port at which react find server (separate var helpful for reverse proxy) |
+| REACT_CORS                 | CORS allowed from React End                                              |
+| AUTH0_DOMAIN               | Auth0 Application Domain                                                 |
+| AUTH0_CLIENT_ID            | Auth0 Application Client ID                                              |
+| AUTH0_REDIRECT_URI         | Auth0 redirect after login (eg. http://localhost:8010/register)          |
+| AUTH0_LOGOUT_URI           | Auth0 redirect after logout (eg. http://localhost:8010)                  |
+| DEBUG                      | Application Shows detailed logs when set to True                         |
 
 ### Development
 
@@ -110,7 +113,6 @@ these steps.
 
 #### Prerequisites
 
-- git
 - golang
 - node
 - mpm | yarn
@@ -133,7 +135,13 @@ these steps.
 
 To deploy the insurance ng, do the following:
 
-1. Get the code: `git clone https://github.com/atb00ker/insurance-ng.git`
-2. Paste your `.env` file and your private key in `.private.pem` file beside the `docker-compose.yml`
-3. Run `docker-compose up -d postgres server nginx`
-4. When the images are up, check your public IP, the application should be accessible.
+1. Copy your `.env`, `deploy/` and `docker-compose.yml` to your server.
+2. Copy your `private.pem` (private key for which the public key is shared with Setu) inside the `deploy/` folder on the server.
+3. Generate dhparam certificates `openssl dhparam -out ./deploy/nginx/dhparam.pem 2048`
+4. Generate SSL certs using certbot certificates:
+   - Follow [certbot instructions](https://certbot.eff.org/instructions).
+   - Copy fullchain: `sudo cat /etc/letsencrypt/live/<domain>/fullchain.pem > ./deploy/nginx/fullchain.pem`
+   - Copy privkey: `sudo cat /etc/letsencrypt/live/<domain>/privkey.pem > ./deploy/nginx/privkey.pem`
+5. Run `docker-compose pull`
+6. Run `docker-compose up -d db server nginx`
+7. When the images are up, check your IP address, the application should be accessible.

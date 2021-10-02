@@ -35,20 +35,22 @@ typings/
 dist
 __debug_bin
 
-# eslint
+# ESlint
 .eslintcache
 .node_repl_history
 
-# dotenv
+# Dotenv
 .env
 .env.test
 
-# golang
+# Golang
 tmp/
 vendor/
 
-# secrets
+# Secrets
 *.pem
+*.crt
+*.key
 
-# development
+# Development
 ngrok
