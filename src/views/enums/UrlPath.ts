@@ -1,5 +1,6 @@
 export enum RouterPath {
-  CreateConsent = '/',
+  Home = '/',
+  Features = '/features/',
   Register = '/register/',
   Dashboard = '/dashboard/',
   About = '/about/',

@@ -29,7 +29,7 @@ const InsuranceInfo: React.FC = () => {
 
   useEffect(() => {
     if (!fiDataFromHistory) {
-      getDataFromServer(uuid);
+      getDataFromServer();
       return;
     }
     setShowError(false);
@@ -68,7 +68,7 @@ const InsuranceInfo: React.FC = () => {
     });
   };
 
-  const getDataFromServer = (uuid: string) => {
+  const getDataFromServer = () => {
     auth.user.jwt().then((jwt: string) => {
       changeStateOnDataResponse(getDashboardData(jwt));
     });

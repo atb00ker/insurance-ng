@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import CompleteLogoImage from '../../assets/icons/complete-logo.jpg';
 import { openInNewTabIcon } from '../../helpers/svgIcons';
+import Footer from '../../components/Common/Footer';
 
 const About: React.FC = () => {
   const hackathonUrl: string = 'https://free-your-data.devfolio.co/';
@@ -126,6 +127,7 @@ const About: React.FC = () => {
           .
         </Col>
       </Row>
+      <Footer />
     </Container>
   );
 };

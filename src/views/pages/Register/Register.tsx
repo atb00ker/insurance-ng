@@ -13,7 +13,7 @@ const RegisterUser: React.FC = () => {
   useEffect(() => {
     auth.user.jwt().then(jwt => {
       registerUserRequest(jwt).then(_ => {
-        history.push(RouterPath.CreateConsent);
+        history.push(RouterPath.Home);
       });
     });
   });

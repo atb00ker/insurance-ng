@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
@@ -21,17 +21,15 @@ import { InsuranceTypes } from '../../enums/Insurance';
 import { IAuth, IUserProfileScores } from '../../interfaces/IUser';
 import Button from 'react-bootstrap/esm/Button';
 import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
-import { AuthContext } from '../Auth/AuthProvider';
-import { RouterPath } from '../../enums/UrlPath';
 import { PageState } from '../../enums/PageStates';
 
 export interface IUserProfile {
   changePageState: (state: string) => void;
   fiData: IFIUserData;
+  auth: IAuth;
 }
 
-const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData }) => {
-  const auth: IAuth = useContext(AuthContext);
+const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) => {
   const getIconForScore = (score: number) => {
     if (score > 0.78) {
       return tickIcon();
@@ -168,7 +166,7 @@ const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData }) => {
                     variant='outline-primary'
                   >
                     Share more financial information for lower <br />
-                    premiums {rightArrowInCircle()}
+                    premiums {rightArrowInCircle('0 0 16 16')}
                   </Button>
                 </Col>
               )}

@@ -8,14 +8,13 @@ import { AuthContext } from '../../components/Auth/AuthProvider';
 import { IAuth } from '../../interfaces/IUser';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import ServerRequestError from '../../components/ContentState/ServerRequestError';
-import UserProfile from '../../components/FIData/UserProfile';
+import UserProfile from '../../components/Dashboard/UserProfile';
 import { IFIData } from '../../interfaces/IFIData';
-import InsuranceCard from '../../components/FIData/InsuranceCard';
+import InsuranceCard from '../../components/Dashboard/InsuranceCard';
 import { InsuranceTypes } from '../../enums/Insurance';
 import FiDataWait from '../../components/ContentState/FIDataWait';
 import { ServerPath } from '../../enums/UrlPath';
-import { delay } from '../../helpers/generic';
-import NoValidConsent from '../../components/ContentState/NoValidConsent';
+import NoValidConsent from '../../components/ContentState/InvalidConsent';
 import { PageState } from '../../enums/PageStates';
 
 const Dashboard: React.FC = () => {
@@ -102,7 +101,7 @@ const Dashboard: React.FC = () => {
       {!showError && !showLoader && !showProcessing && !showShareInfo && (
         <>
           <Row className='mt-1 mb-2 justify-content-center'>
-            <UserProfile changePageState={changePageState} fiData={fiData.data} />
+            <UserProfile auth={auth} changePageState={changePageState} fiData={fiData.data} />
           </Row>
           <Row className='mt-1 mb-5 justify-content-center'>
             {sortedFiInsuranceList.map(insurance => (

@@ -13,10 +13,6 @@ export const ProviderOptions: Auth0ProviderOptions = {
 const AuthConfigurations: React.FC = ({ children }) => {
   const { isLoading, isAuthenticated, loginWithRedirect, logout, user, getIdTokenClaims } = useAuth0();
 
-  if (!isLoading && !isAuthenticated) {
-    loginWithRedirect();
-  }
-
   const auth0Logout = () => {
     return logout({ returnTo: process.env.AUTH0_LOGOUT_URI || window.location.origin });
   };
@@ -42,10 +38,11 @@ const AuthConfigurations: React.FC = ({ children }) => {
     },
   };
 
-  if (auth.isReady && !auth.isAuthenticated) {
-    loginWithRedirect();
-    return <div>Loading...</div>;
-  }
+  // Enable if we want the autologin required feature
+  // if (auth.isReady && !auth.isAuthenticated) {
+  //   loginWithRedirect();
+  //   return <div>Loading...</div>;
+  // }
   return (
     <React.Fragment>
       <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>

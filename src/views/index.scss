@@ -38,7 +38,14 @@ select {
 }
 
 .href-no-underline {
+  cursor: pointer;
   text-decoration: unset;
+}
+
+.d-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-href {

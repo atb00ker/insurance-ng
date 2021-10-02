@@ -17,30 +17,30 @@ const Navbar = () => {
     <React.Fragment>
       <BootstrapNav bg='light' expand='sm'>
         <Container fluid>
-          <BootstrapNav.Brand href='#home'>
+          <BootstrapNav.Brand target='_self' href={RouterPath.Home}>
             <Image src={LogoThinImage} height='26px' />
           </BootstrapNav.Brand>
           <BootstrapNav.Toggle aria-controls='navbar-toggle' />
           <BootstrapNav.Collapse id='navbar-toggle'>
+            <Link to={RouterPath.Home}>
+              <Button className='m-1 me-1 btn-sm' variant='primary'>
+                Home
+              </Button>
+            </Link>
             {auth.isReady && auth.isAuthenticated && (
               <>
-                <Link to={RouterPath.CreateConsent}>
-                  <Button className='m-1 me-1 btn-sm' variant='primary'>
-                    Home
-                  </Button>
-                </Link>
                 <Link to={RouterPath.Dashboard}>
                   <Button className='m-1 me-1 btn-sm' variant='primary'>
                     Dashboard
                   </Button>
                 </Link>
-                <Link to={RouterPath.About}>
-                  <Button className='m-1 me-1 btn-sm' variant='primary'>
-                    About
-                  </Button>
-                </Link>
               </>
             )}
+            <Link to={RouterPath.About}>
+              <Button className='m-1 me-1 btn-sm' variant='primary'>
+                About
+              </Button>
+            </Link>
             <div style={{ flex: '1 1 auto' }}></div>
             {!auth.isReady && (
               <Button className='m-1 me-4 btn-sm' variant='primary' onClick={() => auth.loginWithRedirect()}>
