@@ -169,6 +169,7 @@ func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uu
 	if err != nil {
 		return
 	}
+	fmt.Println(string(respBytes))
 
 	var consentStatus setuConsentStatusResponse
 	if err = json.Unmarshal(respBytes, &consentStatus); err != nil {

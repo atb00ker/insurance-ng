@@ -108,8 +108,13 @@ func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 
 func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData models.UserConsents,
 	rahasyaKeys rahasyaKeyResponse) setuFiSessionRequest {
-
-	signedConsent := strings.Split(consentData.SignedConsent, ".")[2]
+	var signedConsent string
+	signedConsentList := strings.Split(consentData.SignedConsent, ".")
+	if len(signedConsentList) > 2 {
+		signedConsent = signedConsentList[2]
+	} else {
+		return setuFiSessionRequest{}
+	}
 	requestBody := setuFiSessionRequest{
 		Ver:       "1.0",
 		Timestamp: currentTime,

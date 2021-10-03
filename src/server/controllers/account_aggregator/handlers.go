@@ -2,15 +2,19 @@ package account_aggregator
 
 import (
 	"encoding/json"
+	"insurance-ng/src/server/config"
 	"insurance-ng/src/server/controllers"
+	"insurance-ng/src/server/models"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 const (
-	UrlCreateConsent        = "/api/account_aggregator/consent/"
-	UrlConsentStatus        = "/api/account_aggregator/consent/status/"
-	UrlConsentNotification  = "/api/account_aggregator/Consent/Notification"
-	UrlArtefactNotification = "/api/account_aggregator/FI/Notification"
+	UrlCreateConsent           = "/api/account_aggregator/consent/"
+	UrlConsentNotificationMock = "/api/account_aggregator/Mock/Consent/Notification/"
+	UrlConsentNotification     = "/api/account_aggregator/Consent/Notification"
+	UrlArtefactNotification    = "/api/account_aggregator/FI/Notification"
 )
 
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
@@ -69,6 +73,36 @@ func ConsentNotification(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("client_api_key", clientApi)
 	response.Header().Set("x-jws-signature", requestJws)
 	response.Write(setuResponseBody)
+}
+
+func ConsentNotificationMock(response http.ResponseWriter, request *http.Request) {
+	// This is just a mock endpoint.
+	// We don't need in it real life scenarios.
+	response.Header().Set("Content-Type", "application/json")
+	userId, ok := controllers.GetUserIdentifier(response, request)
+	if !ok {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
+	}
+
+	var userConsent models.UserConsents
+	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
+		userId).Take(&userConsent); result.Error != nil {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
+	}
+
+	if userConsent.ArtefactStatus == models.ArtefactStatusPending {
+		consentNotificationMock := consentNotifierStatus{
+			ConsentId:     uuid.New(),
+			ConsentHandle: userConsent.ConsentHandle,
+			ConsentStatus: "ACTIVE",
+		}
+		if err := updateUserConsentForStatusChange(consentNotificationMock); err != nil {
+			HandleNotificationError(response, err)
+			return
+		}
+	}
 }
 
 // Data flow

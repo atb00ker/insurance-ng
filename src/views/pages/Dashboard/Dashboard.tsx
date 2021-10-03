@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { getDashboardData } from '../../helpers/axios';
+import { getDashboardData, mockConsentNotification } from '../../helpers/axios';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import { AuthContext } from '../../components/Auth/AuthProvider';
 import { IAuth } from '../../interfaces/IUser';
@@ -29,6 +29,20 @@ const Dashboard: React.FC = () => {
   const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
   const socketUrl = new URL(ServerPath.DataWebsocket, `${protocol}//${location.hostname}:${port}`);
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl.toString());
+
+  useEffect(() => {
+    // This is only a hack to mock Setu Consent notification
+    // This is not required in a real life application, only added
+    // reliability for the hackathon while the API is
+    // unstable on Setu's end.
+    auth.user.jwt().then((jwt: string) => {
+      setTimeout(() => {
+        mockConsentNotification(jwt).then(_ => {
+          getDataFromServer();
+        });
+      }, 5000)
+    });
+  }, [auth.isReady]);
 
   useEffect(() => {
     // If the websocket connection fails for some reason,
@@ -75,8 +89,14 @@ const Dashboard: React.FC = () => {
           // If request was successful.
           const data: IFIData = response?.data;
           if (data?.status) {
-            setFIData(data);
-            changePageState(PageState.Data);
+            if (data.data.name === "") {
+              // Sometimes the data is corrupt.
+              // We don't want to show that.
+              changePageState(PageState.Error);
+            } else {
+              setFIData(data);
+              changePageState(PageState.Data);
+            }
           } else {
             changePageState(PageState.Processing);
             setTimeout(() => getDataFromServer(), 5000);

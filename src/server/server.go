@@ -35,6 +35,8 @@ func main() {
 	// Account Aggregator
 	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
 		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
+	muxDispatcher.Handle(account_aggregator.UrlConsentNotificationMock,
+		jwtAuth(account_aggregator.ConsentNotificationMock)).Methods("OPTIONS", "GET")
 	muxDispatcher.Handle(account_aggregator.UrlConsentNotification,
 		setuAuth(account_aggregator.ConsentNotification)).Methods("POST")
 	muxDispatcher.Handle(account_aggregator.UrlArtefactNotification,

@@ -30,9 +30,9 @@ export const createConsentRequest = (phoneNumber: string, jwt: string): Promise<
     });
 };
 
-export const getConsentStatus = (jwt: string): Promise<any> => {
-  return axios.get(ServerPath.ConsentStatus, getJwtHeader(jwt)).catch((error: any) => {
-    const url = new URL(ServerPath.ConsentStatus, axios.defaults.baseURL).toString();
+export const mockConsentNotification = (jwt: string): Promise<any> => {
+  return axios.get(ServerPath.ConsentNotificationMock, getJwtHeader(jwt)).catch((error: any) => {
+    const url = new URL(ServerPath.ConsentNotificationMock, axios.defaults.baseURL).toString();
     console.error(`Cant't get ${url} because ${error}`);
     throw error;
   });
