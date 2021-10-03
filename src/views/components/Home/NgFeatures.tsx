@@ -21,14 +21,11 @@ import { AuthContext } from '../Auth/AuthProvider';
 const NgFeatures: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
   return (
-    <Container fluid>
+    <Container className="overflow-hidden" fluid>
       <Row className='cover-screen'>
         <Col sm='12' className='d-flex-center'>
           <Container className='d-flex-center'>
             <Row className='d-flex-center'>
-              <Col sm='12' className='d-md-none text-center'>
-                <Image src={CompleteLogoImage} height={130} />
-              </Col>
               <Col sm='12' md='5' className='text-center-md mt-4 max-width-960'>
                 <h1>
                   The future of <span className='text-primary'>Insurance Services</span>
@@ -39,11 +36,14 @@ const NgFeatures: React.FC = () => {
                   Sign Up {rightArrowInCircle('0 0 16 16')}
                 </Button>}
               </Col>
-              <Col md='7' className='d-none d-md-block d-lg-none text-center'>
-                <Image src={CompleteLogoImage} height={160} />
-              </Col>
-              <Col lg='7' className='d-none d-lg-block text-center'>
-                <Image src={CompleteLogoImage} height={190} />
+            <Col
+              className='text-center'
+              xs={{ order: 'first', span: '12' }}
+              md={{ order: 'last', span: '7' }}
+            >
+                <Image className="d-md-none" src={CompleteLogoImage} width={'90%'} />
+                <Image className="d-none d-md-block d-lg-none" src={CompleteLogoImage} width={400} />
+                <Image className="d-none d-lg-block" src={CompleteLogoImage} width={500} />
               </Col>
             </Row>
           </Container>
