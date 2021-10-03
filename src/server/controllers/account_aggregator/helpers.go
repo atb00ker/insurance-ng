@@ -142,10 +142,10 @@ func getUserConsentWithSessionId(sessionId string) (userConsent models.UserConse
 }
 
 func getPrivatePemFileContent() (x509Key interface{}, err error) {
-	filePath := os.Getenv("APP_JWS_AA_PRIVATEKEY_PATH")
+	filePath := os.Getenv("APP_SETU_JWS_PRIVATEKEY_PATH")
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Println(fmt.Sprintf("Filepath (%s) does not point to a readable file, please check the value of `APP_JWS_AA_PRIVATEKEY_PATH`.", filePath))
+		log.Println(fmt.Sprintf("Filepath (%s) does not point to a readable file, please check the value of `APP_SETU_JWS_PRIVATEKEY_PATH`.", filePath))
 	}
 
 	block, _ := pem.Decode(content)
@@ -179,7 +179,7 @@ func deleteUserConsent(userConsent models.UserConsents) {
 		userConsent.Id).Take(&userScore)
 
 	config.Database.Where("pancard = ?", userScore.Pancard).Where(
-		"is_insuranceng_account <> ?", 1).Delete(&models.UserInsurance{})
+		"is_insurance_ng_acct <> ?", true).Delete(&models.UserInsurance{})
 
 	config.Database.Where("user_id = ?", userConsent.UserId).Delete(&userConsent)
 }

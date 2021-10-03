@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"insurance-ng/src/server/config"
-	"net/http"
 	"os"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
@@ -23,6 +22,8 @@ type jSONWebKeys struct {
 type jwks struct {
 	Keys []jSONWebKeys `json:"keys"`
 }
+
+var auth0Jwks = jwks{}
 
 func JwtMiddleware() *jwtmiddleware.JWTMiddleware {
 	auth_aud := os.Getenv("AUTH0_CLIENT_ID")
@@ -58,23 +59,24 @@ func JwtMiddleware() *jwtmiddleware.JWTMiddleware {
 
 func getPemCert(token *jwt.Token, auth_domain string) (string, error) {
 	cert := ""
-	resp, err := http.Get(auth_domain + ".well-known/jwks.json")
+	// resp, err := http.Get(auth_domain + ".well-known/jwks.json")
+	// defer resp.Body.Close()
+	if auth0Jwks.Keys == nil {
+		resp, err := os.Open(os.Getenv("AUTH0_JWT_WELKNOWNS_PATH"))
+		if err != nil {
+			return cert, err
+		}
+		defer resp.Close()
 
-	if err != nil {
-		return cert, err
+		err = json.NewDecoder(resp).Decode(&auth0Jwks)
+		if err != nil {
+			return cert, err
+		}
 	}
-	defer resp.Body.Close()
 
-	var jwks = jwks{}
-	err = json.NewDecoder(resp.Body).Decode(&jwks)
-
-	if err != nil {
-		return cert, err
-	}
-
-	for k := range jwks.Keys {
-		if token.Header["kid"] == jwks.Keys[k].Kid {
-			cert = "-----BEGIN CERTIFICATE-----\n" + jwks.Keys[k].X5c[0] + "\n-----END CERTIFICATE-----"
+	for k := range auth0Jwks.Keys {
+		if token.Header["kid"] == auth0Jwks.Keys[k].Kid {
+			cert = "-----BEGIN CERTIFICATE-----\n" + auth0Jwks.Keys[k].X5c[0] + "\n-----END CERTIFICATE-----"
 		}
 	}
 

@@ -53,7 +53,7 @@ type insuranceOffers struct {
 	YoyDeductionRate  float32        `json:"yoy_deduction_rate"`
 	Clauses           pq.StringArray `json:"clauses"`
 	CurrentClauses    pq.StringArray `json:"current_clauses"`
-	IsInsuranceNgAcct bool           `json:"is_insuranceng_account"`
+	IsInsuranceNgAcct bool           `json:"is_insurance_ng_acct"`
 	IsActive          bool           `json:"is_active"`
 }
 

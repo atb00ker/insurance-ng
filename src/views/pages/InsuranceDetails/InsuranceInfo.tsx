@@ -111,7 +111,7 @@ const InsuranceInfo: React.FC = () => {
       tableRow.push(
         <tr key={index}>
           <td>{index + 1}.</td>
-          {!insuranceInfo.is_insuranceng_account && insuranceInfo.current_clauses?.length && (
+          {!insuranceInfo.is_insurance_ng_acct && insuranceInfo.current_clauses?.length && (
             <td
               dangerouslySetInnerHTML={{
                 __html: insuranceInfo.current_clauses[index]?.replace(
@@ -159,7 +159,7 @@ const InsuranceInfo: React.FC = () => {
                     <td>: {insuranceInfo.offer_premium}</td>
                     <td></td>
                   </tr>
-                  {!insuranceInfo.is_insuranceng_account && (
+                  {!insuranceInfo.is_insurance_ng_acct && (
                     <tr>
                       <td>Purchase</td>
                       {insuranceInfo.score >= 0.8 && (
@@ -193,7 +193,7 @@ const InsuranceInfo: React.FC = () => {
                       )}
                     </tr>
                   )}
-                  {insuranceInfo.is_insuranceng_account && (
+                  {insuranceInfo.is_insurance_ng_acct && (
                     <tr>
                       <td>Status</td>
                       {insuranceInfo.is_active && (
@@ -243,7 +243,7 @@ const InsuranceInfo: React.FC = () => {
                 <thead>
                   <tr>
                     <th className='text-center'>#</th>
-                    {!insuranceInfo.is_insuranceng_account && insuranceInfo.current_clauses?.length && (
+                    {!insuranceInfo.is_insurance_ng_acct && insuranceInfo.current_clauses?.length && (
                       <th className='text-center'>Current Clauses</th>
                     )}
                     <th className='text-center'>Clauses</th>

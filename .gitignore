@@ -51,6 +51,7 @@ vendor/
 *.pem
 *.crt
 *.key
+jwks.json
 
 # Development
 ngrok

@@ -33,5 +33,5 @@ export interface IFIInsurance {
   offer_cover: number;
   is_active: boolean;
   yoy_deduction_rate: number;
-  is_insuranceng_account: string;
+  is_insurance_ng_acct: string;
 }

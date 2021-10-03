@@ -85,26 +85,27 @@ Create a copy of the `.env.example` file and rename it to `.env`.
 Now, we can manipulate the following variables to configure the application.
 You can find example values in the `.env.example` file itself.
 
-| Key                        | Description                                                              |
-| -------------------------- | ------------------------------------------------------------------------ |
-| DB_USER                    | PostgreSQL User                                                          |
-| DB_PASS                    | PostgreSQL Password                                                      |
-| DB_NAME                    | Database Table Name                                                      |
-| DB_PORT                    | Database Port                                                            |
-| DB_HOST                    | Database Host/Domain                                                     |
-| APP_PORT                   | Port at which our backend will Run                                       |
-| APP_CORS                   | Allowed CORS for backend                                                 |
-| APP_SETU_AA_ENDPOINT       | Setu AA URI                                                              |
-| APP_SETU_CLIENT_KEY        | Setu Client Key                                                          |
-| APP_SETU_AA_KEY            | Setu AA Key                                                              |
-| APP_JWS_AA_PRIVATEKEY_PATH | Path to the private key used for JWS (Public key shared with Setu)       |
-| REACT_APP_PORT             | Port at which react find server (separate var helpful for reverse proxy) |
-| REACT_CORS                 | CORS allowed from React End                                              |
-| AUTH0_DOMAIN               | Auth0 Application Domain                                                 |
-| AUTH0_CLIENT_ID            | Auth0 Application Client ID                                              |
-| AUTH0_REDIRECT_URI         | Auth0 redirect after login (eg. http://localhost:8010/register)          |
-| AUTH0_LOGOUT_URI           | Auth0 redirect after logout (eg. http://localhost:8010)                  |
-| DEBUG                      | Application Shows detailed logs when set to True                         |
+| Key                          | Description                                                              |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| DB_USER                      | PostgreSQL User                                                          |
+| DB_PASS                      | PostgreSQL Password                                                      |
+| DB_NAME                      | Database Table Name                                                      |
+| DB_PORT                      | Database Port                                                            |
+| DB_HOST                      | Database Host/Domain                                                     |
+| APP_PORT                     | Port at which our backend will Run                                       |
+| APP_CORS                     | Allowed CORS for backend                                                 |
+| APP_SETU_AA_ENDPOINT         | Setu AA URI                                                              |
+| APP_SETU_CLIENT_KEY          | Setu Client Key                                                          |
+| APP_SETU_AA_KEY              | Setu AA Key                                                              |
+| APP_SETU_JWS_PRIVATEKEY_PATH | Path to the private key used for JWS (Public key shared with Setu)       |
+| REACT_APP_PORT               | Port at which react find server (separate var helpful for reverse proxy) |
+| REACT_CORS                   | CORS allowed from React End                                              |
+| AUTH0_DOMAIN                 | Auth0 Application Domain                                                 |
+| AUTH0_CLIENT_ID              | Auth0 Application Client ID                                              |
+| AUTH0_REDIRECT_URI           | Auth0 redirect after login (eg. http://localhost:8010/register)          |
+| AUTH0_LOGOUT_URI             | Auth0 redirect after logout (eg. http://localhost:8010)                  |
+| AUTH0_JWT_WELKNOWNS_PATH     | Auth0 JWKs file (eg. content of <your-domain>/.well-known/jwks.json)     |
+| DEBUG                        | Application Shows detailed logs when set to True                         |
 
 ### Development
 

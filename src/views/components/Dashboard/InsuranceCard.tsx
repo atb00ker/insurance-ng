@@ -17,10 +17,10 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
   let recommendedText = recommend,
     cardColor = 'danger';
 
-  if (insurance.is_insuranceng_account && insurance.account_id != '') {
+  if (insurance.is_insurance_ng_acct && insurance.account_id != '') {
     recommendedText = activePlan;
     cardColor = 'success';
-  } else if (insurance.is_insuranceng_account && insurance.account_id == '') {
+  } else if (insurance.is_insurance_ng_acct && insurance.account_id == '') {
     recommendedText = activationInProgress;
     cardColor = 'success';
   } else if (insurance.account_id != '') {
@@ -51,7 +51,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
             </Card.Subtitle>
             <Card.Text className='roboto-regular' style={{ overflow: 'hidden', height: 120 }}>
               {insurance.description} <br />
-              {insurance.is_insuranceng_account && (
+              {insurance.is_insurance_ng_acct && (
                 <>
                   We are offering you a cover of
                   <span className={`text-${cardColor}`}>
@@ -66,7 +66,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
                   . For initiating claims, please contact your agent or contact help line.
                 </>
               )}
-              {!insurance.is_insuranceng_account && insurance.account_id != '' && (
+              {!insurance.is_insurance_ng_acct && insurance.account_id != '' && (
                 <>
                   You current have insurance provides a cover of
                   <span className={`text-${cardColor}`}>
@@ -88,7 +88,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
                   .
                 </>
               )}
-              {!insurance.is_insuranceng_account && insurance.account_id == '' && (
+              {!insurance.is_insurance_ng_acct && insurance.account_id == '' && (
                 <>
                   You are currently not insured, based on your information, we suggest getting a cover of{' '}
                   <span className={`text-${cardColor}`}>
