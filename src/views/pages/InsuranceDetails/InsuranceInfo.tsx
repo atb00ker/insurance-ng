@@ -28,6 +28,12 @@ const InsuranceInfo: React.FC = () => {
   const uuid = location.pathname.replace('/insurance/', '');
 
   useEffect(() => {
+    // Redirect to login if user is not authenticated.
+    if (auth.isReady && !auth.isAuthenticated)
+      auth.loginWithRedirect()
+  }, [auth]);
+
+  useEffect(() => {
     if (!fiDataFromHistory) {
       getDataFromServer();
       return;

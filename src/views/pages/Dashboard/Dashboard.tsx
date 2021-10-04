@@ -31,6 +31,10 @@ const Dashboard: React.FC = () => {
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl.toString());
 
   useEffect(() => {
+    // Redirect to login if user is not authenticated.
+    if (auth.isReady && !auth.isAuthenticated)
+      auth.loginWithRedirect()
+
     // Notification Hack:
     // This is only a hack to mock Setu Notification.
     // This is not required in a real life application, only added
@@ -43,7 +47,7 @@ const Dashboard: React.FC = () => {
         });
       }, 1000);
     });
-  }, [auth.isReady]);
+  }, [auth]);
 
   useEffect(() => {
     // If the websocket connection fails for some reason,
@@ -54,7 +58,7 @@ const Dashboard: React.FC = () => {
     } else if (auth.user.id && readyState === ReadyState.OPEN) {
       sendMessage(auth.user.id);
     }
-  }, [auth.isReady, readyState]);
+  }, [auth, readyState]);
 
   useEffect(() => {
     if (['data-not-shared', 'consent-not-started'].includes(lastMessage?.data)) {
