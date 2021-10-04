@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/form3tech-oss/jwt-go"
 )
@@ -31,8 +32,8 @@ func GetUserIdentifier(response http.ResponseWriter, request *http.Request) (str
 }
 
 func GetRandomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
 	var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
 	account_id := make([]rune, length)
 	for i := range account_id {
 		account_id[i] = letters[rand.Intn(len(letters))]
