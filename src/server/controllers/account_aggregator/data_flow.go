@@ -21,7 +21,11 @@ func createAndSaveSessionDetails(userId string) (err error) {
 		return
 	}
 
-	rahasyaKeys := getRahasyaKeys()
+	rahasyaKeys, err := getRahasyaKeys()
+	if err != nil {
+		return
+	}
+
 	sessionData, err := getDataSession(userId, rahasyaKeys, userConsent)
 	if err != nil {
 		return
@@ -34,15 +38,6 @@ func createAndSaveSessionDetails(userId string) (err error) {
 	}
 
 	config.Database.Where("user_id = ?", userId).Updates(&updatedUserConsent)
-
-	// Hack:
-	// TODO - Currently the Setu FI notification is not triggered
-	// sometimes, which can be a big problem in the
-	// hackathon, hence, for the time being, we start the FI
-	// notification steps here, even if we don't receive
-	// the said notification. Not required in production.
-	config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
-	saveFipData(updatedUserConsent.SessionId)
 	return
 }
 
@@ -76,17 +71,16 @@ func saveFipData(sessionId string) (err error) {
 
 func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 	consentData models.UserConsents) (sessionData setuFiSessionResponse, err error) {
-	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
-	// I have reported, but until those bugs are fixed, we have to comment this and
-	// use the hack below.
-	// currentTime := time.Now().Format(time.RFC3339)
+	// Time Hack:
+	// Currently, Setu API is not following the RFC3339 Correctly,
+	// Hence for the time being, we manually converting dates.
 	uuid := uuid.New()
 	currentTime := time.Now()
-	currentTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	currentTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		currentTime.Year(), currentTime.Month(), currentTime.Day(),
 		currentTime.Hour(), currentTime.Minute(), currentTime.Second())
 
-	fiSessionBody := createFiDataRequestBody(uuid, currentTimeHack, consentData, rahasyaKeys)
+	fiSessionBody := createFiDataRequestBody(uuid, currentTime3339, consentData, rahasyaKeys)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, fiSessionBody)
 	setuRequestBody, err := json.Marshal(fiSessionBody)
 	if err != nil {
@@ -155,6 +149,7 @@ func getDataFromAllFIP(rahasyaNonce string, rahasyaPrivateKey string,
 			defer wgEncrpyptedData.Done()
 			fipDataList, err := getFIPData(rahasyaNonce, rahasyaPrivateKey, encryptedFI)
 			if err != nil {
+				fmt.Println(err.Error())
 				return
 			}
 
@@ -189,6 +184,7 @@ func getFIPData(rahasyaNonce string, rahasyaPrivateKey string,
 
 			var fiData fipData
 			if err = json.Unmarshal(data, &fiData); err != nil {
+				fmt.Println(err.Error())
 				return
 			}
 

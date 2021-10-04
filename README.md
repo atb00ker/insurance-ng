@@ -20,6 +20,7 @@ Insurance NG is the next generation of insurance service with features like vari
    - [Meta workflow](#workflow)
    - [Backend workflow](#backend-workflow)
    - [Database](#database)
+   - [FI Types](#fi-types)
 3. [Setup](#setup)
    - [Configurations](#configurations)
    - [Development](#configurations)
@@ -73,6 +74,11 @@ We have 5 tables the store the following information:
 5. Insurance Table: All Insurances offered by Insurance NG.
 
 ![Database Design](./docs/complete-database-design.jpg)
+**Note:** Click on Image to zoom-in
+
+### FI Types
+
+![FI Types](./docs/fi-types-used.png)
 **Note:** Click on Image to zoom-in
 
 ## Setup

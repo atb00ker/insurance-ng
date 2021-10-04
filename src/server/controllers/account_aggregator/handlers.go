@@ -19,9 +19,9 @@ const (
 
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 
@@ -38,8 +38,8 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	if result := addOrUpdateConsentToDb(userId, consentResponse, expiry); result.Error != nil {
-		controllers.HandleError(response, result.Error.Error())
+	if _, err = addOrUpdateConsentToDb(userId, consentResponse, expiry); err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 
@@ -76,12 +76,15 @@ func ConsentNotification(response http.ResponseWriter, request *http.Request) {
 }
 
 func ConsentNotificationMock(response http.ResponseWriter, request *http.Request) {
+	// Notification Hack:
 	// This is just a mock endpoint.
-	// We don't need in it real life scenarios.
-	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+	// Currently the Setu notifications are not triggered
+	// sometimes, which can be a big problem in the
+	// hackathon, hence, for the time being, we start the
+	// notification steps here. Not required in production.
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 
@@ -92,16 +95,33 @@ func ConsentNotificationMock(response http.ResponseWriter, request *http.Request
 		return
 	}
 
-	if userConsent.ArtefactStatus == models.ArtefactStatusPending {
-		consentNotificationMock := consentNotifierStatus{
-			ConsentId:     uuid.New(),
-			ConsentHandle: userConsent.ConsentHandle,
-			ConsentStatus: "ACTIVE",
-		}
-		if err := updateUserConsentForStatusChange(consentNotificationMock); err != nil {
-			HandleNotificationError(response, err)
-			return
-		}
+	if userConsent.ArtefactStatus != models.ArtefactStatusPending {
+		// Processing is already done, let's just return.
+		return
+	}
+
+	consentNotificationMock := consentNotifierStatus{
+		ConsentId:     uuid.New(),
+		ConsentHandle: userConsent.ConsentHandle,
+		ConsentStatus: "ACTIVE",
+	}
+
+	if err := updateUserConsentForStatusChange(consentNotificationMock); err != nil {
+		HandleNotificationError(response, err)
+		return
+	}
+
+	var updatedUserConsent models.UserConsents
+	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
+		userId).Take(&updatedUserConsent); result.Error != nil {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
+	}
+
+	config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
+	if err := saveFipData(updatedUserConsent.SessionId); err != nil {
+		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+		return
 	}
 }
 
@@ -115,16 +135,10 @@ func FINotification(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// Hack:
-	// TODO - Currently the Setu FI notification is not triggered
-	// sometimes, which can be a big problem in the
-	// hackathon, hence, for the time being, I am commenting this
-	// out and focusing and trigger this notification automatically
-	// after consent request.
-	// if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
-	// 	HandleNotificationError(response, err)
-	// 	return
-	// }
+	if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
+		HandleNotificationError(response, err)
+		return
+	}
 
 	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {

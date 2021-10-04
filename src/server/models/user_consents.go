@@ -14,6 +14,7 @@ const (
 
 const (
 	ArtefactStatusReady   = "READY"
+	ArtefactStatusActive  = "ACTIVE"
 	ArtefactStatusDenied  = "DENIED"
 	ArtefactStatusPending = "PENDING"
 	ArtefactStatusTimeout = "TIMEOUT"

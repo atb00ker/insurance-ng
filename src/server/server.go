@@ -26,8 +26,10 @@ func main() {
 	muxDispatcher.Handle(users.UrlRegister,
 		jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
 	// Insurance
-	muxDispatcher.Handle(insurance.InsurancePurchase,
+	muxDispatcher.Handle(insurance.UrlInsurancePurchase,
 		jwtAuth(insurance.InsurancePurchaseHandler)).Methods("OPTIONS", "POST")
+	muxDispatcher.Handle(insurance.UrlInsuranceClaim,
+		jwtAuth(insurance.InsuranceClaimHandler)).Methods("OPTIONS", "POST")
 	muxDispatcher.Handle(insurance.UrlGetUserData,
 		jwtAuth(insurance.GetUserData)).Methods("OPTIONS", "GET")
 	muxDispatcher.Handle(insurance.UrlWaitForProcessing,

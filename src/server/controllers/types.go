@@ -10,5 +10,5 @@ const (
 	ResponseError   string = "error"
 )
 const (
-	IsUserLoggedInErrorMessage string = "Key not found, is user logged in?"
+	IsUserLoggedInErrorMessage string = "key not found, is user logged in?"
 )

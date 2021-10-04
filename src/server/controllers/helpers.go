@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"math/rand"
 	"net/http"
 
@@ -19,19 +20,22 @@ func HandleError(response http.ResponseWriter, err string) {
 	response.Write(respMessage)
 }
 
-func GetUserIdentifier(response http.ResponseWriter, request *http.Request) (string, bool) {
+func GetUserIdentifier(response http.ResponseWriter, request *http.Request) (string, error) {
 	token := request.Context().Value("user")
 	user := token.(*jwt.Token).Claims.(jwt.MapClaims)
 	userId, ok := user["sub"].(string)
-	return userId, ok
+	if !ok {
+		return "", errors.New(IsUserLoggedInErrorMessage)
+	}
+	return userId, nil
 }
 
-func GetRandomString(n int) string {
+func GetRandomString(length int) string {
 	var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
+	account_id := make([]rune, length)
+	for i := range account_id {
+		account_id[i] = letters[rand.Intn(len(letters))]
 	}
-	return string(s)
+	return string(account_id)
 }

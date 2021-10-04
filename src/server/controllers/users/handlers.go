@@ -14,9 +14,9 @@ const (
 
 func RegisterUserHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 

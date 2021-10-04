@@ -7,16 +7,17 @@ import (
 )
 
 const (
-	InsurancePurchase    = "/api/insurance/purchase/"
+	UrlInsurancePurchase = "/api/insurance/purchase/"
+	UrlInsuranceClaim    = "/api/insurance/claim/"
 	UrlGetUserData       = "/api/insurance/"
 	UrlWaitForProcessing = "/api/ws/insurance/"
 )
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
 		return
 	}
 
@@ -32,20 +33,48 @@ func GetUserData(response http.ResponseWriter, request *http.Request) {
 
 func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, ok := controllers.GetUserIdentifier(response, request)
-	if !ok {
-		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
-		return
-	}
-
-	decoder := json.NewDecoder(request.Body)
-	var requestJson purchaseRequest
-	if err := decoder.Decode(&requestJson); err != nil {
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if err := createInsuranceRecord(userId, requestJson.Uuid); err != nil {
+	insuranceUuid, err := getInsuranceUuid(request.Body)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	if err := createInsuranceRecord(userId, insuranceUuid); err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	userData, err := getUserDataRecord(userId)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	respMessage, _ := json.Marshal(userData)
+	response.Write(respMessage)
+}
+
+func InsuranceClaimHandler(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	userId, err := controllers.GetUserIdentifier(response, request)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	insuranceUuid, err := getInsuranceUuid(request.Body)
+	if err != nil {
+		controllers.HandleError(response, err.Error())
+		return
+	}
+
+	if err := initiateInsuranceClaim(userId, insuranceUuid); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}

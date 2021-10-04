@@ -27,20 +27,26 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 		return
 	}
 
+	if userConsent.result.ArtefactStatus != models.ArtefactStatusReady &&
+		userConsent.result.ArtefactStatus != models.ArtefactStatusActive {
+		return getUserDataResponse{Status: true}, nil
+	}
+
 	if !userConsent.result.DataFetched {
 		return getUserDataResponse{Status: false}, nil
 	}
 
 	userPlanScoresCh := make(chan userScoreChResp, 1)
+	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
 	go getUserPlanScore(userConsent.result.Id, userPlanScoresCh)
+	go getUserInsurances(userConsent.result.CustomerId, userExistingInsuranceCh)
+
 	userScore := <-userPlanScoresCh
 	if userScore.err != nil {
 		err = insuranceAvailable.err
 		return
 	}
 
-	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
-	go getUserInsurances(userScore.result.Pancard, userExistingInsuranceCh)
 	userExistingInsurance := <-userExistingInsuranceCh
 	if userExistingInsurance.err != nil {
 		err = userConsent.err
@@ -74,6 +80,7 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 			YoyDeductionRate:  insuranceInfo.YoyDeductionRate,
 			IsInsuranceNgAcct: existingInsurance.IsInsuranceNgAcct,
 			IsActive:          existingInsurance.IsActive,
+			IsClaimed:         existingInsurance.IsClaimed,
 			Type:              insuranceInfo.Type,
 		})
 	}
@@ -102,7 +109,7 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 
 func getUserInsurances(pancard string, userExistingInsuranceCh chan userInsurancesChResp) {
 	var userExistingInsurance []*models.UserInsurance
-	result := config.Database.Where("pancard = ?", pancard).Find(&userExistingInsurance)
+	result := config.Database.Where("customer_id = ?", pancard).Find(&userExistingInsurance)
 
 	userExistingInsuranceCh <- userInsurancesChResp{
 		result: userExistingInsurance,
@@ -162,7 +169,7 @@ func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
 		return
 	}
 
-	insuranceScore := GetScoreForType(&userScore, insurance.Type)
+	insuranceScore := float64(GetScoreForType(&userScore, insurance.Type))
 	insuranceAcctId := ""
 	insuranceActivate := insuranceScore > PreApprovedBar
 	if insuranceActivate {
@@ -170,21 +177,47 @@ func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
 	}
 	newInsurance := models.UserInsurance{
 		Type:              insurance.Type,
-		Premium:           getOfferPremium(insurance.Premium, float64(insuranceScore)),
-		Cover:             getOfferCover(insurance.Cover, float64(insuranceScore)),
+		Premium:           getOfferPremium(insurance.Premium, insuranceScore),
+		Cover:             getOfferCover(insurance.Cover, insuranceScore),
 		IsActive:          insuranceActivate,
 		AccountId:         insuranceAcctId,
-		Pancard:           userScore.Pancard,
+		CustomerId:        userConsent.CustomerId,
 		Clauses:           insurance.Clauses,
+		IsClaimed:         false,
 		IsInsuranceNgAcct: true,
 	}
 
-	if config.Database.Where("pancard = ?", userScore.Pancard).Where("type = ?",
+	if config.Database.Where("customer_id = ?", userConsent.CustomerId).Where("type = ?",
 		insurance.Type).Updates(&newInsurance).RowsAffected == 0 {
 		if result := config.Database.Create(&newInsurance); result.Error != nil {
 			err = result.Error
 			return
 		}
+	}
+
+	return
+}
+
+func initiateInsuranceClaim(userId string, insuranceId uuid.UUID) (err error) {
+	var userConsent models.UserConsents
+	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
+		userId).Take(&userConsent); result.Error != nil {
+		err = result.Error
+		return
+	}
+
+	var insurance models.Insurance
+	if result := config.Database.Model(&models.Insurance{}).Where("id = ?",
+		insuranceId).Take(&insurance); result.Error != nil {
+		err = result.Error
+		return
+	}
+
+	result := config.Database.Model(&models.UserInsurance{}).Where("customer_id = ?",
+		userConsent.CustomerId).Where("type = ?", insurance.Type).Update("is_claimed", true)
+	if result.Error != nil {
+		err = result.Error
+		return
 	}
 
 	return

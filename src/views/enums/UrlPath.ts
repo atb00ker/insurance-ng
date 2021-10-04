@@ -14,4 +14,5 @@ export enum ServerPath {
   GetUserData = '/api/insurance/',
   DataWebsocket = '/api/ws/insurance/',
   InsurancePurchase = '/api/insurance/purchase/',
+  InsuranceClaim = '/api/insurance/claim/',
 }

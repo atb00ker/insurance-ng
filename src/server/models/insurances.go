@@ -44,10 +44,11 @@ type Insurance struct {
 type UserInsurance struct {
 	Id                uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	Type              string         `json:"type"`
-	Pancard           string         `json:"pancard"`
+	CustomerId        string         `json:"customer_id"`
 	Premium           float64        `json:"premium"`
 	Cover             float64        `json:"cover"`
 	IsActive          bool           `json:"is_active"`
+	IsClaimed         bool           `json:"is_claimed"`
 	AccountId         string         `json:"account_id"`
 	Clauses           pq.StringArray `json:"clauses" gorm:"type:text[]"`
 	IsInsuranceNgAcct bool           `json:"is_insurance_ng_acct"`

@@ -11,11 +11,13 @@ const CreateConsentImage: React.FC<IContentStateImages> = ({ width, imgHeight })
   return (
     <Row className='justify-content-center'>
       <Col sm='12' md='10' lg='7' className='mt-4 text-center'>
-        To provide         <Link className='href-no-underline' to={RouterPath.Features}>
+        To provide{' '}
+        <Link className='href-no-underline' to={RouterPath.Features}>
           the features
-        </Link> and show lowest possible prices, we need your financial information associated
-        with your phone number. We will show you all the data we need to access and you'll have the choice to
-        provide consent to our data request.
+        </Link>{' '}
+        and show lowest possible prices, we need your financial information associated with your phone number.
+        We will show you all the data we need to access and you'll have the choice to provide consent to our
+        data request.
       </Col>
       <Col sm='12' md='10' lg='7' className='mt-4 text-center'>
         <Image src={ProcessSummaryImage} height={imgHeight} width={width} alt='Process Summary' />

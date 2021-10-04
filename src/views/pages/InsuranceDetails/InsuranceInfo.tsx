@@ -5,13 +5,13 @@ import Row from 'react-bootstrap/Row';
 import { useHistory, useLocation } from 'react-router-dom';
 import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
-import { createPurchaseRequest, getDashboardData } from '../../helpers/axios';
+import { createClaimRequest, createPurchaseRequest, getDashboardData } from '../../helpers/axios';
 import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
 import ServerRequestError from '../../components/ContentState/ServerRequestError';
 import SectionLoader from '../../components/ContentState/SectionLoader';
 import Table from 'react-bootstrap/esm/Table';
 import Button from 'react-bootstrap/esm/Button';
-import { tickIcon } from '../../helpers/svgIcons';
+import { hourglassWaitIcon, tickIcon } from '../../helpers/svgIcons';
 import { Chart } from 'react-google-charts';
 import InsuranceInfoTitle from './InsuranceInfoTitle';
 import { RouterPath } from '../../enums/UrlPath';
@@ -77,6 +77,12 @@ const InsuranceInfo: React.FC = () => {
   const startPurchaseProcess = (uuid: string) => {
     auth.user.jwt().then((jwt: string) => {
       changeStateOnDataResponse(createPurchaseRequest(uuid, jwt));
+    });
+  };
+
+  const startClaimProcess = (uuid: string) => {
+    auth.user.jwt().then((jwt: string) => {
+      changeStateOnDataResponse(createClaimRequest(uuid, jwt));
     });
   };
 
@@ -198,8 +204,26 @@ const InsuranceInfo: React.FC = () => {
                       <td>Status</td>
                       {insuranceInfo.is_active && (
                         <>
-                          <td>: Active {tickIcon()} </td>
-                          <td></td>
+                          {!insuranceInfo.is_claimed && (
+                            <>
+                              <td>: Active {tickIcon()} </td>
+                              <td>
+                                <Button
+                                  variant='outline-primary'
+                                  className='btn-sm'
+                                  onClick={() => startClaimProcess(insuranceInfo.uuid)}
+                                >
+                                  Initiate Claim
+                                </Button>
+                              </td>
+                            </>
+                          )}
+                          {insuranceInfo.is_claimed && (
+                            <>
+                              <td>: Claim in progress {hourglassWaitIcon()}</td>
+                              <td></td>
+                            </>
+                          )}
                         </>
                       )}
                       {!insuranceInfo.is_active && (

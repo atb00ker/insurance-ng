@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./deploy/private.pem:/go/src/app/private.pem:ro
+      - ./deploy/jwks.json:/go/src/app/jwks.json:ro
       - ./.env:/go/src/app/.env:ro
       - react_data:/go/src/app/dist/
     ports:

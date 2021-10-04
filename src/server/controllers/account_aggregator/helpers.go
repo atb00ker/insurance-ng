@@ -79,17 +79,17 @@ func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 func sendResponseToSetuNotification() (clientApi string, requestJws string,
 	setuResponseBody []byte, err error) {
 
-	// Hack
-	// Currently, Setu API is not following
-	// the complete RFC3339
+	// Time Hack:
+	// Currently, Setu API is not following the RFC3339 Correctly,
+	// Hence for the time being, we manually converting dates.
 	startTime := time.Now()
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	startTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		startTime.Year(), startTime.Month(), startTime.Day(),
 		startTime.Hour(), startTime.Minute(), startTime.Second())
 
 	respMessage := setuConsentNotificationResponse{
 		Ver:       "1.0",
-		Timestamp: startTimeHack,
+		Timestamp: startTime3339,
 		Txnid:     uuid.New(),
 		Response:  "OK",
 	}
@@ -110,11 +110,11 @@ func sendResponseToSetuNotification() (clientApi string, requestJws string,
 }
 
 func HandleNotificationError(response http.ResponseWriter, err error) {
-	// Hack
-	// Currently, Setu API is not following
-	// the complete RFC3339
+	// Time Hack:
+	// Currently, Setu API is not following the RFC3339 Correctly,
+	// Hence for the time being, we manually converting dates.
 	startTime := time.Now()
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	startTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		startTime.Year(), startTime.Month(), startTime.Day(),
 		startTime.Hour(), startTime.Minute(), startTime.Second())
 
@@ -122,7 +122,7 @@ func HandleNotificationError(response http.ResponseWriter, err error) {
 	respMessage, _ := json.Marshal(setuConsentNotificationResponse{
 		ErrorCode: "Errored",
 		Ver:       "1.0",
-		Timestamp: startTimeHack,
+		Timestamp: startTime3339,
 		Txnid:     uuid.New(),
 		Response:  err.Error(),
 	})
@@ -161,7 +161,7 @@ func getPrivatePemFileContent() (x509Key interface{}, err error) {
 
 // Rahasya //
 
-func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse) {
+func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse, err error) {
 	respBytes, err := sendRequestToRahasya(RahasyaApiGetKeys, "GET", []byte{})
 	if err != nil {
 		return
@@ -171,17 +171,19 @@ func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse) {
 	return
 }
 
-func deleteUserConsent(userConsent models.UserConsents) {
+func deleteUserConsent(userConsent models.UserConsents) (err error) {
 	// We delete here instead of updating because we want to delete
 	// cascade all FIP the stored with this user consent.
-	var userScore models.UserScores
-	config.Database.Model(&models.UserScores{}).Where("user_consent_id = ?",
-		userConsent.Id).Take(&userScore)
+	if result := config.Database.Where("customer_id = ?", userConsent.CustomerId).Where(
+		"is_insurance_ng_acct <> ?", true).Delete(&models.UserInsurance{}); result.Error != nil {
+		return result.Error
+	}
 
-	config.Database.Where("pancard = ?", userScore.Pancard).Where(
-		"is_insurance_ng_acct <> ?", true).Delete(&models.UserInsurance{})
-
-	config.Database.Where("user_id = ?", userConsent.UserId).Delete(&userConsent)
+	if result := config.Database.Where("user_id = ?",
+		userConsent.UserId).Delete(&userConsent); result.Error != nil {
+		return result.Error
+	}
+	return
 }
 
 func sendRequestToRahasya(urlPath string, reqType string, payload []byte) (response []byte, err error) {

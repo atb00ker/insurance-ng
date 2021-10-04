@@ -26,8 +26,14 @@ const FeatureDisplayOffWhite: React.FC<FeatureDisplayType> = ({ image, title, de
               xs={{ order: 'first', span: '12' }}
               md={{ order: 'last', span: '8' }}
             >
-              <Image className='d-none d-md-block cover-screen-flex' src={image} alt={title} width={imageWidth} />
-              <Image className='d-md-none cover-screen-flex' src={image} alt={title} width={'100%'} />            </Col>
+              <Image
+                className='d-none d-md-block cover-screen-flex'
+                src={image}
+                alt={title}
+                width={imageWidth}
+              />
+              <Image className='d-md-none cover-screen-flex' src={image} alt={title} width={'100%'} />{' '}
+            </Col>
           </Row>
         </Container>
       </Col>

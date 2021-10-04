@@ -31,16 +31,17 @@ const Dashboard: React.FC = () => {
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl.toString());
 
   useEffect(() => {
-    // This is only a hack to mock Setu Consent notification
+    // Notification Hack:
+    // This is only a hack to mock Setu Notification.
     // This is not required in a real life application, only added
-    // reliability for the hackathon while the API is
-    // unstable on Setu's end.
+    // reliability for the hackathon while the notification endpoint
+    // is unstable on Setu's end.
     auth.user.jwt().then((jwt: string) => {
       setTimeout(() => {
         mockConsentNotification(jwt).then(_ => {
           getDataFromServer();
         });
-      }, 5000)
+      }, 1000);
     });
   }, [auth.isReady]);
 
@@ -89,10 +90,10 @@ const Dashboard: React.FC = () => {
           // If request was successful.
           const data: IFIData = response?.data;
           if (data?.status) {
-            if (data.data.name === "") {
+            if (data.data.name === '') {
               // Sometimes the data is corrupt.
               // We don't want to show that.
-              changePageState(PageState.Error);
+              changePageState(PageState.Waiting);
             } else {
               setFIData(data);
               changePageState(PageState.Data);

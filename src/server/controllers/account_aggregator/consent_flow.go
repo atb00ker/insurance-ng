@@ -10,7 +10,6 @@ import (
 
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 // Create Consent
@@ -43,28 +42,28 @@ func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCre
 
 func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, customerId string) setuCreateConsentRequest {
 
-	// TODO: Unfortunatly, there are some bugs in the Setu API as of today, which
-	// I have reported, but until those bugs are fixed, we have to comment this and
-	// use the hack below.
+	// Time Hack:
+	// Currently, Setu API is not following the RFC3339 Correctly,
+	// Hence for the time being, we manually converting dates.
 	// startTime := time.Now().Format(time.RFC3339)
 	// endTime := time.Now().Add(time.Minute * 15).Format(time.RFC3339)
-	startTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	startTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		startTime.Year(), startTime.Month(), startTime.Day(),
 		startTime.Hour(), startTime.Minute(), startTime.Second())
-	fromTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	fromTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		endTime.Year()-5, endTime.Month(), endTime.Day(),
 		endTime.Hour(), endTime.Minute(), endTime.Second())
-	endTimeHack := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
+	endTime3339 := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.153Z",
 		endTime.Year(), endTime.Month(), endTime.Day(),
 		endTime.Hour(), endTime.Minute(), endTime.Second())
 
 	requestBody := setuCreateConsentRequest{
 		Ver:       "1.0",
-		Timestamp: startTimeHack,
+		Timestamp: startTime3339,
 		Txnid:     uuid,
 		ConsentDetail: consentDetails{
-			ConsentStart:  startTimeHack,
-			ConsentExpiry: endTimeHack,
+			ConsentStart:  startTime3339,
+			ConsentExpiry: endTime3339,
 			ConsentMode:   ConsentModeView,
 			FetchType:     FetchTypeOnetime,
 			ConsentTypes:  []string{ConsentTypesProfile, ConsentTypesSummary, ConsentTypesTransaction},
@@ -87,7 +86,7 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 					Type: "string",
 				},
 			},
-			FIDataRange: fIDataRange{From: fromTimeHack, To: endTimeHack},
+			FIDataRange: fIDataRange{From: fromTime3339, To: endTime3339},
 			DataLife:    dataTimeRange{Unit: "DAY", Value: 1},
 			Frequency:   dataTimeRange{Unit: "DAY", Value: 1},
 			DataFilter:  []dataFilter{},
@@ -97,8 +96,10 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 	return requestBody
 }
 
-func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, expiry time.Time) *gorm.DB {
-	userConsent := models.UserConsents{
+func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse,
+	expiry time.Time) (userConsent models.UserConsents, err error) {
+
+	userConsent = models.UserConsents{
 		UserId:         userId,
 		CustomerId:     consent.Customer.Id,
 		Expire:         expiry,
@@ -110,8 +111,14 @@ func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse, ex
 		ConsentId:      uuid.Nil,
 	}
 
-	deleteUserConsent(userConsent)
-	return config.Database.Create(&userConsent)
+	if err = deleteUserConsent(userConsent); err != nil {
+		return models.UserConsents{}, err
+	}
+
+	if result := config.Database.Create(&userConsent); result.Error != nil {
+		return models.UserConsents{}, result.Error
+	}
+	return
 }
 
 func updateUserConsentForStatusChange(consent consentNotifierStatus) error {

@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 func processAndSaveFipDataCollection(allFipData []fipDataCollection,
@@ -18,14 +16,14 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	sharedDataSources := getSharedDataSources(allFipData)
 	name := getDepositHolderField(allFipData, "Name")
 	dob, _ := time.Parse("02-01-2006", getDepositHolderField(allFipData, "Dob"))
-	panCard := getDepositHolderField(allFipData, "Pan")
+	pancard := getDepositHolderField(allFipData, "Pan")
 	ckycCompliance, _ := strconv.ParseBool(getDepositHolderField(allFipData, "CkycCompliance"))
 
 	planInformation := models.UserScores{
 		UserConsentId:     userConsent.Id,
 		Name:              name,
 		DateOfBirth:       dob,
-		Pancard:           panCard,
+		Pancard:           pancard,
 		CkycCompliance:    ckycCompliance,
 		SharedDataSources: sharedDataSources,
 		AgeScore:          getAgeScore(dob),
@@ -42,7 +40,7 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		AllScore:          getAllPlanScore(allFipData, sharedDataSources),
 	}
 	// We can to this in go routines to make this section faster.
-	if err := saveExistingInsuranceInformation(allFipData, userConsent.Id, panCard); err != nil {
+	if err := saveExistingInsuranceInformation(allFipData, userConsent); err != nil {
 		return err
 	}
 	if result := config.Database.Create(&planInformation); result.Error != nil {
@@ -100,27 +98,27 @@ func getDepositHolderField(allFipData []fipDataCollection, field string) string 
 	return ""
 }
 
-func saveExistingInsuranceInformation(allFipData []fipDataCollection, consendId uuid.UUID,
-	pancard string) error {
+func saveExistingInsuranceInformation(allFipData []fipDataCollection, consent models.UserConsents) error {
 	for _, fipData := range allFipData {
 		for _, fipDataItem := range fipData.FipData {
 			if fipDataItem.Account.Type == strings.ToLower(FiTypesInsurancePolicies) {
 				premium, _ := strconv.ParseFloat(fipDataItem.Account.Summary.PremiumAmount, 32)
 				cover, _ := strconv.ParseFloat(fipDataItem.Account.Summary.CoverAmount, 32)
 				insurance := models.UserInsurance{
-					Type:      fipDataItem.Account.Summary.PolicyType,
-					Premium:   premium,
-					Cover:     cover,
-					IsActive:  true,
-					Pancard:   pancard,
-					Clauses:   models.InsuranceApnaMockedClauses,
-					AccountId: fipDataItem.Account.MaskedAccNumber,
+					Type:       fipDataItem.Account.Summary.PolicyType,
+					Premium:    premium,
+					Cover:      cover,
+					IsActive:   true,
+					IsClaimed:  false,
+					CustomerId: consent.CustomerId,
+					Clauses:    models.InsuranceApnaMockedClauses,
+					AccountId:  fipDataItem.Account.MaskedAccNumber,
 				}
 
 				var existingInsurance models.UserInsurance
 				if existingRecord := config.Database.Where("type = ?",
-					insurance.Type).Where("pancard = ?",
-					pancard).Take(&existingInsurance); existingRecord.Error != nil {
+					insurance.Type).Where("customer_id = ?",
+					consent.CustomerId).Take(&existingInsurance); existingRecord.Error != nil {
 					if existingRecord.Error.Error() == "record not found" {
 						result := config.Database.Create(&insurance)
 						if result.Error != nil {

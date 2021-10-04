@@ -13,7 +13,7 @@ func getAgeScore(dob time.Time) float32 {
 	// Younger people score higher in age score
 	// which factors in medical and term insurance.
 	// Datapoints:
-	// - profile.holders[0].holder.dob
+	// - deposit:profile.holders.holder.dob
 	return 0.81
 }
 
@@ -21,15 +21,15 @@ func getMedicalPlanScore(allFipData []fipDataCollection, sharedDataSources int16
 	// Like it or not, your medical state largely depends on your
 	// lifestyle, profession and quality of life.
 	// Datapoints:
-	// - Health records from other soources to fetch known conditions (eg. medical records)
 	// - age score (calculated above)
-	// - deposit:transactions.transaction (filtered transactions with Hospital, Pharmacy etc)
-	// - insurance_policies:transactions.transaction (filtered Medical Claims)
-	// - deposit:transactions.transaction (calculate monthly income and spending)
-	// - deposit:transactions.transaction (check for spending patterns, like drinking) -- excessive
+	// - deposit:transactions.transaction.narration+amount (filtered transactions with Hospital, Pharmacy etc)
+	// - insurance_policies:transactions.transaction.txnDate+amount+type (filtered Medical Claims)
+	// - deposit:transactions.transaction.type+narration+amount+transactionTimestamp (calculate income and spending)
+	// - deposit:transactions.transaction.type+narration+amount (check for spending patterns) -- excessive
 	//                                     /hedonistic would rank lower and family spending patterns higher
-	// - deposit:profile.holders[0].holder.address (place of living, reflects quality of life, proxymity to
+	// - deposit:profile.holders.holder.address (place of living reflects quality of life, proxymity to
 	//                                              emergency services, financial security)
+	// - Health records from other sources to fetch known conditions (eg. medical records)
 	return 0.85 + float32(sharedDataSources)/50
 }
 
@@ -38,14 +38,13 @@ func getWealthPlanScore(allFipData []fipDataCollection, sharedDataSources int16)
 	// many aspects of your life, including the lenght of it.
 	// Datapoints:
 	// - deposit:summary.currentBalance
-	// - deposit:transactions.transaction (check for spending patterns -- excessive
-	//                                     /hedonistic would rank lower and family spending patterns higher)
+	// - deposit:transactions.transaction.type+narration+amount (check for spending patterns) -- excessive
+	//                                     /hedonistic would rank lower and family spending patterns higher
 	// - credit_card:summary.currentDue (Debt can be a good indictor of financial security and maturity)
-	// - term-deposite/reoccuring-deposites/govt-debts/ppf/nfs:summary.holdings.currentValue (Investments indicate
+	// - term-deposit|reoccuring-deposits|ppf|nfs:summary.currentValue (Investments indicate
 	//                                      financial / future security & planning). A good planner is
 	//                                      likely to be more mature in other aspects of life as well.
-	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
-	//                                      future security)
+	// - sip|mutual_funds:summary.currentValue (Investments indicate financial / future security)
 	return 0.73 + float32(sharedDataSources)/50
 }
 
@@ -54,7 +53,8 @@ func getDebtPlanScore(allFipData []fipDataCollection, sharedDataSources int16) f
 	// many aspects of your life, including the lenght of it.
 	// Datapoints:
 	// - deposit:summary.currentBalance
-	// - deposit:transactions.transaction (spending patterns can indicate the future possibility of debt)
+	// - deposit:transactions.transaction.type+narration+amount+transactionTimestamp (spending patterns
+	//                                    can indicate the future possibility of debt)
 	// - credit_card:summary.currentDue (Debt can be a good indictor of financial security and maturity)
 	return 0.69 + float32(sharedDataSources)/50
 }
@@ -62,11 +62,10 @@ func getDebtPlanScore(allFipData []fipDataCollection, sharedDataSources int16) f
 func getInvestmentScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your investments gives insights about the person's future planning and maturity.
 	// Datapoints:
-	// - term-deposite/reoccuring-deposites/govt-debts/ppf/nfs:summary.holdings.currentValue (Investments indicate
+	// - term-deposit|reoccuring-deposits|ppf|nfs:summary.currentValue (Investments indicate
 	//                                      financial / future security & planning). A good planner is
 	//                                      likely to be more mature in other aspects of life as well.
-	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
-	//                                      future security)
+	// - sip|mutual_funds:summary.currentValue (Investments indicate financial / future security)
 	return 0.76 + float32(sharedDataSources)/50
 }
 
@@ -76,11 +75,10 @@ func getPensionPlanScore(allFipData []fipDataCollection, sharedDataSources int16
 	// - age score (calculated above)
 	// - wealth score (calculated above)
 	// - debt score (calculated above)
-	// - term-deposite/reoccuring-deposites/govt-debts/ppf/nfs:summary.holdings.currentValue (Investments indicate
+	// - term-deposit|reoccuring-deposits|ppf|nfs:summary.currentValue (Investments indicate
 	//                                      financial / future security & planning). A good planner is
 	//                                      likely to be more mature in other aspects of life as well.
-	// - sip/mutual_funds/equities:summary.holdings.currentValue (Investments indicate financial /
-	//                                      future security)
+	// - sip|mutual_funds:summary.currentValue (Investments indicate financial / future security)
 	return 0.71 + float32(sharedDataSources)/50
 }
 
@@ -109,8 +107,8 @@ func getMotorPlanScore(allFipData []fipDataCollection, sharedDataSources int16) 
 	// Children's plan would be very similar to the medical & family insurance plan calculated above.
 	// Datapoints:
 	// - wealth score (calculated above) -- will indicate the reasonable amount spend on the vehicle.
-	// - insurance_policies:transactions.transaction (filtered for motor claims)
-	// - deposit:profile.holders[0].holder.address (can help indicate if the person lives in a place where
+	// - insurance_policies:transactions.transaction.txnDate+amount+type (filtered for motor claims)
+	// - deposit:profile.holders.holder.address (can help indicate if the person lives in a place where
 	//                                              there have been many vehicle theft cases)
 	return 0
 }
@@ -122,10 +120,10 @@ func getTermPlanScore(allFipData []fipDataCollection, sharedDataSources int16) f
 	// - age score (calculated above)
 	// - wealth score (calculated above)
 	// - debt score (calculated above)
-	// - deposit:transactions.transaction (calculate monthly income and spending)
-	// - deposit:transactions.transaction (check for spending patterns, like drinking) -- excessive
+	// - deposit:transactions.transaction.type+narration+amount+transactionTimestamp (calculate income and spending)
+	// - deposit:transactions.transaction.type+narration+amount (check for spending patterns) -- excessive
 	//                                     /hedonistic would rank lower and family spending patterns higher
-	// - deposit:profile.holders[0].holder.address (place of living, reflects quality of life, proxymity to
+	// - deposit:profile.holders.holder.address (place of living, reflects quality of life, proxymity to
 	//                                              emergency services, financial security)
 	return 0.6 + float32(sharedDataSources)/50
 }
@@ -135,7 +133,8 @@ func getTravelPlanScore(allFipData []fipDataCollection, sharedDataSources int16)
 	// country of travel.
 	// Datapoints:
 	// - wealth score (calculated above) -- indicates the type of safety / luxury in the trip.
-	// - deposit:transactions.transaction -- indicate country / places travelling to in the near future,
+	// - deposit:transactions.transaction.type+narration+amount+transactionTimestamp -- indicate country
+	//                                    or places travelling to in the near future,
 	// frequency of travel.
 	return 0.3
 }

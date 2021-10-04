@@ -13,7 +13,7 @@ const (
 	PreApprovedBar = 0.80
 )
 
-type purchaseRequest struct {
+type insuranceActionRequest struct {
 	Uuid uuid.UUID `json:"uuid"`
 }
 
@@ -55,6 +55,7 @@ type insuranceOffers struct {
 	CurrentClauses    pq.StringArray `json:"current_clauses"`
 	IsInsuranceNgAcct bool           `json:"is_insurance_ng_acct"`
 	IsActive          bool           `json:"is_active"`
+	IsClaimed         bool           `json:"is_claimed"`
 }
 
 type userScoreChResp struct {

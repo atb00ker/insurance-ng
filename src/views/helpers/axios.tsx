@@ -54,6 +54,14 @@ export const createPurchaseRequest = (uuid: string, jwt: string): Promise<any> =
   });
 };
 
+export const createClaimRequest = (uuid: string, jwt: string): Promise<any> => {
+  return axios.post(ServerPath.InsuranceClaim, { uuid: uuid }, getJwtHeader(jwt)).catch((error: any) => {
+    const url = new URL(ServerPath.InsuranceClaim, axios.defaults.baseURL).toString();
+    console.error(`Cant't get ${url} because ${error}`);
+    throw error;
+  });
+};
+
 export const getPathToDashboard = () => {
   return new URL(RouterPath.Dashboard, window.location.origin).toString();
 };

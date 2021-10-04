@@ -21,7 +21,7 @@ import { AuthContext } from '../Auth/AuthProvider';
 const NgFeatures: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
   return (
-    <Container className="overflow-hidden" fluid>
+    <Container className='overflow-hidden' fluid>
       <Row className='cover-screen'>
         <Col sm='12' className='d-flex-center'>
           <Container className='d-flex-center'>
@@ -31,19 +31,20 @@ const NgFeatures: React.FC = () => {
                   The future of <span className='text-primary'>Insurance Services</span>
                 </h1>
                 <h5>Insurance management experience tailored to your lifestyle.</h5>
-                {auth.isReady && !auth.isAuthenticated &&
-                <Button onClick={() => auth.loginWithRedirect()} className='d-inline' variant='primary'>
-                  Sign Up {rightArrowInCircle('0 0 16 16')}
-                </Button>}
+                {auth.isReady && !auth.isAuthenticated && (
+                  <Button onClick={() => auth.loginWithRedirect()} className='d-inline' variant='primary'>
+                    Sign Up {rightArrowInCircle('0 0 16 16')}
+                  </Button>
+                )}
               </Col>
-            <Col
-              className='text-center'
-              xs={{ order: 'first', span: '12' }}
-              md={{ order: 'last', span: '7' }}
-            >
-                <Image className="d-md-none" src={CompleteLogoImage} width={'90%'} />
-                <Image className="d-none d-md-block d-lg-none" src={CompleteLogoImage} width={400} />
-                <Image className="d-none d-lg-block" src={CompleteLogoImage} width={500} />
+              <Col
+                className='text-center'
+                xs={{ order: 'first', span: '12' }}
+                md={{ order: 'last', span: '7' }}
+              >
+                <Image className='d-md-none' src={CompleteLogoImage} width={'90%'} />
+                <Image className='d-none d-md-block d-lg-none' src={CompleteLogoImage} width={400} />
+                <Image className='d-none d-lg-block' src={CompleteLogoImage} width={500} />
               </Col>
             </Row>
           </Container>
@@ -91,10 +92,11 @@ const NgFeatures: React.FC = () => {
                   No long forms, full control on your data, quick and simple user experience. <br />
                   So, what are you waiting for?
                   <br />
-                  {auth.isReady && !auth.isAuthenticated &&
+                  {auth.isReady && !auth.isAuthenticated && (
                     <a className='href-no-underline' onClick={() => auth.loginWithRedirect()}>
                       Sign up now and get started {rightArrowInCircle('0 2 20 16')}
-                    </a>}
+                    </a>
+                  )}
                 </h5>
               </Col>
             </Row>
