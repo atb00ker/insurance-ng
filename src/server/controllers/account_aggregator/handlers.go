@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	UrlCreateConsent           = "/api/account_aggregator/consent/"
-	UrlConsentNotificationMock = "/api/account_aggregator/Mock/Consent/Notification/"
-	UrlConsentNotification     = "/api/account_aggregator/Consent/Notification"
-	UrlArtefactNotification    = "/api/account_aggregator/FI/Notification"
+	UrlCreateConsent           = "/api/v1/account_aggregator/consent/"
+	UrlConsentNotificationMock = "/api/v1/account_aggregator/Mock/Consent/Notification/"
+	UrlConsentNotification     = "/api/v1/account_aggregator/Consent/Notification"
+	UrlArtefactNotification    = "/api/v1/account_aggregator/FI/Notification"
 )
 
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {

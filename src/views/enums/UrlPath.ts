@@ -8,11 +8,11 @@ export enum RouterPath {
 }
 
 export enum ServerPath {
-  Register = '/api/register/',
-  CreateConsent = '/api/account_aggregator/consent/',
-  ConsentNotificationMock = '/api/account_aggregator/Mock/Consent/Notification/',
-  GetUserData = '/api/insurance/',
-  DataWebsocket = '/api/ws/insurance/',
-  InsurancePurchase = '/api/insurance/purchase/',
-  InsuranceClaim = '/api/insurance/claim/',
+  Register = '/api/v1/register/',
+  CreateConsent = '/api/v1/account_aggregator/consent/',
+  ConsentNotificationMock = '/api/v1/account_aggregator/Mock/Consent/Notification/',
+  GetUserData = '/api/v1/insurance/',
+  DataWebsocket = '/api/v1/ws/insurance/',
+  InsurancePurchase = '/api/v1/insurance/purchase/',
+  InsuranceClaim = '/api/v1/insurance/claim/',
 }

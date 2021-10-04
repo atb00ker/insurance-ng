@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	UrlInsurancePurchase = "/api/insurance/purchase/"
-	UrlInsuranceClaim    = "/api/insurance/claim/"
-	UrlGetUserData       = "/api/insurance/"
-	UrlWaitForProcessing = "/api/ws/insurance/"
+	UrlInsurancePurchase = "/api/v1/insurance/purchase/"
+	UrlInsuranceClaim    = "/api/v1/insurance/claim/"
+	UrlGetUserData       = "/api/v1/insurance/"
+	UrlWaitForProcessing = "/api/v1/ws/insurance/"
 )
 
 func GetUserData(response http.ResponseWriter, request *http.Request) {
