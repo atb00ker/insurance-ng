@@ -1,12 +1,18 @@
 import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
+import { IFIData, IFIInsurance } from '../../types/IFIData';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { RouterPath } from '../../enums/UrlPath';
 import { hourglassWaitIcon } from '../../helpers/svgIcons';
 import './InsuranceCard.scss';
+
+enum recommendedCutOff {
+  notApplicable = 0,
+  doNotRecommend = 0.3,
+  highlyRecommend = 0.78,
+}
 
 const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({ fiData, insurance }) => {
   const history = useHistory();
@@ -30,13 +36,13 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
   } else if (insurance.account_id != '') {
     recommendedText = highlyRecommend;
     cardColor = 'primary';
-  } else if (insurance.score >= 0.78) {
+  } else if (insurance.score >= recommendedCutOff.highlyRecommend) {
     recommendedText = highlyRecommend;
     cardColor = 'danger';
-  } else if (insurance.score <= 0) {
+  } else if (insurance.score <= recommendedCutOff.notApplicable) {
     recommendedText = notApplicable;
     cardColor = 'secondary';
-  } else if (insurance.score <= 0.3) {
+  } else if (insurance.score <= recommendedCutOff.doNotRecommend) {
     recommendedText = doNotRecommend;
     cardColor = 'secondary';
   } else {
@@ -109,7 +115,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
           </Card.Body>
           <Card.Footer className={`text-${cardColor} d-flex`} style={{ lineHeight: '30px' }}>
             {recommendedText}
-            {insurance.score > 0 && (
+            {insurance.score > recommendedCutOff.notApplicable && (
               <Button
                 className='btn-sm'
                 style={{ marginLeft: 'auto' }}
@@ -123,8 +129,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
                     state: fiData,
                   });
                   return;
-                }}
-              >
+                }}>
                 Read More
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -132,8 +137,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
                   height='16'
                   fill='currentColor'
                   className='bi bi-chevron-right'
-                  viewBox='0 0 16 18'
-                >
+                  viewBox='0 0 16 18'>
                   <path
                     fillRule='evenodd'
                     d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'
@@ -148,4 +152,4 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
   );
 };
 
-export default InsuranceCard;
+export { InsuranceCard };

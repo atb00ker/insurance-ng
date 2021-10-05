@@ -11,6 +11,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "./src/views/types/*.d.ts"
+    "./src/views/types/modules/*.d.ts"
   ]
 }

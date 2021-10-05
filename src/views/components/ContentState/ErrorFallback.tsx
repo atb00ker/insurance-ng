@@ -1,7 +1,7 @@
 import React from 'react';
 import { FallbackProps } from 'react-error-boundary';
 
-export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   return (
     <div role='alert'>
       <p>Something went wrong:</p>
@@ -10,3 +10,5 @@ export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBounda
     </div>
   );
 };
+
+export { ErrorFallback };

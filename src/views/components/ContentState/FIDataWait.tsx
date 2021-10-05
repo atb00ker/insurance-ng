@@ -1,6 +1,6 @@
 import React from 'react';
 import FiDataWaitSvg from '../../assets/illustrations/factory-illustration-1.svg';
-import IContentStateImages from '../../types/react-component-input-types';
+import { IContentStateImages } from '../../types/react-component-input-types';
 
 const FiDataWait: React.FC<IContentStateImages> = ({ height, width, imgHeight }) => {
   return (
@@ -18,4 +18,4 @@ const FiDataWait: React.FC<IContentStateImages> = ({ height, width, imgHeight })
   );
 };
 
-export default FiDataWait;
+export { FiDataWait };

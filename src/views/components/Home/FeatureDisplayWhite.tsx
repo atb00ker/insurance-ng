@@ -5,7 +5,7 @@ import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/esm/Container';
 import { FeatureDisplayType } from '../../types/react-component-input-types';
 
-const FeatureDisplayOffWhite: React.FC<FeatureDisplayType> = ({ image, title, description, imageWidth }) => {
+const FeatureDisplayWhite: React.FC<FeatureDisplayType> = ({ image, title, description, imageWidth }) => {
   return (
     <Row className='cover-screen'>
       <Col sm='12'>
@@ -24,8 +24,7 @@ const FeatureDisplayOffWhite: React.FC<FeatureDisplayType> = ({ image, title, de
             <Col
               className='cover-screen-flex'
               xs={{ order: 'first', span: '12' }}
-              md={{ order: 'last', span: '8' }}
-            >
+              md={{ order: 'last', span: '8' }}>
               <Image
                 className='d-none d-md-block cover-screen-flex'
                 src={image}
@@ -41,4 +40,4 @@ const FeatureDisplayOffWhite: React.FC<FeatureDisplayType> = ({ image, title, de
   );
 };
 
-export default FeatureDisplayOffWhite;
+export { FeatureDisplayWhite };

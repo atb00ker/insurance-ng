@@ -5,18 +5,18 @@ import Image from 'react-bootstrap/Image';
 import CompleteLogoImage from '../../assets/icons/complete-logo.jpg';
 import './NgFeatures.scss';
 import Button from 'react-bootstrap/esm/Button';
-import { IAuth } from '../../interfaces/IUser';
 import Container from 'react-bootstrap/esm/Container';
-import FeatureDisplayOffWhite from './FeatureDisplayOffWhite';
-import FeatureDisplayWhite from './FeatureDisplayWhite';
+import { FeatureDisplayOffWhite } from './FeatureDisplayOffWhite';
+import { FeatureDisplayWhite } from './FeatureDisplayWhite';
 import EmptyInformationDashboard3 from '../../assets/illustrations/empty-information-dashboard-3.svg';
 import SearchPage1 from '../../assets/illustrations/search-page-1.svg';
 import SaveMoney1 from '../../assets/illustrations/save-money-1.svg';
 import ClauseDiscovery1 from '../../assets/illustrations/clause-discovery-1.svg';
 import SteppingToFuture1 from '../../assets/illustrations/stepping-to-future-1.svg';
 import { rightArrowInCircle } from '../../helpers/svgIcons';
-import Footer from '../Common/Footer';
+import { Footer } from '../Common/Footer';
 import { AuthContext } from '../Auth/AuthProvider';
+import { IAuth } from '../../types/IUser';
 
 const NgFeatures: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -40,11 +40,10 @@ const NgFeatures: React.FC = () => {
               <Col
                 className='text-center'
                 xs={{ order: 'first', span: '12' }}
-                md={{ order: 'last', span: '7' }}
-              >
+                md={{ order: 'last', span: '7' }}>
                 <Image className='d-md-none' src={CompleteLogoImage} width={'90%'} />
-                <Image className='d-none d-md-block d-lg-none' src={CompleteLogoImage} width={400} />
-                <Image className='d-none d-lg-block' src={CompleteLogoImage} width={500} />
+                <Image className='d-none d-md-block d-lg-none' src={CompleteLogoImage} width={'400px'} />
+                <Image className='d-none d-lg-block' src={CompleteLogoImage} width={'500px'} />
               </Col>
             </Row>
           </Container>
@@ -52,31 +51,31 @@ const NgFeatures: React.FC = () => {
       </Row>
       <FeatureDisplayOffWhite
         image={EmptyInformationDashboard3}
-        imageWidth={450}
+        imageWidth={'450px'}
         title='Variable Premiums'
         description='We offer lower premiums which adjusts to your lifestyle. If you are a low risk taker, why should your premiums be high?'
       />
       <FeatureDisplayWhite
         image={SearchPage1}
-        imageWidth={550}
+        imageWidth={'550px'}
         title='Tailored Dashboard'
         description="Don't waste time searching what you want, we will find it for you and provide an experience created uniquely for you."
       />
       <FeatureDisplayOffWhite
         image={SaveMoney1}
-        imageWidth={550}
+        imageWidth={'550px'}
         title='Find Better Plans'
         description='Do you have an existing insurance, if there exists a better plan in the category, we will suggest it to you.'
       />
       <FeatureDisplayWhite
         image={ClauseDiscovery1}
-        imageWidth={550}
+        imageWidth={'550px'}
         title='Clause Discovery'
         description="No need to go through 18 pages of terms and conditions, clearly see what's applicable for you and for what you are paying."
       />
       <FeatureDisplayOffWhite
         image={SteppingToFuture1}
-        imageWidth={650}
+        imageWidth={'650px'}
         title='See the future'
         description='Your premiums change with time, see the future predictions for upto 5 years, predicted based on your financial status of the past 5 years.'
       />
@@ -108,4 +107,4 @@ const NgFeatures: React.FC = () => {
   );
 };
 
-export default NgFeatures;
+export { NgFeatures };

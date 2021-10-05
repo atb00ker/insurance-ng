@@ -25,4 +25,4 @@ const InvalidConsent: React.FC<IContentStateImages> = ({ height, width, imgHeigh
   );
 };
 
-export default InvalidConsent;
+export { InvalidConsent };

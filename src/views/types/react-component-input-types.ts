@@ -5,8 +5,8 @@ export type IContentStateImages = {
 };
 
 export type FeatureDisplayType = {
-  image: any;
-  imageWidth: any;
+  image: string;
+  imageWidth: string;
   title: string;
   description: string;
 };

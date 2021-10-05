@@ -56,7 +56,7 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 }
 
 func getSharedDataSources(allFipData []fipDataCollection) int16 {
-	var records int16 = 0
+	var records int16
 	basicRequirements := map[string]bool{
 		strings.ToLower(FiTypesInsurancePolicies): false,
 		strings.ToLower(FiTypesDeposit):           false,

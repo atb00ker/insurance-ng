@@ -67,22 +67,22 @@ select {
 }
 
 /* width */
-::-webkit-scrollbar {
+:root::-webkit-scrollbar {
   width: 5px;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
+:root::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+:root::-webkit-scrollbar-thumb {
   background: #888;
 }
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+:root::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
@@ -91,18 +91,19 @@ select {
 **************************/
 
 @font-face {
-  font-family: RobotoRegular;
+  font-family: RobotoRegular, sans-serif;
   src: url(./assets/fonts/Roboto/Roboto-Regular.ttf);
 }
+
 @font-face {
-  font-family: RobotoHeavy;
+  font-family: RobotoHeavy, sans-serif;
   src: url(./assets/fonts/Roboto/Roboto-Bold.ttf);
 }
 
 .roboto-regular {
-  font-family: RobotoRegular;
+  font-family: RobotoRegular, sans-serif;
 }
 
 .roboto-bold {
-  font-family: RobotoHeavy;
+  font-family: RobotoHeavy, sans-serif;
 }

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CreateConsentImage from '../ContentState/CreateConsentImage';
-import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
-import SectionLoader from '../ContentState/SectionLoader';
-import { IAuth } from '../../interfaces/IUser';
-import ServerRequestError from '../ContentState/ServerRequestError';
+import { CreateConsentImage } from '../ContentState/CreateConsentImage';
+import { createConsentRequest, getPathToDashboard, HTTPError, HTTPResponse } from '../../helpers/axios';
+import { SectionLoader } from '../ContentState/SectionLoader';
+import { ServerRequestError } from '../ContentState/ServerRequestError';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { rightArrowInCircle } from '../../helpers/svgIcons';
 import './CreateConsent.scss';
+import { PageState } from '../../enums/PageStates';
+import { IConsentCreatedResponse } from '../../types/IServerResponses';
+import { IAuth } from '../../types/IUser';
 
 const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
   const [validated, setValidated] = useState(false);
@@ -20,24 +22,28 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
     event.preventDefault();
     const form = event.currentTarget;
     setValidated(true);
-    setShowLoader(true);
+    changePageState(PageState.Loading);
     if (form.checkValidity() === true) {
-      auth.user.jwt().then(jwt => {
+      auth.user.jwt().then((jwt: string) => {
         createConsentRequest(form.elements.enterNumber.value, jwt)
-          .then(response => {
-            const consent_handle = response.data['consent_handle'];
-            if (consent_handle)
+          .then((response: HTTPResponse<IConsentCreatedResponse>) => {
+            const consent_handle = response?.data?.consent_handle;
+            if (consent_handle) {
               globalThis.window.location.href = `https://anumati.setu.co/${consent_handle}?redirect_url=${getPathToDashboard()}`;
-            setValidated(false);
-            setShowError(false);
+            }
           })
-          .catch(() => {
-            setShowError(true);
+          .catch((error: HTTPError) => {
+            console.log(error);
+            changePageState(PageState.Error);
             setValidated(false);
-            setShowLoader(false);
           });
       });
-    } else setShowLoader(false);
+    } else changePageState(PageState.Loading);
+  };
+
+  const changePageState = (state: string) => {
+    setShowError(state == PageState.Error);
+    setShowLoader(state == PageState.Loading);
   };
 
   return (
@@ -49,8 +55,7 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
               id='ProvideConsentForm'
               noValidate
               validated={validated}
-              onSubmit={handleCreateConsentSubmit}
-            >
+              onSubmit={handleCreateConsentSubmit}>
               <Form.Group as={Row} controlId='enterNumber'>
                 <Col>
                   <div className='create-consent-input-container mx-auto'>
@@ -65,8 +70,7 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
                       className='d-inline ms-2'
                       style={{ marginBottom: '2px' }}
                       type='submit'
-                      variant='primary'
-                    >
+                      variant='primary'>
                       {rightArrowInCircle('0 0 16 16')}
                     </Button>
                     <Form.Control.Feedback type='invalid'>
@@ -88,4 +92,4 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
   );
 };
 
-export default CreateConsent;
+export { CreateConsent };

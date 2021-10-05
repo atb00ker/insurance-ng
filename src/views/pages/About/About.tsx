@@ -5,12 +5,12 @@ import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import CompleteLogoImage from '../../assets/icons/complete-logo.jpg';
 import { openInNewTabIcon } from '../../helpers/svgIcons';
-import Footer from '../../components/Common/Footer';
+import { Footer } from '../../components/Common/Footer';
 
 const About: React.FC = () => {
-  const hackathonUrl: string = 'https://free-your-data.devfolio.co/';
-  const authorEmailText: string = 'ajay39in+aa[at]gmail[dot]com';
-  const authorEmail: string = 'ajay39in+aa@gmail.com';
+  const hackathonUrl = 'https://free-your-data.devfolio.co/';
+  const authorEmailText = 'ajay39in+aa[at]gmail[dot]com';
+  const authorEmail = 'ajay39in+aa@gmail.com';
 
   return (
     <Container>
@@ -33,7 +33,7 @@ const About: React.FC = () => {
           </p>
         </Col>
         <Col sm='12' className='mt-4 mb-4 max-width-960 text-center'>
-          <Image src={CompleteLogoImage} height={130} />
+          <Image src={CompleteLogoImage} height={'130px'} />
         </Col>
         <Col sm='12' className='max-width-960'>
           <h4>Privacy and Data Policy</h4>
@@ -48,8 +48,7 @@ const About: React.FC = () => {
             The data in this application is collected with the help of the Setu{' '}
             <a
               className='href-no-underline'
-              href='https://www.thebalance.com/what-is-account-aggregation-1293879'
-            >
+              href='https://www.thebalance.com/what-is-account-aggregation-1293879'>
               Account Agregator {openInNewTabIcon('0 -3 32 32')}
             </a>{' '}
             network in which all your favourite financial institutions participate including apna bank, apna
@@ -113,8 +112,7 @@ const About: React.FC = () => {
             to us, we store it in secure servers and we which follow the{' '}
             <a
               className='href-no-underline'
-              href='https://en.wikipedia.org/wiki/Principle_of_least_privilege'
-            >
+              href='https://en.wikipedia.org/wiki/Principle_of_least_privilege'>
               principle of least privilege
             </a>{' '}
             to ensure your privacy.
@@ -136,4 +134,4 @@ const About: React.FC = () => {
   );
 };
 
-export default About;
+export { About };

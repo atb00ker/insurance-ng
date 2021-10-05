@@ -5,7 +5,7 @@ import Image from 'react-bootstrap/Image';
 import Table from 'react-bootstrap/Table';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { IFIUserData } from '../../interfaces/IFIData';
+import { IFIUserData } from '../../types/IFIData';
 import Row from 'react-bootstrap/esm/Row';
 import ProfileImageFemale from './../../assets/images/default-profile-picture-female.jpeg';
 import ProfileImageMale from './../../assets/images/default-profile-picture.jpeg';
@@ -18,39 +18,48 @@ import {
   warnIcon,
 } from '../../helpers/svgIcons';
 import { InsuranceTypes } from '../../enums/Insurance';
-import { IAuth, IUserProfileScores } from '../../interfaces/IUser';
 import Button from 'react-bootstrap/esm/Button';
 import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
 import { PageState } from '../../enums/PageStates';
+import { IAuth, IUserProfileScores } from '../../types/IUser';
 
-export interface IUserProfile {
+export type IUserProfile = {
   changePageState: (state: string) => void;
   fiData: IFIUserData;
   auth: IAuth;
+};
+
+enum iconCutOff {
+  tick = 0.78,
+  warn = 0.7,
+  error = 0.3,
 }
 
 const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) => {
+  const dataTypeCount = 5;
+
   const getIconForScore = (score: number) => {
-    if (score > 0.78) {
+    if (score > iconCutOff.tick) {
       return tickIcon();
-    } else if (score >= 0.7) {
+    } else if (score >= iconCutOff.warn) {
       return warnIcon();
-    } else if (score > 0.3) {
+    } else if (score > iconCutOff.error) {
       return errorIcon();
     } else {
       return notApplicableIcon();
     }
   };
 
-  const handleCreateConsentSubmit = (event: any) => {
+  const handleCreateConsentSubmit = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
     changePageState(PageState.Loading);
-    auth.user.jwt().then(jwt => {
+    auth.user.jwt().then((jwt: string) => {
       createConsentRequest(fiData.phone, jwt)
         .then(response => {
-          const consent_handle = response.data['consent_handle'];
-          if (consent_handle)
+          const consent_handle = response?.data?.consent_handle;
+          if (consent_handle) {
             globalThis.window.location.href = `https://anumati.setu.co/${consent_handle}?redirect_url=${getPathToDashboard()}`;
+          }
         })
         .catch(error => {
           console.log(error);
@@ -146,8 +155,7 @@ const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) 
                             {scoreInfo.score.toFixed(2)}{' '}
                             <OverlayTrigger
                               placement='bottom'
-                              overlay={<Tooltip id='button-tooltip'>{scoreInfo.explaination}</Tooltip>}
-                            >
+                              overlay={<Tooltip id='button-tooltip'>{scoreInfo.explaination}</Tooltip>}>
                               <span>{questionIcon()}</span>
                             </OverlayTrigger>
                           </td>
@@ -158,13 +166,12 @@ const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) 
                   </tbody>
                 </Table>
               </Col>
-              {fiData.shared_data_sources < 5 && (
+              {fiData.shared_data_sources < dataTypeCount && (
                 <Col sm='12'>
                   <Button
                     onClick={event => handleCreateConsentSubmit(event)}
                     className='float-end btn-sm'
-                    variant='outline-primary'
-                  >
+                    variant='outline-primary'>
                     Share more financial information for lower <br />
                     premiums {rightArrowInCircle('0 0 16 16')}
                   </Button>
@@ -178,6 +185,7 @@ const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) 
   );
 };
 
+const noRecordFound = 0;
 const getUserScoreList = (fiData: IFIUserData): IUserProfileScores[] => [
   {
     title: 'Age Score',
@@ -192,7 +200,9 @@ const getUserScoreList = (fiData: IFIUserData): IUserProfileScores[] => [
   {
     title: 'Medical Emergency Score',
     explaination: 'Higher score can qualify you for lower premiums on health insurance.',
-    score: fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MEDICAL_PLAN)?.score || 0,
+    score:
+      fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MEDICAL_PLAN)?.score ||
+      noRecordFound,
   },
   {
     title: 'Debt Score',
@@ -202,7 +212,9 @@ const getUserScoreList = (fiData: IFIUserData): IUserProfileScores[] => [
   {
     title: 'Travel Probablity',
     explaination: 'We suggest you plans based on your travel requirements and habits.',
-    score: fiData.insurance.find(insurance => insurance.type == InsuranceTypes.TRAVEL_PLAN)?.score || 0,
+    score:
+      fiData.insurance.find(insurance => insurance.type == InsuranceTypes.TRAVEL_PLAN)?.score ||
+      noRecordFound,
   },
   {
     title: 'Investment Health',
@@ -213,8 +225,9 @@ const getUserScoreList = (fiData: IFIUserData): IUserProfileScores[] => [
   {
     title: 'Motor Safety Score',
     explaination: 'Based on the safety and maintainence record of your vehicle, we adjust the premium.',
-    score: fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MOTOR_PLAN)?.score || 0,
+    score:
+      fiData.insurance.find(insurance => insurance.type == InsuranceTypes.MOTOR_PLAN)?.score || noRecordFound,
   },
 ];
 
-export default UserProfile;
+export { UserProfile };

@@ -14,4 +14,4 @@ const PageLoader: React.FC = () => {
   );
 };
 
-export default PageLoader;
+export { PageLoader };

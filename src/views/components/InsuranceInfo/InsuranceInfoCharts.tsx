@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
 import Col from 'react-bootstrap/Col';
 import Chart from 'react-google-charts';
-import { IFIInsurance } from '../../interfaces/IFIData';
+import { IFIInsurance } from '../../types/IFIData';
 
 const InsuranceInfoCharts: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insuranceInfo }) => {
+  const numberOfChartRecords = 6;
   const premiumGraph: [number, number][] = useMemo(() => {
-    let deductionRate = insuranceInfo.yoy_deduction_rate,
-      graphColumns: [number, number][] = [];
-    for (let index = 1; index < 6; index++) {
+    let deductionRate = insuranceInfo.yoy_deduction_rate;
+    const graphColumns: [number, number][] = [];
+    for (let index = 1; index < numberOfChartRecords; index++) {
       graphColumns.push([index, insuranceInfo.offer_premium - deductionRate]);
       deductionRate = deductionRate + deductionRate;
     }
@@ -15,9 +16,9 @@ const InsuranceInfoCharts: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insura
   }, [insuranceInfo]);
 
   const coverGraph: [number, number][] = useMemo(() => {
-    let incrementRate = insuranceInfo.yoy_deduction_rate,
-      graphColumns: [number, number][] = [];
-    for (let index = 1; index < 6; index++) {
+    let incrementRate = insuranceInfo.yoy_deduction_rate;
+    const graphColumns: [number, number][] = [];
+    for (let index = 1; index < numberOfChartRecords; index++) {
       graphColumns.push([index, insuranceInfo.offer_cover + incrementRate]);
       incrementRate = incrementRate + incrementRate;
     }
@@ -67,4 +68,4 @@ const InsuranceInfoCharts: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insura
   );
 };
 
-export default InsuranceInfoCharts;
+export { InsuranceInfoCharts };

@@ -1,10 +1,10 @@
-export interface IFIData {
+export type IFIData = {
   status: boolean;
   data: IFIUserData;
   error?: string;
-}
+};
 
-export interface IFIUserData {
+export type IFIUserData = {
   name: string;
   date_of_birth: Date;
   pancard: string;
@@ -16,9 +16,9 @@ export interface IFIUserData {
   phone: string;
   shared_data_sources: number;
   insurance: IFIInsurance[];
-}
+};
 
-export interface IFIInsurance {
+export type IFIInsurance = {
   uuid: string;
   type: string;
   title: string;
@@ -35,4 +35,4 @@ export interface IFIInsurance {
   is_claimed: boolean;
   yoy_deduction_rate: number;
   is_insurance_ng_acct: string;
-}
+};

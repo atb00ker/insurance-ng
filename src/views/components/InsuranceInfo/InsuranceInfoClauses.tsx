@@ -1,8 +1,6 @@
-import React, { useMemo } from 'react';
-import Col from 'react-bootstrap/Col';
+import React from 'react';
 import Table from 'react-bootstrap/esm/Table';
-import Chart from 'react-google-charts';
-import { IFIInsurance } from '../../interfaces/IFIData';
+import { IFIInsurance } from '../../types/IFIData';
 
 const InsuranceInfoClauses: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insuranceInfo }) => {
   const getClauseTableColumns = (insuranceInfo: IFIInsurance): React.ReactNode => {
@@ -10,7 +8,7 @@ const InsuranceInfoClauses: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insur
       insuranceInfo.clauses?.length > insuranceInfo.current_clauses?.length
         ? insuranceInfo.clauses?.length
         : insuranceInfo.current_clauses?.length || insuranceInfo.clauses?.length;
-    let tableRow = [];
+    const tableRow = [];
     for (let index = 0; index < noOfClauses; index++) {
       tableRow.push(
         <tr key={index}>
@@ -18,24 +16,19 @@ const InsuranceInfoClauses: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insur
           {!insuranceInfo.is_insurance_ng_acct && insuranceInfo.current_clauses?.length && (
             <td
               dangerouslySetInnerHTML={{
-                __html: insuranceInfo.current_clauses[index]?.replace(
-                  /(\d+%?)|(\S[A-Z]+\S)/g,
-                  function (value) {
-                    if (value === 'SLA') return value;
-                    return `<span class="text-danger">${value}</span>`;
-                  },
-                ),
-              }}
-            ></td>
+                __html: insuranceInfo.current_clauses[index]?.replace(/(\d+%?)|(\S[A-Z]+\S)/g, value => {
+                  if (value === 'SLA') return value;
+                  return `<span class="text-danger">${value}</span>`;
+                }),
+              }}></td>
           )}
           <td
             dangerouslySetInnerHTML={{
-              __html: insuranceInfo.clauses[index]?.replace(/(\d+%?)|(\S[A-Z]+\S)/g, function (value) {
+              __html: insuranceInfo.clauses[index]?.replace(/(\d+%?)|(\S[A-Z]+\S)/g, value => {
                 if (value === 'SLA') return value;
                 return `<span class="text-success">${value}</span>`;
               }),
-            }}
-          ></td>
+            }}></td>
         </tr>,
       );
     }
@@ -58,4 +51,4 @@ const InsuranceInfoClauses: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insur
   );
 };
 
-export default InsuranceInfoClauses;
+export { InsuranceInfoClauses };

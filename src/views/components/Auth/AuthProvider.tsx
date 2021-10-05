@@ -1,9 +1,8 @@
 import React from 'react';
-import AuthConfigurations, { Provider, ProviderOptions } from './Auth0';
-import { IAuth } from '../../interfaces/IUser';
+import { IAuth } from '../../types/IUser';
+import { AuthConfigurations, Provider, ProviderOptions } from './Auth0';
 
-export const AuthContext = React.createContext<IAuth>(undefined as unknown as IAuth);
-
+const AuthContext = React.createContext<IAuth>({} as IAuth);
 const AuthProvider: React.FC = ({ children }) => {
   return (
     <Provider {...ProviderOptions}>
@@ -12,4 +11,4 @@ const AuthProvider: React.FC = ({ children }) => {
   );
 };
 
-export default AuthProvider;
+export { AuthContext, AuthProvider };

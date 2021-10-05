@@ -2,20 +2,20 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { getDashboardData, mockConsentNotification } from '../../helpers/axios';
-import SectionLoader from '../../components/ContentState/SectionLoader';
-import { AuthContext } from '../../components/Auth/AuthProvider';
-import { IAuth } from '../../interfaces/IUser';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import ServerRequestError from '../../components/ContentState/ServerRequestError';
-import UserProfile from '../../components/Dashboard/UserProfile';
-import { IFIData } from '../../interfaces/IFIData';
-import InsuranceCard from '../../components/Dashboard/InsuranceCard';
+import { getDashboardData, HTTPResponse, mockConsentNotification } from '../../helpers/axios';
+import { SectionLoader } from '../../components/ContentState/SectionLoader';
+import { AuthContext } from '../../components/Auth/AuthProvider';
+import { ServerRequestError } from '../../components/ContentState/ServerRequestError';
+import { UserProfile } from '../../components/Dashboard/UserProfile';
+import { IFIData } from '../../types/IFIData';
+import { InsuranceCard } from '../../components/Dashboard/InsuranceCard';
 import { InsuranceTypes } from '../../enums/Insurance';
-import FiDataWait from '../../components/ContentState/FIDataWait';
+import { FiDataWait } from '../../components/ContentState/FIDataWait';
 import { ServerPath } from '../../enums/UrlPath';
-import NoValidConsent from '../../components/ContentState/InvalidConsent';
+import { InvalidConsent } from '../../components/ContentState/InvalidConsent';
 import { PageState } from '../../enums/PageStates';
+import { IAuth } from '../../types/IUser';
 
 const Dashboard: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
     // is unstable on Setu's end.
     auth.user.jwt().then((jwt: string) => {
       setTimeout(() => {
-        mockConsentNotification(jwt).then(_ => {
+        mockConsentNotification(jwt).then((_: HTTPResponse<string>) => {
           getDataFromServer();
         });
       }, 1000);
@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
       {!!showShareInfo && (
         <Row className='mt-5'>
           <Col sm='12'>
-            <NoValidConsent height='450px' imgHeight='400px' width='100%' />
+            <InvalidConsent height='450px' imgHeight='400px' width='100%' />
           </Col>
         </Row>
       )}
@@ -170,4 +170,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export { Dashboard };

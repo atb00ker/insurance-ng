@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import Container from 'react-bootstrap/Container';
-import CreateConsent from '../../components/Home/CreateConsent';
-import { IAuth } from '../../interfaces/IUser';
+import { CreateConsent } from '../../components/Home/CreateConsent';
+import { IAuth } from '../../types/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
-import NgFeatures from '../../components/Home/NgFeatures';
-import SectionLoader from '../../components/ContentState/SectionLoader';
+import { NgFeatures } from '../../components/Home/NgFeatures';
+import { SectionLoader } from '../../components/ContentState/SectionLoader';
 
 const Home: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -22,4 +22,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export { Home };

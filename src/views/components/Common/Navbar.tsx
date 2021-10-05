@@ -5,10 +5,10 @@ import Button from 'react-bootstrap/Button';
 import Image from 'react-bootstrap/Image';
 
 import { AuthContext } from '../Auth/AuthProvider';
-import { IAuth } from '../../interfaces/IUser';
 import { Link } from 'react-router-dom';
 import LogoThinImage from '../../assets/icons/logo-thin.png';
 import { RouterPath } from '../../enums/UrlPath';
+import { IAuth } from '../../types/IUser';
 
 const Navbar = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -64,4 +64,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export { Navbar };

@@ -34,4 +34,4 @@ const CreateConsentImage: React.FC<IContentStateImages> = ({ width, imgHeight })
   );
 };
 
-export default CreateConsentImage;
+export { CreateConsentImage };

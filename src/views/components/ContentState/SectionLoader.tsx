@@ -14,4 +14,4 @@ const SectionLoader: React.FC<{ height?: string; width?: string }> = ({ height, 
   );
 };
 
-export default SectionLoader;
+export { SectionLoader };

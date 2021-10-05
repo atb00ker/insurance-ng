@@ -3,18 +3,24 @@ import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { useHistory, useLocation } from 'react-router-dom';
-import { IAuth } from '../../interfaces/IUser';
 import { AuthContext } from '../../components/Auth/AuthProvider';
-import { createClaimRequest, createPurchaseRequest, getDashboardData } from '../../helpers/axios';
-import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
+import {
+  createClaimRequest,
+  createPurchaseRequest,
+  getDashboardData,
+  HTTPError,
+  HTTPResponse,
+} from '../../helpers/axios';
+import { IFIData, IFIInsurance } from '../../types/IFIData';
 import { RouterPath } from '../../enums/UrlPath';
-import ServerRequestError from '../../components/ContentState/ServerRequestError';
-import SectionLoader from '../../components/ContentState/SectionLoader';
-import TitleSection from '../../components/InsuranceInfo/TitleSection';
-import BasicInfoTable from '../../components/InsuranceInfo/BasicInfoTable';
-import InsuranceInfoCharts from '../../components/InsuranceInfo/InsuranceInfoCharts';
-import InsuranceInfoClauses from '../../components/InsuranceInfo/InsuranceInfoClauses';
+import { ServerRequestError } from '../../components/ContentState/ServerRequestError';
+import { SectionLoader } from '../../components/ContentState/SectionLoader';
+import { TitleSection } from '../../components/InsuranceInfo/TitleSection';
+import { BasicInfoTable } from '../../components/InsuranceInfo/BasicInfoTable';
+import { InsuranceInfoCharts } from '../../components/InsuranceInfo/InsuranceInfoCharts';
+import { InsuranceInfoClauses } from '../../components/InsuranceInfo/InsuranceInfoClauses';
 import { PageState } from '../../enums/PageStates';
+import { IAuth } from '../../types/IUser';
 
 const InsuranceInfo: React.FC = () => {
   const history = useHistory();
@@ -70,9 +76,9 @@ const InsuranceInfo: React.FC = () => {
     });
   };
 
-  const changeStateOnDataResponse = (dataResponse: Promise<any>) => {
+  const changeStateOnDataResponse = (dataResponse: Promise<HTTPResponse<IFIData>>) => {
     dataResponse
-      .then((response: any) => {
+      .then((response: HTTPResponse<IFIData>) => {
         const data: IFIData = response?.data;
         if (data?.status) {
           changePageState(PageState.Data);
@@ -81,7 +87,7 @@ const InsuranceInfo: React.FC = () => {
           changePageState(PageState.Error);
         }
       })
-      .catch((error: any) => {
+      .catch((error: HTTPError) => {
         console.error(error);
         changePageState(PageState.Error);
       });
@@ -91,7 +97,6 @@ const InsuranceInfo: React.FC = () => {
     setShowError(state == PageState.Error);
     setShowLoader(state == PageState.Loading);
   };
-
 
   return (
     <Container>
@@ -167,4 +172,4 @@ const InsuranceInfo: React.FC = () => {
   );
 };
 
-export default InsuranceInfo;
+export { InsuranceInfo };

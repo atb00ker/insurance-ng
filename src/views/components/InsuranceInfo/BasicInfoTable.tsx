@@ -1,5 +1,5 @@
 import React from 'react';
-import { IFIInsurance } from '../../interfaces/IFIData';
+import { IFIInsurance } from '../../types/IFIData';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { hourglassWaitIcon, tickIcon } from '../../helpers/svgIcons';
@@ -39,8 +39,7 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
                     <Button
                       variant='outline-primary'
                       className='btn-sm'
-                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}
-                    >
+                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}>
                       Buy
                     </Button>
                   </td>
@@ -53,8 +52,7 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
                     <Button
                       variant='outline-primary'
                       className='btn-sm'
-                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}
-                    >
+                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}>
                       Talk to an Agent
                     </Button>
                   </td>
@@ -75,8 +73,7 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
                         <Button
                           variant='outline-primary'
                           className='btn-sm'
-                          onClick={() => startClaimProcess(insuranceInfo.uuid)}
-                        >
+                          onClick={() => startClaimProcess(insuranceInfo.uuid)}>
                           Initiate Claim
                         </Button>
                       </td>
@@ -98,8 +95,7 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
                       disabled
                       variant='outline-secondary'
                       className='btn-sm'
-                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}
-                    >
+                      onClick={() => startPurchaseProcess(insuranceInfo.uuid)}>
                       We will contact you soon
                     </Button>
                   </td>
@@ -114,4 +110,4 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
   );
 };
 
-export default BasicInfoTable;
+export { BasicInfoTable };

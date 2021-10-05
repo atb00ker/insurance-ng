@@ -19,4 +19,4 @@ const ServerRequestError: React.FC<IContentStateImages> = ({ height, width, imgH
   );
 };
 
-export default ServerRequestError;
+export { ServerRequestError };
