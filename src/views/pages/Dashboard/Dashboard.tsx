@@ -133,8 +133,8 @@ const Dashboard: React.FC = () => {
           </Row>
           <Row className='mt-1 mb-5 justify-content-center'>
             {sortedFiInsuranceList.map(insurance => (
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <InsuranceCard key={insurance.type} fiData={fiData} insurance={insurance} />
+              <ErrorBoundary key={insurance.type} FallbackComponent={ErrorFallback}>
+                <InsuranceCard fiData={fiData} insurance={insurance} />
               </ErrorBoundary>
             ))}
           </Row>

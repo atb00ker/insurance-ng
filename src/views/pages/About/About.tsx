@@ -11,6 +11,9 @@ const About: React.FC = () => {
   const hackathonUrl = 'https://free-your-data.devfolio.co/';
   const authorEmailText = 'ajay39in+aa[at]gmail[dot]com';
   const authorEmail = 'ajay39in+aa@gmail.com';
+  const logoLicense = 'https://commons.wikimedia.org/wiki/File:ALiAS_Logo.png';
+  const parthTwitter = 'https://twitter.com/parthshar2';
+  const githubDocsAttributions = 'https://github.com/atb00ker/insurance-ng#attribution';
 
   return (
     <Container>
@@ -119,6 +122,30 @@ const About: React.FC = () => {
           </p>
           <h5 className='mt-3'>Data Sharing</h5>
           <p>Your data is not shared with any third-party organization.</p>
+        </Col>
+        <Col sm='12' className='max-width-960'>
+          <h3>License</h3>
+          <ul>
+            <li>This project is under MIT license.</li>
+            <li>
+              The site{' '}
+              <a className='href-no-underline' href={logoLicense}>
+                favicon of the website
+              </a>{' '}
+              is contributed by{' '}
+              <a className='href-no-underline' href={parthTwitter}>
+                Parth Sharma
+              </a>{' '}
+              under <b>CC BY-SA License</b> on WikiMedia.
+            </li>
+            <li>
+              The open-source libraries used have their own seperate licenses. Most of them are under MIT
+              license. Please check the{' '}
+              <a className='href-no-underline' href={githubDocsAttributions}>
+                documentation on GitHub to know more about their licenses.
+              </a>
+            </li>
+          </ul>
         </Col>
         <Col sm='12' className='max-width-960'>
           <h3>Contact Us</h3>

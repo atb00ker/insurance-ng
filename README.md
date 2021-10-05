@@ -112,7 +112,7 @@ You can find example values in the `.env.example` file itself.
 | AUTH0_CLIENT_ID              | Auth0 Application Client ID                                              |
 | AUTH0_REDIRECT_URI           | Auth0 redirect after login (eg. <http://localhost:8010/register>)        |
 | AUTH0_LOGOUT_URI             | Auth0 redirect after logout (eg. <http://localhost:8010>)                |
-| AUTH0_JWT_WELKNOWNS_PATH     | Auth0 JWKs file (eg. content of <your-domain>/.well-known/jwks.json)     |
+| AUTH0_JWT_WELKNOWNS_PATH     | Auth0 JWKs file (eg. content of `<your-domain>/.well-known/jwks.json`)   |
 | DEBUG                        | Application Shows detailed logs when set to True                         |
 
 ### Development
@@ -154,3 +154,8 @@ To deploy the insurance ng, do the following:
 5.  Run `docker-compose pull`
 6.  Run `docker-compose up -d db server nginx`
 7.  When the images are up, check your IP address, the application should be accessible.
+
+## Licenses
+
+-   The site [favicon of the website](https://commons.wikimedia.org/wiki/File:ALiAS_Logo.png) is contributed by [Parth Sharma](https://twitter.com/parthshar2) under **CC BY-SA License** on WikiMedia.
+-   The open-source libraries used have their own seperate licenses. Most of them are under MIT license. Please check the license for [golang dependencies' licenses](./go.mod) and [react dependencies' licenses](./package.json) before using the project for your purposes.
