@@ -1,4 +1,4 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"bytes"
@@ -42,27 +42,27 @@ func getDetachedJwt(jwtToken *jwt.Token) (string, error) {
 func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 	jwtToken *jwt.Token) (response []byte, err error) {
 
-	setuApi, err := url.Parse(os.Getenv("APP_SETU_AA_ENDPOINT"))
+	setuAPI, err := url.Parse(os.Getenv("APP_SETU_AA_ENDPOINT"))
 	if err != nil {
 		return
 	}
-	setuApi.Path = path.Join(setuApi.Path, urlPath)
+	setuAPI.Path = path.Join(setuAPI.Path, urlPath)
 
-	setuRequest, err := http.NewRequest(reqType, setuApi.String(), bytes.NewBuffer(payload))
-	if err != nil {
-		return
-	}
-
-	requestJws, err := getDetachedJwt(jwtToken)
+	setuRequest, err := http.NewRequest(reqType, setuAPI.String(), bytes.NewBuffer(payload))
 	if err != nil {
 		return
 	}
 
-	clientApi := os.Getenv("APP_SETU_CLIENT_KEY")
+	requestJWS, err := getDetachedJwt(jwtToken)
+	if err != nil {
+		return
+	}
+
+	clientAPI := os.Getenv("APP_SETU_CLIENT_KEY")
 	setuRequest.Header = http.Header{
 		"Content-Type":    []string{"application/json"},
-		"client_api_key":  []string{clientApi},
-		"x-jws-signature": []string{requestJws},
+		"client_api_key":  []string{clientAPI},
+		"x-jws-signature": []string{requestJWS},
 	}
 
 	client := &http.Client{}
@@ -76,7 +76,7 @@ func sendRequestToSetu(urlPath string, reqType string, payload []byte,
 	return
 }
 
-func sendResponseToSetuNotification() (clientApi string, requestJws string,
+func sendResponseToSetuNotification() (clientAPI string, requestJWS string,
 	setuResponseBody []byte, err error) {
 
 	// Time Hack:
@@ -100,16 +100,16 @@ func sendResponseToSetuNotification() (clientApi string, requestJws string,
 		return
 	}
 
-	requestJws, err = getDetachedJwt(jwtToken)
+	requestJWS, err = getDetachedJwt(jwtToken)
 	if err != nil {
 		return
 	}
 
-	clientApi = os.Getenv("APP_SETU_CLIENT_KEY")
+	clientAPI = os.Getenv("APP_SETU_CLIENT_KEY")
 	return
 }
 
-func HandleNotificationError(response http.ResponseWriter, err error) {
+func handleNotificationError(response http.ResponseWriter, err error) {
 	// Time Hack:
 	// Currently, Setu API is not following the RFC3339 Correctly,
 	// Hence for the time being, we manually converting dates.
@@ -129,14 +129,14 @@ func HandleNotificationError(response http.ResponseWriter, err error) {
 	response.Write(respMessage)
 }
 
-func getUserConsentWithUserId(userId string) (userConsent models.UserConsents, err error) {
-	result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Take(&userConsent)
+func getUserConsentWithUserID(userID string) (userConsent models.UserConsents, err error) {
+	result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userID).Take(&userConsent)
 	err = result.Error
 	return
 }
 
-func getUserConsentWithSessionId(sessionId string) (userConsent models.UserConsents, err error) {
-	result := config.Database.Model(&models.UserConsents{}).Where("session_id = ?", sessionId).Take(&userConsent)
+func getUserConsentWithSessionID(sessionID string) (userConsent models.UserConsents, err error) {
+	result := config.Database.Model(&models.UserConsents{}).Where("session_id = ?", sessionID).Take(&userConsent)
 	err = result.Error
 	return
 }
@@ -162,7 +162,7 @@ func getPrivatePemFileContent() (x509Key interface{}, err error) {
 // Rahasya //
 
 func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse, err error) {
-	respBytes, err := sendRequestToRahasya(RahasyaApiGetKeys, "GET", []byte{})
+	respBytes, err := sendRequestToRahasya(RahasyaAPIGetKeys, "GET", []byte{})
 	if err != nil {
 		return
 	}
@@ -174,26 +174,26 @@ func getRahasyaKeys() (rahasyaKeys rahasyaKeyResponse, err error) {
 func deleteUserConsent(userConsent models.UserConsents) (err error) {
 	// We delete here instead of updating because we want to delete
 	// cascade all FIP the stored with this user consent.
-	if result := config.Database.Where("customer_id = ?", userConsent.CustomerId).Where(
+	if result := config.Database.Where("customer_id = ?", userConsent.CustomerID).Where(
 		"is_insurance_ng_acct <> ?", true).Delete(&models.UserInsurance{}); result.Error != nil {
 		return result.Error
 	}
 
 	if result := config.Database.Where("user_id = ?",
-		userConsent.UserId).Delete(&userConsent); result.Error != nil {
+		userConsent.UserID).Delete(&userConsent); result.Error != nil {
 		return result.Error
 	}
 	return
 }
 
 func sendRequestToRahasya(urlPath string, reqType string, payload []byte) (response []byte, err error) {
-	rahasyaApi, err := url.Parse(os.Getenv("APP_RAHASYA_AA_ENDPOINT"))
+	rahasyaAPI, err := url.Parse(os.Getenv("APP_RAHASYA_AA_ENDPOINT"))
 	if err != nil {
 		return
 	}
-	rahasyaApi.Path = path.Join(rahasyaApi.Path, urlPath)
+	rahasyaAPI.Path = path.Join(rahasyaAPI.Path, urlPath)
 
-	rahasyaRequest, err := http.NewRequest(reqType, rahasyaApi.String(), bytes.NewBuffer(payload))
+	rahasyaRequest, err := http.NewRequest(reqType, rahasyaAPI.String(), bytes.NewBuffer(payload))
 	if err != nil {
 		return
 	}

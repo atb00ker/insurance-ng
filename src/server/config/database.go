@@ -12,8 +12,10 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+// Database instance globally used to interact with database
 var Database *gorm.DB
 
+// ConnectToDb before starting server, connect to the database
 func ConnectToDb() {
 	fmt.Println("Connecting to database...")
 	dsn := url.URL{
@@ -49,5 +51,5 @@ func migrateDb() {
 	Database.AutoMigrate(&models.UserScores{})
 	Database.AutoMigrate(&models.UserInsurance{})
 	Database.AutoMigrate(&models.Insurance{})
-	InitInsuranceSeed()
+	initInsuranceSeed()
 }

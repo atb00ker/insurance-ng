@@ -1,4 +1,4 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"encoding/json"
@@ -10,35 +10,37 @@ import (
 	"github.com/google/uuid"
 )
 
+// URLs for account aggregator endpoints
 const (
-	UrlCreateConsent           = "/api/v1/account_aggregator/consent/"
-	UrlConsentNotificationMock = "/api/v1/account_aggregator/Mock/Consent/Notification/"
-	UrlConsentNotification     = "/api/v1/account_aggregator/Consent/Notification"
-	UrlArtefactNotification    = "/api/v1/account_aggregator/FI/Notification"
+	URLCreateConsent           string = "/api/v1/account_aggregator/consent/"
+	URLConsentNotificationMock string = "/api/v1/account_aggregator/Mock/Consent/Notification/"
+	URLConsentNotification     string = "/api/v1/account_aggregator/Consent/Notification"
+	URLArtefactNotification    string = "/api/v1/account_aggregator/FI/Notification"
 )
 
+// CreateConsentRequest creates a new AA Consent request
 func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, err := controllers.GetUserIdentifier(response, request)
+	userID, err := controllers.GetUserIdentifier(response, request)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
 	decoder := json.NewDecoder(request.Body)
-	var requestJson createConsentRequestInput
-	if err := decoder.Decode(&requestJson); err != nil {
+	var requestJSON createConsentRequestInput
+	if err := decoder.Decode(&requestJSON); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	consentResponse, expiry, err := sendCreateConsentReqToAcctAggregator(requestJson.Phone)
+	consentResponse, expiry, err := sendCreateConsentReqToAcctAggregator(requestJSON.Phone)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if _, err = addOrUpdateConsentToDb(userId, consentResponse, expiry); err != nil {
+	if _, err = addOrUpdateConsentToDb(userID, consentResponse, expiry); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
@@ -50,31 +52,33 @@ func CreateConsentRequest(response http.ResponseWriter, request *http.Request) {
 	response.Write(respMessage)
 }
 
+// ConsentNotification initiates state update on consent notification
 func ConsentNotification(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	decoder := json.NewDecoder(request.Body)
-	var requestJson setuConsentNotificationRequest
-	if err := decoder.Decode(&requestJson); err != nil {
+	var requestJSON setuConsentNotificationRequest
+	if err := decoder.Decode(&requestJSON); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if err := updateUserConsentForStatusChange(requestJson.ConsentStatusNotification); err != nil {
-		HandleNotificationError(response, err)
+	if err := updateUserConsentForStatusChange(requestJSON.ConsentStatusNotification); err != nil {
+		handleNotificationError(response, err)
 		return
 	}
 
-	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
+	clientAPI, requestJWS, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {
-		HandleNotificationError(response, err)
+		handleNotificationError(response, err)
 		return
 	}
 
-	response.Header().Set("client_api_key", clientApi)
-	response.Header().Set("x-jws-signature", requestJws)
+	response.Header().Set("client_api_key", clientAPI)
+	response.Header().Set("x-jws-signature", requestJWS)
 	response.Write(setuResponseBody)
 }
 
+// ConsentNotificationMock returns mocked notification response
 func ConsentNotificationMock(response http.ResponseWriter, request *http.Request) {
 	// Notification Hack:
 	// This is just a mock endpoint.
@@ -82,7 +86,7 @@ func ConsentNotificationMock(response http.ResponseWriter, request *http.Request
 	// sometimes, which can be a big problem in the
 	// hackathon, hence, for the time being, we start the
 	// notification steps here. Not required in production.
-	userId, err := controllers.GetUserIdentifier(response, request)
+	userID, err := controllers.GetUserIdentifier(response, request)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -90,7 +94,7 @@ func ConsentNotificationMock(response http.ResponseWriter, request *http.Request
 
 	var userConsent models.UserConsents
 	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
-		userId).Take(&userConsent); result.Error != nil {
+		userID).Take(&userConsent); result.Error != nil {
 		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
 		return
 	}
@@ -101,52 +105,54 @@ func ConsentNotificationMock(response http.ResponseWriter, request *http.Request
 	}
 
 	consentNotificationMock := consentNotifierStatus{
-		ConsentId:     uuid.New(),
+		ConsentID:     uuid.New(),
 		ConsentHandle: userConsent.ConsentHandle,
 		ConsentStatus: "ACTIVE",
 	}
 
 	if err := updateUserConsentForStatusChange(consentNotificationMock); err != nil {
-		HandleNotificationError(response, err)
+		handleNotificationError(response, err)
 		return
 	}
 
 	var updatedUserConsent models.UserConsents
 	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
-		userId).Take(&updatedUserConsent); result.Error != nil {
+		userID).Take(&updatedUserConsent); result.Error != nil {
 		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
 		return
 	}
 
-	config.Database.Where("user_id = ?", userId).Take(&updatedUserConsent)
-	if err := saveFipData(updatedUserConsent.SessionId); err != nil {
+	config.Database.Where("user_id = ?", userID).Take(&updatedUserConsent)
+	if err := saveFipData(updatedUserConsent.SessionID); err != nil {
 		controllers.HandleError(response, controllers.IsUserLoggedInErrorMessage)
 		return
 	}
 }
 
 // Data flow
+
+// FINotification returns notification JSON response
 func FINotification(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	decoder := json.NewDecoder(request.Body)
-	var requestJson fINotificationRequest
-	if err := decoder.Decode(&requestJson); err != nil {
+	var requestJSON fINotificationRequest
+	if err := decoder.Decode(&requestJSON); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if err := saveFipData(requestJson.FIStatusNotification.SessionID); err != nil {
-		HandleNotificationError(response, err)
+	if err := saveFipData(requestJSON.FIStatusNotification.SessionID); err != nil {
+		handleNotificationError(response, err)
 		return
 	}
 
-	clientApi, requestJws, setuResponseBody, err := sendResponseToSetuNotification()
+	clientAPI, requestJWS, setuResponseBody, err := sendResponseToSetuNotification()
 	if err != nil {
-		HandleNotificationError(response, err)
+		handleNotificationError(response, err)
 		return
 	}
 
-	response.Header().Set("client_api_key", clientApi)
-	response.Header().Set("x-jws-signature", requestJws)
+	response.Header().Set("client_api_key", clientAPI)
+	response.Header().Set("x-jws-signature", requestJWS)
 	response.Write(setuResponseBody)
 }

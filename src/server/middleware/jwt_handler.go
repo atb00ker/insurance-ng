@@ -25,26 +25,27 @@ type jwks struct {
 
 var auth0Jwks = jwks{}
 
+// JwtMiddleware processes and verifis jwt before request is processed
 func JwtMiddleware() *jwtmiddleware.JWTMiddleware {
-	auth_aud := os.Getenv("AUTH0_CLIENT_ID")
-	auth_domain := "https://" + os.Getenv("AUTH0_DOMAIN") + "/"
+	authAud := os.Getenv("AUTH0_CLIENT_ID")
+	authDomain := "https://" + os.Getenv("AUTH0_DOMAIN") + "/"
 
 	return jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim
-			aud := auth_aud
+			aud := authAud
 			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 			if !checkAud {
 				return token, errors.New("invalid audience")
 			}
 			// Verify 'iss' claim
-			iss := auth_domain
+			iss := authDomain
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 			if !checkIss {
 				return token, errors.New("invalid issuer")
 			}
 
-			cert, err := getPemCert(token, auth_domain)
+			cert, err := getPemCert(token, authDomain)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -57,7 +58,7 @@ func JwtMiddleware() *jwtmiddleware.JWTMiddleware {
 	})
 }
 
-func getPemCert(token *jwt.Token, auth_domain string) (string, error) {
+func getPemCert(token *jwt.Token, authDomain string) (string, error) {
 	cert := ""
 	// resp, err := http.Get(auth_domain + ".well-known/jwks.json")
 	// defer resp.Body.Close()

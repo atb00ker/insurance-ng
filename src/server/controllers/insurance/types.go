@@ -9,12 +9,13 @@ import (
 	"github.com/lib/pq"
 )
 
+// Enum values of insurances used for calculations
 const (
 	PreApprovedBar = 0.80
 )
 
 type insuranceActionRequest struct {
-	Uuid uuid.UUID `json:"uuid"`
+	UUID uuid.UUID `json:"uuid"`
 }
 
 // Get User Data Types //
@@ -40,8 +41,8 @@ type userData struct {
 }
 
 type insuranceOffers struct {
-	Id                uuid.UUID      `json:"uuid"`
-	AccountId         string         `json:"account_id"`
+	ID                uuid.UUID      `json:"uuid"`
+	AccountID         string         `json:"account_id"`
 	Type              string         `json:"type"`
 	Title             string         `json:"title"`
 	Description       string         `json:"description"`
@@ -79,14 +80,17 @@ type insuranceChResp struct {
 
 // Dashboard Websocket //
 
+// Websocket is an instance of state of information
+// required for connecting with websocket
 type Websocket struct {
 	clients    map[*string]*Client
 	register   chan *Client
 	unregister chan *Client
 }
 
+// Client is an instance of websocket client
 type Client struct {
-	Id         *string
+	ID         *string
 	websocket  *Websocket
 	connection *websocket.Conn
 }

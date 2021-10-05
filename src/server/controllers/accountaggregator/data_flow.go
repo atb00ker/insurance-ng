@@ -1,4 +1,4 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"encoding/base64"
@@ -15,8 +15,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func createAndSaveSessionDetails(userId string) (err error) {
-	userConsent, err := getUserConsentWithUserId(userId)
+func createAndSaveSessionDetails(userID string) (err error) {
+	userConsent, err := getUserConsentWithUserID(userID)
 	if err != nil {
 		return
 	}
@@ -26,23 +26,23 @@ func createAndSaveSessionDetails(userId string) (err error) {
 		return
 	}
 
-	sessionData, err := getDataSession(userId, rahasyaKeys, userConsent)
+	sessionData, err := getDataSession(userID, rahasyaKeys, userConsent)
 	if err != nil {
 		return
 	}
 
 	updatedUserConsent := models.UserConsents{
-		SessionId:         sessionData.SessionId.String(),
+		SessionID:         sessionData.SessionID.String(),
 		RahasyaNonce:      rahasyaKeys.KeyMaterial.Nonce,
 		RahasyaPrivateKey: rahasyaKeys.PrivateKey,
 	}
 
-	config.Database.Where("user_id = ?", userId).Updates(&updatedUserConsent)
+	config.Database.Where("user_id = ?", userID).Updates(&updatedUserConsent)
 	return
 }
 
-func saveFipData(sessionId string) (err error) {
-	userConsent, err := getUserConsentWithSessionId(sessionId)
+func saveFipData(sessionID string) (err error) {
+	userConsent, err := getUserConsentWithSessionID(sessionID)
 	if err != nil {
 		return
 	}
@@ -52,9 +52,9 @@ func saveFipData(sessionId string) (err error) {
 		return
 	}
 
-	encryptedData, data_err := getEncryptedFIData(userConsent.SessionId)
+	encryptedData, dataErr := getEncryptedFIData(userConsent.SessionID)
 	if err != nil {
-		err = data_err
+		err = dataErr
 		return
 	}
 
@@ -69,7 +69,7 @@ func saveFipData(sessionId string) (err error) {
 	return
 }
 
-func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
+func getDataSession(userID string, rahasyaKeys rahasyaKeyResponse,
 	consentData models.UserConsents) (sessionData setuFiSessionResponse, err error) {
 	// Time Hack:
 	// Currently, Setu API is not following the RFC3339 Correctly,
@@ -87,7 +87,7 @@ func getDataSession(userId string, rahasyaKeys rahasyaKeyResponse,
 		return
 	}
 
-	respBytes, err := sendRequestToSetu(SetuApiFiRequest, "POST", setuRequestBody, jwtToken)
+	respBytes, err := sendRequestToSetu(SetuAPIFiRequest, "POST", setuRequestBody, jwtToken)
 	if err != nil {
 		return
 	}
@@ -118,7 +118,7 @@ func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData mod
 			To:   currentTime,
 		},
 		Consent: fiConsent{
-			Id:               consentData.ConsentId,
+			ID:               consentData.ConsentID,
 			DigitalSignature: signedConsent,
 		},
 		KeyMaterial: rahasyaKeys.KeyMaterial,
@@ -127,8 +127,8 @@ func createFiDataRequestBody(uuid uuid.UUID, currentTime string, consentData mod
 	return requestBody
 }
 
-func getEncryptedFIData(sessionId string) (fiEncryptedData setuFiDataResponse, err error) {
-	urlPath := fmt.Sprintf(SetuApiFiDataFetch, sessionId)
+func getEncryptedFIData(sessionID string) (fiEncryptedData setuFiDataResponse, err error) {
+	urlPath := fmt.Sprintf(SetuAPIFiDataFetch, sessionID)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.StandardClaims{})
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
 	if err != nil {
@@ -155,7 +155,7 @@ func getDataFromAllFIP(rahasyaNonce string, rahasyaPrivateKey string,
 
 			response = append(response, fipDataCollection{
 				FipData: fipDataList,
-				FipId:   encryptedFI.FipId,
+				FipID:   encryptedFI.FipID,
 			})
 		}(encryptedFI)
 	}
@@ -212,7 +212,7 @@ func getDecryptedData(rahasyaNonce string, rahasyaPrivateKey string,
 		return
 	}
 
-	respBytes, err := sendRequestToRahasya(RahasyaApiDecrypt, "POST", rahasyaRequestBody)
+	respBytes, err := sendRequestToRahasya(RahasyaAPIDecrypt, "POST", rahasyaRequestBody)
 	if err != nil {
 		return
 	}

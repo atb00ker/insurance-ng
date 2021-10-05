@@ -15,7 +15,7 @@ Insurance NG is the next generation of insurance service with features like vari
 
 ## Table of Contents
 
-1. [Features](#feature)
+1. [Features](#features)
 2. [Design](#design)
    - [Meta workflow](#workflow)
    - [Backend workflow](#backend-workflow)
@@ -23,10 +23,10 @@ Insurance NG is the next generation of insurance service with features like vari
    - [FI Types](#fi-types)
 3. [Setup](#setup)
    - [Configurations](#configurations)
-   - [Development](#configurations)
+   - [Development](#development)
 4. [Deployment](#deployment)
 
-## Feature
+## Features
 
 To deliver the next generation of insurance services experience, insurance NG provides the following features:
 
@@ -69,8 +69,8 @@ The workflow for server image is as followed:
 
 We have 5 tables the store the following information:
 
-1. User Table: Stores basic information about user when they register
-2. User Consent Table: Stores AA consent details created by the user
+1. User Table: Stores basic information about user when they register.
+2. User Consent Table: Stores AA consent details created by the user.
 3. User Scores Table: Stores the scores calculated as per their habits and lifestyle based on FIP data.
 4. User Insurance Table: Stores information about insurances that are purchased by the user.
 5. Insurance Table: All Insurances offered by Insurance NG.

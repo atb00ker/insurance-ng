@@ -8,6 +8,7 @@ import (
 	"github.com/rs/cors"
 )
 
+// CorsMiddleware creates middleware to add cors header to response
 func CorsMiddleware() *cors.Cors {
 	allowedCors := strings.Split(os.Getenv("APP_CORS"), ",")
 	return cors.New(cors.Options{

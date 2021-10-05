@@ -7,9 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
+// UserScores model is table that stores the scores calculated as per their
+// habits and lifestyle based on FIP data.
 type UserScores struct {
-	Id                uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
-	UserConsentId     uuid.UUID    `json:"consent_id"`
+	ID                uuid.UUID    `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	UserConsentID     uuid.UUID    `json:"consent_id"`
 	Name              string       `json:"name"`
 	DateOfBirth       time.Time    `json:"date_of_birth"`
 	Pancard           string       `json:"pan_card"`
@@ -27,10 +29,11 @@ type UserScores struct {
 	TravelScore       float32      `json:"travel_score"`
 	AllScore          float32      `json:"all_score"`
 	SharedDataSources int16        `json:"shared_data_sources"`
-	UserConsent       UserConsents `gorm:"foreignKey:UserConsentId;constraint:OnDelete:CASCADE;"`
+	UserConsent       UserConsents `gorm:"foreignKey:UserConsentID;constraint:OnDelete:CASCADE;"`
 }
 
-func (insurance *UserScores) BeforeCreate(tx *gorm.DB) (err error) {
-	insurance.Id = uuid.New()
+// BeforeCreate creates new UUID before saving to database
+func (userScore *UserScores) BeforeCreate(tx *gorm.DB) (err error) {
+	userScore.ID = uuid.New()
 	return
 }

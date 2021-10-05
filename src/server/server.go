@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"insurance-ng/src/server/config"
-	"insurance-ng/src/server/controllers/account_aggregator"
+	"insurance-ng/src/server/controllers/accountaggregator"
 	"insurance-ng/src/server/controllers/insurance"
 	"insurance-ng/src/server/controllers/users"
 	"insurance-ng/src/server/middleware"
@@ -23,26 +23,26 @@ func main() {
 	config.LoadEnv()
 	config.ConnectToDb()
 	// User
-	muxDispatcher.Handle(users.UrlRegister,
+	muxDispatcher.Handle(users.URLRegister,
 		jwtAuth(users.RegisterUserHandler)).Methods("OPTIONS", "GET")
 	// Insurance
-	muxDispatcher.Handle(insurance.UrlInsurancePurchase,
-		jwtAuth(insurance.InsurancePurchaseHandler)).Methods("OPTIONS", "POST")
-	muxDispatcher.Handle(insurance.UrlInsuranceClaim,
-		jwtAuth(insurance.InsuranceClaimHandler)).Methods("OPTIONS", "POST")
-	muxDispatcher.Handle(insurance.UrlGetUserData,
+	muxDispatcher.Handle(insurance.URLInsurancePurchase,
+		jwtAuth(insurance.InitiatePurchase)).Methods("OPTIONS", "POST")
+	muxDispatcher.Handle(insurance.URLInsuranceClaim,
+		jwtAuth(insurance.InitiateClaim)).Methods("OPTIONS", "POST")
+	muxDispatcher.Handle(insurance.URLGetUserData,
 		jwtAuth(insurance.GetUserData)).Methods("OPTIONS", "GET")
-	muxDispatcher.Handle(insurance.UrlWaitForProcessing,
+	muxDispatcher.Handle(insurance.URLWaitForProcessing,
 		insuranceWebsocket(insurance.WaitForDataProcessingWebsocket, websocket))
 	// Account Aggregator
-	muxDispatcher.Handle(account_aggregator.UrlCreateConsent,
-		jwtAuth(account_aggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
-	muxDispatcher.Handle(account_aggregator.UrlConsentNotificationMock,
-		jwtAuth(account_aggregator.ConsentNotificationMock)).Methods("OPTIONS", "GET")
-	muxDispatcher.Handle(account_aggregator.UrlConsentNotification,
-		setuAuth(account_aggregator.ConsentNotification)).Methods("POST")
-	muxDispatcher.Handle(account_aggregator.UrlArtefactNotification,
-		setuAuth(account_aggregator.FINotification)).Methods("POST")
+	muxDispatcher.Handle(accountaggregator.URLCreateConsent,
+		jwtAuth(accountaggregator.CreateConsentRequest)).Methods("OPTIONS", "POST")
+	muxDispatcher.Handle(accountaggregator.URLConsentNotificationMock,
+		jwtAuth(accountaggregator.ConsentNotificationMock)).Methods("OPTIONS", "GET")
+	muxDispatcher.Handle(accountaggregator.URLConsentNotification,
+		setuAuth(accountaggregator.ConsentNotification)).Methods("POST")
+	muxDispatcher.Handle(accountaggregator.URLArtefactNotification,
+		setuAuth(accountaggregator.FINotification)).Methods("POST")
 	// Static Files
 	muxDispatcher.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist/")))
 	// Start Server

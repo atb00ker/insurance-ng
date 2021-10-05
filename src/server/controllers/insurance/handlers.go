@@ -6,22 +6,24 @@ import (
 	"net/http"
 )
 
+// URLs for insurance endpoints
 const (
-	UrlInsurancePurchase = "/api/v1/insurance/purchase/"
-	UrlInsuranceClaim    = "/api/v1/insurance/claim/"
-	UrlGetUserData       = "/api/v1/insurance/"
-	UrlWaitForProcessing = "/api/v1/ws/insurance/"
+	URLInsurancePurchase = "/api/v1/insurance/purchase/"
+	URLInsuranceClaim    = "/api/v1/insurance/claim/"
+	URLGetUserData       = "/api/v1/insurance/"
+	URLWaitForProcessing = "/api/v1/ws/insurance/"
 )
 
+// GetUserData gets user's data procured by FIP
 func GetUserData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, err := controllers.GetUserIdentifier(response, request)
+	userID, err := controllers.GetUserIdentifier(response, request)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	userData, err := getUserDataRecord(userId)
+	userData, err := getUserDataRecord(userID)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -31,26 +33,27 @@ func GetUserData(response http.ResponseWriter, request *http.Request) {
 	response.Write(respMessage)
 }
 
-func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Request) {
+// InitiatePurchase handles insurance purchase requests
+func InitiatePurchase(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, err := controllers.GetUserIdentifier(response, request)
+	userID, err := controllers.GetUserIdentifier(response, request)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	insuranceUuid, err := getInsuranceUuid(request.Body)
+	insuranceUUID, err := getInsuranceUUID(request.Body)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if err := createInsuranceRecord(userId, insuranceUuid); err != nil {
+	if err := createInsuranceRecord(userID, insuranceUUID); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	userData, err := getUserDataRecord(userId)
+	userData, err := getUserDataRecord(userID)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -60,26 +63,27 @@ func InsurancePurchaseHandler(response http.ResponseWriter, request *http.Reques
 	response.Write(respMessage)
 }
 
-func InsuranceClaimHandler(response http.ResponseWriter, request *http.Request) {
+// InitiateClaim handles insurance claim requests
+func InitiateClaim(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	userId, err := controllers.GetUserIdentifier(response, request)
+	userID, err := controllers.GetUserIdentifier(response, request)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	insuranceUuid, err := getInsuranceUuid(request.Body)
+	insuranceUUID, err := getInsuranceUUID(request.Body)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	if err := initiateInsuranceClaim(userId, insuranceUuid); err != nil {
+	if err := initiateInsuranceClaim(userID, insuranceUUID); err != nil {
 		controllers.HandleError(response, err.Error())
 		return
 	}
 
-	userData, err := getUserDataRecord(userId)
+	userData, err := getUserDataRecord(userID)
 	if err != nil {
 		controllers.HandleError(response, err.Error())
 		return
@@ -89,6 +93,7 @@ func InsuranceClaimHandler(response http.ResponseWriter, request *http.Request) 
 	response.Write(respMessage)
 }
 
+// WaitForDataProcessingWebsocket starts a go routine to open a websocket with client
 func WaitForDataProcessingWebsocket(websocket Websocket, response http.ResponseWriter, request *http.Request) {
 	connection, err := wsUpgrader.Upgrade(response, request, nil)
 	if err != nil {

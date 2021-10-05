@@ -10,23 +10,23 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func GetScoreForType(userScore *models.UserScores, insuranceType string) float32 {
+func getScoreForType(userScore *models.UserScores, insuranceType string) float32 {
 	switch insuranceType {
-	case models.OfferePlansAllPlan:
+	case models.OfferPlansAllPlan:
 		return userScore.AllScore
-	case models.OfferePlansMedicalPlan:
+	case models.OfferPlansMedicalPlan:
 		return userScore.MedicalScore
-	case models.OfferePlansPensionPlan:
+	case models.OfferPlansPensionPlan:
 		return userScore.PensionScore
-	case models.OfferePlansFamilyPlan:
+	case models.OfferPlansFamilyPlan:
 		return userScore.FamilyScore
-	case models.OfferePlansChildrenPlan:
+	case models.OfferPlansChildrenPlan:
 		return userScore.ChildrenScore
-	case models.OfferePlansTermPlan:
+	case models.OfferPlansTermPlan:
 		return userScore.TermScore
-	case models.OfferePlansMotorPlan:
+	case models.OfferPlansMotorPlan:
 		return userScore.MotorScore
-	case models.OfferePlansTravelPlan:
+	case models.OfferPlansTravelPlan:
 		return userScore.TravelScore
 	}
 	return 1
@@ -40,13 +40,13 @@ func getOfferCover(cover float64, score float64) float64 {
 	return math.Floor(cover + ((cover * score) / 15))
 }
 
-func getInsuranceUuid(requestBody io.Reader) (insuranceUuid uuid.UUID, err error) {
-	var requestJson insuranceActionRequest
+func getInsuranceUUID(requestBody io.Reader) (insuranceUUID uuid.UUID, err error) {
+	var requestJSON insuranceActionRequest
 	decoder := json.NewDecoder(requestBody)
-	if err = decoder.Decode(&requestJson); err != nil {
+	if err = decoder.Decode(&requestJSON); err != nil {
 		return
 	}
-	return requestJson.Uuid, nil
+	return requestJSON.UUID, nil
 }
 
 func websocketResponse(client *Client, message []byte) (err error) {

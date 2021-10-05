@@ -1,4 +1,4 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"insurance-ng/src/server/config"
@@ -20,7 +20,7 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 	ckycCompliance, _ := strconv.ParseBool(getDepositHolderField(allFipData, "CkycCompliance"))
 
 	planInformation := models.UserScores{
-		UserConsentId:     userConsent.Id,
+		UserConsentID:     userConsent.ID,
 		Name:              name,
 		DateOfBirth:       dob,
 		Pancard:           pancard,
@@ -47,11 +47,11 @@ func processAndSaveFipDataCollection(allFipData []fipDataCollection,
 		return result.Error
 	}
 	if result := config.Database.Model(&models.UserConsents{}).Where("id = ?",
-		userConsent.Id).Update("data_fetched", true); result.Error != nil {
+		userConsent.ID).Update("data_fetched", true); result.Error != nil {
 		return result.Error
 	}
 
-	insurance.WaitForProcessing <- userConsent.UserId
+	insurance.WaitForProcessing <- userConsent.UserID
 	return nil
 }
 
@@ -110,15 +110,15 @@ func saveExistingInsuranceInformation(allFipData []fipDataCollection, consent mo
 					Cover:      cover,
 					IsActive:   true,
 					IsClaimed:  false,
-					CustomerId: consent.CustomerId,
+					CustomerID: consent.CustomerID,
 					Clauses:    models.InsuranceApnaMockedClauses,
-					AccountId:  fipDataItem.Account.MaskedAccNumber,
+					AccountID:  fipDataItem.Account.MaskedAccNumber,
 				}
 
 				var existingInsurance models.UserInsurance
 				if existingRecord := config.Database.Where("type = ?",
 					insurance.Type).Where("customer_id = ?",
-					consent.CustomerId).Take(&existingInsurance); existingRecord.Error != nil {
+					consent.CustomerID).Take(&existingInsurance); existingRecord.Error != nil {
 					if existingRecord.Error.Error() == "record not found" {
 						result := config.Database.Create(&insurance)
 						if result.Error != nil {

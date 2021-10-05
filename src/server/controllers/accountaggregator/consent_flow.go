@@ -1,10 +1,9 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"encoding/json"
 	"fmt"
 	"insurance-ng/src/server/config"
-	"insurance-ng/src/server/controllers"
 	"insurance-ng/src/server/models"
 	"time"
 
@@ -15,19 +14,19 @@ import (
 // Create Consent
 func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCreateConsentResponse,
 	consentExpire time.Time, err error) {
-	customerId := fmt.Sprintf("%s@setu-aa", phone)
-	consentUuid := uuid.New()
+	customerID := fmt.Sprintf("%s@setu-aa", phone)
+	consentUUID := uuid.New()
 	startTime := time.Now()
 	endTime := time.Now().Add(time.Minute * 15)
 
-	consentBody := createConsentBody(consentUuid, startTime, endTime, customerId)
+	consentBody := createConsentBody(consentUUID, startTime, endTime, customerID)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, consentBody)
 	setuRequestBody, err := json.Marshal(consentBody)
 	if err != nil {
 		return
 	}
 
-	respBytes, err := sendRequestToSetu(SetuApiCreateConsentPath, "POST", setuRequestBody, jwtToken)
+	respBytes, err := sendRequestToSetu(SetuAPICreateConsentPath, "POST", setuRequestBody, jwtToken)
 	if err != nil {
 		return
 	}
@@ -40,7 +39,7 @@ func sendCreateConsentReqToAcctAggregator(phone string) (consentResponse setuCre
 	return
 }
 
-func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, customerId string) setuCreateConsentRequest {
+func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, customerID string) setuCreateConsentRequest {
 
 	// Time Hack:
 	// Currently, Setu API is not following the RFC3339 Correctly,
@@ -57,6 +56,8 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 		endTime.Year(), endTime.Month(), endTime.Day(),
 		endTime.Hour(), endTime.Minute(), endTime.Second())
 
+	const dataEndpointsExplaination = `To provide the lowest prices, we need your financial information to understand you. We take the data points like personal information (including name, date of birth, address, pancard & existing insurance plans), deposit account transactions, current balance summary, insurance accounts and transactions, investment plans and debt to understand your lifestyle and plans that would best suit you. You have the right to revoke/request for data deletion at any point in the future. Sharing bank account and insurance account is a minimum requirement.`
+
 	requestBody := setuCreateConsentRequest{
 		Ver:       "1.0",
 		Timestamp: startTime3339,
@@ -72,15 +73,15 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 				FiTypesTermDeposit, FiTypesRecurringDeposit, FiTypesPPF, FiTypesNPS,
 			},
 			DataConsumer: idType{
-				Id: "FIU",
+				ID: "FIU",
 			},
 			Customer: idType{
-				Id: customerId,
+				ID: customerID,
 			},
 			Purpose: purpose{
 				Code:   fmt.Sprint(PurposeOneTime),
-				RefUri: "https://api.rebit.org.in/aa/purpose/105.xml",
-				Text:   controllers.DataEndpointsExplainationInParagraph,
+				RefURI: "https://api.rebit.org.in/aa/purpose/105.xml",
+				Text:   dataEndpointsExplaination,
 				Category: purposeCategory{
 					Type: "string",
 				},
@@ -95,19 +96,19 @@ func createConsentBody(uuid uuid.UUID, startTime time.Time, endTime time.Time, c
 	return requestBody
 }
 
-func addOrUpdateConsentToDb(userId string, consent setuCreateConsentResponse,
+func addOrUpdateConsentToDb(userID string, consent setuCreateConsentResponse,
 	expiry time.Time) (userConsent models.UserConsents, err error) {
 
 	userConsent = models.UserConsents{
-		UserId:         userId,
-		CustomerId:     consent.Customer.Id,
+		UserID:         userID,
+		CustomerID:     consent.Customer.ID,
 		Expire:         expiry,
 		ConsentStatus:  models.EmptyColumn,
 		ArtefactStatus: models.ArtefactStatusPending,
 		DataFetched:    false,
 		SignedConsent:  models.EmptyColumn,
 		ConsentHandle:  consent.ConsentHandle,
-		ConsentId:      uuid.Nil,
+		ConsentID:      uuid.Nil,
 	}
 
 	if err = deleteUserConsent(userConsent); err != nil {
@@ -125,7 +126,7 @@ func updateUserConsentForStatusChange(consent consentNotifierStatus) error {
 	if consent.ConsentStatus == models.ConsentStatusRevoked {
 		userConsent = models.UserConsents{
 			SignedConsent:  models.EmptyColumn,
-			ConsentId:      consent.ConsentId,
+			ConsentID:      consent.ConsentID,
 			DataFetched:    false,
 			ConsentStatus:  consent.ConsentStatus,
 			ArtefactStatus: models.ArtefactStatusDenied,
@@ -153,22 +154,22 @@ func updateSignedConsent(userConsent models.UserConsents) (err error) {
 		return
 	}
 
-	consentId, err := getUserArtefactStatus(userConsent.UserId, userConsent.ConsentHandle)
+	consentID, err := getUserArtefactStatus(userConsent.UserID, userConsent.ConsentHandle)
 	if err != nil {
 		return
 	}
-	if err = fetchSignedConsent(userConsent.UserId, consentId); err != nil {
+	if err = fetchSignedConsent(userConsent.UserID, consentID); err != nil {
 		return
 	}
-	if err = createAndSaveSessionDetails(userConsent.UserId); err != nil {
+	if err = createAndSaveSessionDetails(userConsent.UserID); err != nil {
 		return
 	}
 
 	return
 }
 
-func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uuid.UUID, err error) {
-	urlPath := fmt.Sprintf(SetuApiConsentStatusPath, consentHandle)
+func getUserArtefactStatus(userID string, consentHandle uuid.UUID) (consentID uuid.UUID, err error) {
+	urlPath := fmt.Sprintf(SetuAPIConsentStatusPath, consentHandle)
 	jwtPayload := setuConsentStatusRequest{Path: urlPath}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtPayload)
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
@@ -182,12 +183,12 @@ func getUserArtefactStatus(userId string, consentHandle uuid.UUID) (consentId uu
 		return
 	}
 
-	consentId = consentStatus.ConsentStatus.Id
+	consentID = consentStatus.ConsentStatus.ID
 	return
 }
 
-func fetchSignedConsent(userId string, consentId uuid.UUID) (err error) {
-	urlPath := fmt.Sprintf(SetuApiConsentSignedPath, consentId)
+func fetchSignedConsent(userID string, consentID uuid.UUID) (err error) {
+	urlPath := fmt.Sprintf(SetuAPIConsentSignedPath, consentID)
 	jwtPayload := setuConsentStatusRequest{Path: urlPath}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtPayload)
 	respBytes, err := sendRequestToSetu(urlPath, "GET", []byte{}, jwtToken)
@@ -203,9 +204,10 @@ func fetchSignedConsent(userId string, consentId uuid.UUID) (err error) {
 	updatedConsent := models.UserConsents{
 		ArtefactStatus: signedConsent.Status,
 		SignedConsent:  signedConsent.SignedConsent,
-		ConsentId:      signedConsent.ConsentId,
+		ConsentID:      signedConsent.ConsentID,
 	}
 
-	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?", userId).Updates(&updatedConsent)
+	updatedRow := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
+		userID).Updates(&updatedConsent)
 	return updatedRow.Error
 }

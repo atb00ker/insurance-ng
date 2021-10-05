@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// LoadEnv loads the environment variables from .env file
 func LoadEnv() {
 	fmt.Println("Loading environment Variables...")
 	if err := godotenv.Load(); err != nil {
@@ -16,6 +17,7 @@ func LoadEnv() {
 	}
 }
 
+// IsDebugMode checks if debug mode is enabled
 func IsDebugMode() bool {
 	debug, err := strconv.ParseBool(os.Getenv("DEBUG"))
 	if err != nil {

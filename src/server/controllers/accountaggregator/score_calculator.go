@@ -1,3 +1,5 @@
+package accountaggregator
+
 // The formulas used by insurance companies are researched
 // over long periods of time by a team of dedicated
 // statisticians, I do not know the art of that trade, so
@@ -5,7 +7,6 @@
 // However, in the spirit of completeness, I will provide,
 // the datapoints that AA can provide as an input to the
 // formulas.
-package account_aggregator
 
 import "time"
 
@@ -35,7 +36,7 @@ func getMedicalPlanScore(allFipData []fipDataCollection, sharedDataSources int16
 
 func getWealthPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your financial status in the society can indicate a lot about
-	// many aspects of your life, including the lenght of it.
+	// many aspects of your life, including the length of it.
 	// Datapoints:
 	// - deposit:summary.currentBalance
 	// - deposit:transactions.transaction.type+narration+amount (check for spending patterns) -- excessive
@@ -50,7 +51,7 @@ func getWealthPlanScore(allFipData []fipDataCollection, sharedDataSources int16)
 
 func getDebtPlanScore(allFipData []fipDataCollection, sharedDataSources int16) float32 {
 	// Knowning about your financial status in the society can indicate a lot about
-	// many aspects of your life, including the lenght of it.
+	// many aspects of your life, including the length of it.
 	// Datapoints:
 	// - deposit:summary.currentBalance
 	// - deposit:transactions.transaction.type+narration+amount+transactionTimestamp (spending patterns

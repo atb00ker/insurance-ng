@@ -1,4 +1,4 @@
-package account_aggregator
+package accountaggregator
 
 import (
 	"time"
@@ -7,30 +7,40 @@ import (
 	"github.com/google/uuid"
 )
 
+// All the Setu API endpoints
 const (
-	SetuApiCreateConsentPath = "Consent"
-	SetuApiConsentStatusPath = "/Consent/handle/%s"
-	SetuApiConsentSignedPath = "/Consent/%s"
-	SetuApiFiRequest         = "/FI/request"
-	SetuApiFiDataFetch       = "/FI/fetch/%s"
-	RahasyaApiGetKeys        = "/ecc/v1/generateKey"
-	RahasyaApiDecrypt        = "/ecc/v1/decrypt"
+	SetuAPICreateConsentPath = "Consent"
+	SetuAPIConsentStatusPath = "/Consent/handle/%s"
+	SetuAPIConsentSignedPath = "/Consent/%s"
+	SetuAPIFiRequest         = "/FI/request"
+	SetuAPIFiDataFetch       = "/FI/fetch/%s"
+	RahasyaAPIGetKeys        = "/ecc/v1/generateKey"
+	RahasyaAPIDecrypt        = "/ecc/v1/decrypt"
 )
 
+// Enum of all account aggregator  Consent Mode
 const (
-	// Consent Mode
 	ConsentModeView   = "VIEW"
 	ConsentModeStore  = "STORE"
 	ConsentModeQUERY  = "QUERY"
 	ConsentModeSTREAM = "STREAM"
-	// Fetch Type
+)
+
+// Enum of all account aggregator  Fetch Type
+const (
 	FetchTypeOnetime  = "ONETIME"
 	FetchTypePeriodic = "PERIODIC"
-	// Consent Types
+)
+
+// Enum of all account aggregator  Consent Types
+const (
 	ConsentTypesProfile     = "PROFILE"
 	ConsentTypesTransaction = "TRANSACTIONS"
 	ConsentTypesSummary     = "SUMMARY"
-	// FI Types
+)
+
+// Enum of all account aggregator FI Types
+const (
 	FiTypesDeposit             = "DEPOSIT"
 	FiTypesMutualFunds         = "MUTUAL_FUNDS"
 	FiTypesCreditCard          = "CREDIT_CARD"
@@ -47,6 +57,7 @@ const (
 	FiTypesETF                 = "ETF"
 )
 
+// Enum of all account aggregator purpose codes
 const (
 	PurposeWealthManagement int = 101
 	PurposeReportings
@@ -99,12 +110,12 @@ type consentDetails struct {
 }
 
 type idType struct {
-	Id string `json:"id"`
+	ID string `json:"id"`
 }
 
 type purpose struct {
 	Code     string          `json:"code"`
-	RefUri   string          `json:"refUri"`
+	RefURI   string          `json:"refUri"`
 	Text     string          `json:"text"`
 	Category purposeCategory `json:"Category"`
 }
@@ -146,7 +157,7 @@ type setuConsentStatusResponse struct {
 }
 
 type consentStatus struct {
-	Id     uuid.UUID `json:"id"`
+	ID     uuid.UUID `json:"id"`
 	Status string    `json:"status"`
 }
 
@@ -155,7 +166,7 @@ type setuSignedConsentResponse struct {
 	Ver             string     `json:"ver"`
 	Txnid           uuid.UUID  `json:"txnid"`
 	ConsentUse      consentUse `json:"ConsentUse"`
-	ConsentId       uuid.UUID  `json:"consentId"`
+	ConsentID       uuid.UUID  `json:"consentID"`
 	CreateTimestamp time.Time  `json:"createTimestamp"`
 	SignedConsent   string     `json:"signedConsent"`
 	Timestamp       time.Time  `json:"timestamp"`
@@ -167,7 +178,7 @@ type setuSignedConsentResponse struct {
 type consentUse struct {
 	Count           int       `json:"count"`
 	LastUseDateTime uuid.UUID `json:"lastUseDateTime"`
-	LogUri          string    `json:"logUri"`
+	LogURI          string    `json:"logUri"`
 }
 
 // Rahasya Get Keys Types //
@@ -206,14 +217,14 @@ type setuFiSessionResponse struct {
 	Ver       string    `json:"ver"`
 	Timestamp time.Time `json:"timestamp"`
 	Txnid     uuid.UUID `json:"txnid"`
-	SessionId uuid.UUID `json:"sessionId"`
-	ConsentId uuid.UUID `json:"consentId"`
+	SessionID uuid.UUID `json:"sessionID"`
+	ConsentID uuid.UUID `json:"consentID"`
 	ErrorCode string    `json:"errorCode"`
 	ErrorMsg  string    `json:"errorMsg"`
 }
 
 type fiConsent struct {
-	Id               uuid.UUID `json:"id"`
+	ID               uuid.UUID `json:"id"`
 	DigitalSignature string    `json:"digitalSignature"`
 }
 
@@ -229,7 +240,7 @@ type setuFiDataResponse struct {
 type fiEncryptionData struct {
 	KeyMaterial rahasyaKeyMaterial `json:"KeyMaterial"`
 	Data        []fiData           `json:"data"`
-	FipId       string             `json:"fipId"`
+	FipID       string             `json:"fipId"`
 }
 
 type fiData struct {
@@ -255,7 +266,7 @@ type rahasyaDataResponse struct {
 
 type fipDataCollection struct {
 	FipData []fipData
-	FipId   string
+	FipID   string
 }
 
 type fipData struct {
@@ -334,11 +345,11 @@ type setuConsentNotificationRequest struct {
 
 type consentNotifier struct {
 	Type string `json:"type"`
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 }
 
 type consentNotifierStatus struct {
-	ConsentId     uuid.UUID `json:"consentId"`
+	ConsentID     uuid.UUID `json:"consentID"`
 	ConsentHandle uuid.UUID `json:"consentHandle"`
 	ConsentStatus string    `json:"consentStatus"`
 }
@@ -354,7 +365,7 @@ type fINotificationRequest struct {
 		ID   string `json:"id"`
 	} `json:"Notifier"`
 	FIStatusNotification struct {
-		SessionID        string `json:"sessionId"`
+		SessionID        string `json:"sessionID"`
 		SessionStatus    string `json:"sessionStatus"`
 		FIStatusResponse []struct {
 			FipID    string `json:"fipID"`

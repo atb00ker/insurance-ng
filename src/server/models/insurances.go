@@ -6,31 +6,35 @@ import (
 	"gorm.io/gorm"
 )
 
+// Plans offered by Insurance NG
 const (
-	OfferePlansAllPlan      = "ALL_PLAN"
-	OfferePlansMedicalPlan  = "MEDICAL_PLAN"
-	OfferePlansPensionPlan  = "PENSION_PLAN"
-	OfferePlansFamilyPlan   = "FAMILY_PLAN"
-	OfferePlansChildrenPlan = "CHILDREN_PLAN"
-	OfferePlansTermPlan     = "TERM_PLAN"
-	OfferePlansMotorPlan    = "MOTOR_PLAN"
-	OfferePlansTravelPlan   = "TRAVEL_PLAN"
+	OfferPlansAllPlan      = "ALL_PLAN"
+	OfferPlansMedicalPlan  = "MEDICAL_PLAN"
+	OfferPlansPensionPlan  = "PENSION_PLAN"
+	OfferPlansFamilyPlan   = "FAMILY_PLAN"
+	OfferPlansChildrenPlan = "CHILDREN_PLAN"
+	OfferPlansTermPlan     = "TERM_PLAN"
+	OfferPlansMotorPlan    = "MOTOR_PLAN"
+	OfferPlansTravelPlan   = "TRAVEL_PLAN"
 )
 
+// InsuranceNGMockedClauses is mocked insurance clauses of other insurance providers
 var InsuranceNGMockedClauses = []string{
 	"We have an SLA of 48 hours of claim resolution. You are entited to 2% addition claim for every additional day.",
 	"Your coverage is effective from the time of payment without any delay or waiting period.",
 	"Your coverage DOES include all the previously known and declared conditions.",
 }
 
+// InsuranceApnaMockedClauses are clauses offered by Insurance NG
 var InsuranceApnaMockedClauses = []string{
 	"We have an SLA of 72 hours of claim resolution. You are entited to 1% addition claim for every additional day.",
 	"Your coverage is effective from the time of payment without any delay or waiting period.",
 	"Your coverage DOES NOT include all the previously known and declared conditions.",
 }
 
+// Insurance model is table of all Insurances offered by Insurance NG.
 type Insurance struct {
-	Id               uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	ID               uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	Title            string         `json:"title"`
 	Description      string         `json:"description"`
 	Type             string         `json:"type"`
@@ -41,26 +45,29 @@ type Insurance struct {
 	gorm.Model
 }
 
+// UserInsurance model is table that stores information about insurances that are purchased by the user
 type UserInsurance struct {
-	Id                uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
+	ID                uuid.UUID      `json:"id" gorm:"type:uuid;PRIMARY_KEY;"`
 	Type              string         `json:"type"`
-	CustomerId        string         `json:"customer_id"`
+	CustomerID        string         `json:"customer_id"`
 	Premium           float64        `json:"premium"`
 	Cover             float64        `json:"cover"`
 	IsActive          bool           `json:"is_active"`
 	IsClaimed         bool           `json:"is_claimed"`
-	AccountId         string         `json:"account_id"`
+	AccountID         string         `json:"account_id"`
 	Clauses           pq.StringArray `json:"clauses" gorm:"type:text[]"`
 	IsInsuranceNgAcct bool           `json:"is_insurance_ng_acct"`
 	gorm.Model
 }
 
-func (insurance *UserInsurance) BeforeCreate(tx *gorm.DB) (err error) {
-	insurance.Id = uuid.New()
+// BeforeCreate creates new UUID before saving to database
+func (userInsurance *UserInsurance) BeforeCreate(tx *gorm.DB) (err error) {
+	userInsurance.ID = uuid.New()
 	return
 }
 
+// BeforeCreate creates new UUID before saving to database
 func (insurance *Insurance) BeforeCreate(tx *gorm.DB) (err error) {
-	insurance.Id = uuid.New()
+	insurance.ID = uuid.New()
 	return
 }

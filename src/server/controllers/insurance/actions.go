@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func getUserDataRecord(userId string) (responseData getUserDataResponse, err error) {
+func getUserDataRecord(userID string) (responseData getUserDataResponse, err error) {
 	userConsentCh := make(chan userConsentChResp, 1)
-	go getUserConsent(userId, userConsentCh)
+	go getUserConsent(userID, userConsentCh)
 	insuranceAvailableCh := make(chan insuranceChResp, 1)
 	go getAllInsuranceOffers(insuranceAvailableCh)
 
@@ -38,8 +38,8 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 
 	userPlanScoresCh := make(chan userScoreChResp, 1)
 	userExistingInsuranceCh := make(chan userInsurancesChResp, 1)
-	go getUserPlanScore(userConsent.result.Id, userPlanScoresCh)
-	go getUserInsurances(userConsent.result.CustomerId, userExistingInsuranceCh)
+	go getUserPlanScore(userConsent.result.ID, userPlanScoresCh)
+	go getUserInsurances(userConsent.result.CustomerID, userExistingInsuranceCh)
 
 	userScore := <-userPlanScoresCh
 	if userScore.err != nil {
@@ -64,12 +64,12 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 			}
 		}
 
-		insuranceScore := GetScoreForType(userScore.result, insuranceInfo.Type)
+		insuranceScore := getScoreForType(userScore.result, insuranceInfo.Type)
 		insuranceOffered = append(insuranceOffered, insuranceOffers{
-			Id:                insuranceInfo.Id,
+			ID:                insuranceInfo.ID,
 			Title:             insuranceInfo.Title,
 			Description:       insuranceInfo.Description,
-			AccountId:         existingInsurance.AccountId,
+			AccountID:         existingInsurance.AccountID,
 			Score:             insuranceScore,
 			CurrentPremium:    existingInsurance.Premium,
 			CurrentCover:      existingInsurance.Cover,
@@ -92,7 +92,7 @@ func getUserDataRecord(userId string) (responseData getUserDataResponse, err err
 			Name:              userScore.result.Name,
 			DateOfBirth:       userScore.result.DateOfBirth,
 			Pancard:           userScore.result.Pancard,
-			Phone:             regexPattern.ReplaceAllString(userConsent.result.CustomerId, ""),
+			Phone:             regexPattern.ReplaceAllString(userConsent.result.CustomerID, ""),
 			SharedDataSources: userScore.result.SharedDataSources,
 			CkycCompliance:    userScore.result.CkycCompliance,
 			AgeScore:          userScore.result.AgeScore,
@@ -117,9 +117,9 @@ func getUserInsurances(pancard string, userExistingInsuranceCh chan userInsuranc
 	}
 }
 
-func getUserPlanScore(consentId uuid.UUID, userPlanScoreCh chan userScoreChResp) {
+func getUserPlanScore(consentID uuid.UUID, userPlanScoreCh chan userScoreChResp) {
 	var userPlanScore *models.UserScores
-	result := config.Database.Where("user_consent_id = ?", consentId).Take(&userPlanScore)
+	result := config.Database.Where("user_consent_id = ?", consentID).Take(&userPlanScore)
 
 	userPlanScoreCh <- userScoreChResp{
 		result: userPlanScore,
@@ -127,9 +127,9 @@ func getUserPlanScore(consentId uuid.UUID, userPlanScoreCh chan userScoreChResp)
 	}
 }
 
-func getUserConsent(userId string, userConsentChannel chan userConsentChResp) {
+func getUserConsent(userID string, userConsentChannel chan userConsentChResp) {
 	var userConsent *models.UserConsents
-	result := config.Database.Where("user_id = ?", userId).Take(&userConsent)
+	result := config.Database.Where("user_id = ?", userID).Take(&userConsent)
 
 	userConsentChannel <- userConsentChResp{
 		result: userConsent,
@@ -147,47 +147,47 @@ func getAllInsuranceOffers(insuranceAvailableChannel chan insuranceChResp) {
 	}
 }
 
-func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
+func createInsuranceRecord(userID string, insuranceID uuid.UUID) (err error) {
 	var userConsent models.UserConsents
 	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
-		userId).Take(&userConsent); result.Error != nil {
+		userID).Take(&userConsent); result.Error != nil {
 		err = result.Error
 		return
 	}
 
 	var userScore models.UserScores
 	if result := config.Database.Model(&models.UserScores{}).Where("user_consent_id = ?",
-		userConsent.Id).Take(&userScore); result.Error != nil {
+		userConsent.ID).Take(&userScore); result.Error != nil {
 		err = result.Error
 		return
 	}
 
 	var insurance models.Insurance
 	if result := config.Database.Model(&models.Insurance{}).Where("id = ?",
-		insuranceId).Take(&insurance); result.Error != nil {
+		insuranceID).Take(&insurance); result.Error != nil {
 		err = result.Error
 		return
 	}
 
-	insuranceScore := float64(GetScoreForType(&userScore, insurance.Type))
-	insuranceAcctId := ""
+	insuranceScore := float64(getScoreForType(&userScore, insurance.Type))
+	insuranceAcctID := ""
 	insuranceActivate := insuranceScore > PreApprovedBar
 	if insuranceActivate {
-		insuranceAcctId = controllers.GetRandomString(10)
+		insuranceAcctID = controllers.GetRandomString(10)
 	}
 	newInsurance := models.UserInsurance{
 		Type:              insurance.Type,
 		Premium:           getOfferPremium(insurance.Premium, insuranceScore),
 		Cover:             getOfferCover(insurance.Cover, insuranceScore),
 		IsActive:          insuranceActivate,
-		AccountId:         insuranceAcctId,
-		CustomerId:        userConsent.CustomerId,
+		AccountID:         insuranceAcctID,
+		CustomerID:        userConsent.CustomerID,
 		Clauses:           insurance.Clauses,
 		IsClaimed:         false,
 		IsInsuranceNgAcct: true,
 	}
 
-	if config.Database.Where("customer_id = ?", userConsent.CustomerId).Where("type = ?",
+	if config.Database.Where("customer_id = ?", userConsent.CustomerID).Where("type = ?",
 		insurance.Type).Updates(&newInsurance).RowsAffected == 0 {
 		if result := config.Database.Create(&newInsurance); result.Error != nil {
 			err = result.Error
@@ -198,23 +198,23 @@ func createInsuranceRecord(userId string, insuranceId uuid.UUID) (err error) {
 	return
 }
 
-func initiateInsuranceClaim(userId string, insuranceId uuid.UUID) (err error) {
+func initiateInsuranceClaim(userID string, insuranceID uuid.UUID) (err error) {
 	var userConsent models.UserConsents
 	if result := config.Database.Model(&models.UserConsents{}).Where("user_id = ?",
-		userId).Take(&userConsent); result.Error != nil {
+		userID).Take(&userConsent); result.Error != nil {
 		err = result.Error
 		return
 	}
 
 	var insurance models.Insurance
 	if result := config.Database.Model(&models.Insurance{}).Where("id = ?",
-		insuranceId).Take(&insurance); result.Error != nil {
+		insuranceID).Take(&insurance); result.Error != nil {
 		err = result.Error
 		return
 	}
 
 	result := config.Database.Model(&models.UserInsurance{}).Where("customer_id = ?",
-		userConsent.CustomerId).Where("type = ?", insurance.Type).Update("is_claimed", true)
+		userConsent.CustomerID).Where("type = ?", insurance.Type).Update("is_claimed", true)
 	if result.Error != nil {
 		err = result.Error
 		return
