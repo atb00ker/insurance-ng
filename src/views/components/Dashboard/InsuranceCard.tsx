@@ -5,15 +5,19 @@ import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { RouterPath } from '../../enums/UrlPath';
+import { hourglassWaitIcon } from '../../helpers/svgIcons';
+import './InsuranceCard.scss';
 
 const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({ fiData, insurance }) => {
   const history = useHistory();
-  const recommend = 'Recommended plan',
-    activationInProgress = 'Application under review...',
-    activePlan = 'Active Plan',
-    highlyRecommend = 'Highly recommended plan',
-    doNotRecommend = 'Not recommended plan',
-    notApplicable = 'You cannot purchase this plan';
+
+  const recommend = <span>Recommended plan</span>,
+    activationInProgress = <span>{hourglassWaitIcon('0 1 18 18')} Application under review</span>,
+    activePlan = <span>Active Plan</span>,
+    highlyRecommend = <span>Highly recommended plan</span>,
+    doNotRecommend = <span>Not recommended plan</span>,
+    notApplicable = <span>You cannot purchase this plan</span>;
+
   let recommendedText = recommend,
     cardColor = 'danger';
 
@@ -49,7 +53,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
             <Card.Subtitle className='mb-2 text-muted'>
               {insurance.account_id.length ? insurance.account_id : '-'}
             </Card.Subtitle>
-            <Card.Text className='roboto-regular' style={{ overflow: 'hidden', height: 120 }}>
+            <Card.Text className='insurance-card-text roboto-regular'>
               {insurance.description} <br />
               {insurance.is_insurance_ng_acct && (
                 <>

@@ -78,7 +78,7 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
             </Form>
           </Col>
           <Col sm='12'>
-            {!showError && <CreateConsentImage imgHeight='100%' width='100%' />}
+            {!showError && <CreateConsentImage imgHeight='100%' width='100%' height='' />}
             {!!showError && <ServerRequestError height='500px' imgHeight='250px' width='100%' />}
           </Col>
         </>

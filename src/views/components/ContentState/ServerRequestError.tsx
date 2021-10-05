@@ -3,6 +3,7 @@ import ServerDownSvg from '../../assets/illustrations/server-down-1.svg';
 import { IContentStateImages } from '../../types/react-component-input-types';
 
 const ServerRequestError: React.FC<IContentStateImages> = ({ height, width, imgHeight }) => {
+  // Proof: f014
   return (
     <>
       <div className='text-center d-flex' style={{ height: height }}>

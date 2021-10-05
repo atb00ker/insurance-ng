@@ -16,7 +16,7 @@ func (m *SetuValidateMiddleware) HandlerWithNext(response http.ResponseWriter, r
 	next http.HandlerFunc) {
 	auth := request.Header.Get("Authorization")
 	if auth == os.Getenv("APP_SETU_AA_KEY") {
-		// TODO: Check JWS
+		// TODO: Check Setu JWS
 		next(response, request)
 	} else {
 		controllers.HandleError(response, "Incorrect Authorization token!")

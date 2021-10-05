@@ -5,7 +5,7 @@ import { IFIData, IFIInsurance } from '../../interfaces/IFIData';
 import Button from 'react-bootstrap/esm/Button';
 import { RouterPath } from '../../enums/UrlPath';
 
-const InsuranceInfoTitle: React.FC<{ fiData: IFIData; insuranceInfo: IFIInsurance }> = ({
+const TitleSection: React.FC<{ fiData: IFIData; insuranceInfo: IFIInsurance }> = ({
   fiData,
   insuranceInfo,
 }) => {
@@ -51,4 +51,4 @@ const InsuranceInfoTitle: React.FC<{ fiData: IFIData; insuranceInfo: IFIInsuranc
   );
 };
 
-export default InsuranceInfoTitle;
+export default TitleSection;

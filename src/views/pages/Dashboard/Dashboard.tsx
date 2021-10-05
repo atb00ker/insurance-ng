@@ -32,8 +32,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     // Redirect to login if user is not authenticated.
-    if (auth.isReady && !auth.isAuthenticated)
-      auth.loginWithRedirect()
+    if (auth.isReady && !auth.isAuthenticated) auth.loginWithRedirect();
 
     // Notification Hack:
     // This is only a hack to mock Setu Notification.

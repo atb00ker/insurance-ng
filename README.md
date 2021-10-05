@@ -30,6 +30,8 @@ Insurance NG is the next generation of insurance service with features like vari
 
 To deliver the next generation of insurance services experience, insurance NG provides the following features:
 
+[![YouTube Features Video](./docs/youtube-features-video.png)](https://www.youtube.com/watch?v=WQT03VS6VX8)
+
 - Variable Premiums: We offer lower premiums which adjusts to your lifestyle. If you are a low risk taker, why should your premiums be high?
 - Tailored Dashboard: Don't waste time searching what you want, we will find it for you and provide an experience created uniquely for you.
 - Find Better Plans: Do you have an existing insurance, if there exists a better plan in the category, we will suggest it to you.

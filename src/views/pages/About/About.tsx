@@ -25,6 +25,10 @@ const About: React.FC = () => {
             <a className='href-no-underline' href={hackathonUrl}>
               Setu x GitHub Hackathon on Devfolio {openInNewTabIcon('0 0 32 32')}
             </a>
+            . Watch{' '}
+            <a className='href-no-underline' href='https://www.youtube.com/watch?v=WQT03VS6VX8'>
+              introductory video of the project on YouTube {openInNewTabIcon('0 0 32 32')}
+            </a>
             .
           </p>
         </Col>
