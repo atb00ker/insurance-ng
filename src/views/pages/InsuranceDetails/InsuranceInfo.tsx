@@ -21,6 +21,8 @@ import { InsuranceInfoCharts } from '../../components/InsuranceInfo/InsuranceInf
 import { InsuranceInfoClauses } from '../../components/InsuranceInfo/InsuranceInfoClauses';
 import { PageState } from '../../enums/PageStates';
 import { IAuth } from '../../types/IUser';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallback } from '../../components/ContentState/ErrorFallback';
 
 const InsuranceInfo: React.FC = () => {
   const history = useHistory();
@@ -107,11 +109,13 @@ const InsuranceInfo: React.FC = () => {
           </Row>
           <Row className='justify-content-center'>
             <Col id='topTable' sm='8' md='6' lg='5'>
-              <BasicInfoTable
-                insuranceInfo={insuranceInfo}
-                startPurchaseProcess={startPurchaseProcess}
-                startClaimProcess={startClaimProcess}
-              />
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <BasicInfoTable
+                  insuranceInfo={insuranceInfo}
+                  startPurchaseProcess={startPurchaseProcess}
+                  startClaimProcess={startClaimProcess}
+                />
+              </ErrorBoundary>
             </Col>
             <Col id='introText' className='mt-4' sm='12' md='10'>
               {insuranceInfo.description} Voluptas nihil sed laborum sequi quaerat veritatis hic facere eaque
@@ -129,14 +133,18 @@ const InsuranceInfo: React.FC = () => {
               Commodi repellat reiciendis ipsa aperiam sequi, illum quae. Fuga, eaque fugiat.
             </Col>
             <Col id='clauseTable' sm='12' md='8'>
-              <InsuranceInfoClauses insuranceInfo={insuranceInfo} />
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <InsuranceInfoClauses insuranceInfo={insuranceInfo} />
+              </ErrorBoundary>
             </Col>
             <Col id='clauseText' sm='12' md='10'>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam aspernatur labore similique eaque
               officiis! Aliquam maiores eaque excepturi praesentium esse consectetur, ab impedit, amet
               veritatis culpa reprehenderit delectus consequatur blanditiis?
             </Col>
-            <InsuranceInfoCharts insuranceInfo={insuranceInfo} />
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <InsuranceInfoCharts insuranceInfo={insuranceInfo} />
+            </ErrorBoundary>
             <Col id='bottomText' className='mb-5' sm='12' md='10'>
               Tenetur ab corrupti delectus? Officia magni eligendi vel itaque quidem eaque laboriosam magnam
               tempore exercitationem atque aliquam, culpa amet, dolor hic similique in qui quaerat velit! Odit

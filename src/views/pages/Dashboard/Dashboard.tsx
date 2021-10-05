@@ -16,6 +16,8 @@ import { ServerPath } from '../../enums/UrlPath';
 import { InvalidConsent } from '../../components/ContentState/InvalidConsent';
 import { PageState } from '../../enums/PageStates';
 import { IAuth } from '../../types/IUser';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallback } from '../../components/ContentState/ErrorFallback';
 
 const Dashboard: React.FC = () => {
   const auth: IAuth = useContext(AuthContext);
@@ -125,11 +127,15 @@ const Dashboard: React.FC = () => {
       {!showError && !showLoader && !showProcessing && !showShareInfo && (
         <>
           <Row className='mt-1 mb-2 justify-content-center'>
-            <UserProfile auth={auth} changePageState={changePageState} fiData={fiData.data} />
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <UserProfile auth={auth} changePageState={changePageState} fiData={fiData.data} />
+            </ErrorBoundary>
           </Row>
           <Row className='mt-1 mb-5 justify-content-center'>
             {sortedFiInsuranceList.map(insurance => (
-              <InsuranceCard key={insurance.type} fiData={fiData} insurance={insurance} />
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <InsuranceCard key={insurance.type} fiData={fiData} insurance={insurance} />
+              </ErrorBoundary>
             ))}
           </Row>
         </>
