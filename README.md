@@ -6,6 +6,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b989e07971bd4b05b5b6d8678c86c69e)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=atb00ker/insurance-ng&utm_campaign=Badge_Grade)
 ![Stack](https://img.shields.io/static/v1?label=stack&message=golang-react&color=green)
 ![License](https://img.shields.io/github/license/atb00ker/insurance-ng)
+[![Support](https://img.shields.io/badge/support-orange)](mailto:ajay39in@gmail.com)
 
 <img src="./docs/complete-logo-docs.jpg" alt="Logo" />
 
