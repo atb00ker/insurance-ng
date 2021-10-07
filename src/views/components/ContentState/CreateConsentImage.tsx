@@ -1,8 +1,8 @@
 import React from 'react';
 import ProcessSummaryImage from '../../assets/images/process-summary.jpg';
 import Image from 'react-bootstrap/Image';
-import Row from 'react-bootstrap/esm/Row';
-import Col from 'react-bootstrap/esm/Col';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { IContentStateImages } from '../../types/react-component-input-types';
 import { Link } from 'react-router-dom';
 import { RouterPath } from '../../enums/UrlPath';

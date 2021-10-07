@@ -61,7 +61,7 @@ const BasicInfoTable: React.FC<BasicInfoTableInput> = ({
               )}
             </tr>
           )}
-          {insuranceInfo.is_insurance_ng_acct && (
+          {!!insuranceInfo.is_insurance_ng_acct && (
             <tr>
               <td>Status</td>
               {insuranceInfo.is_active && (

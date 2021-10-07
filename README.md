@@ -1,12 +1,13 @@
 # Insurance NG
 
 [![Version](https://img.shields.io/github/tag/atb00ker/insurance-ng)](https://github.com/atb00ker/insurance-ng/releases/latest)
+[![CI Tests](https://github.com/atb00ker/insurance-ng/actions/workflows/branch.yml/badge.svg)](https://github.com/atb00ker/insurance-ng/actions/workflows/branch.yml)
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/atb00ker/insurance-ng)](https://hub.docker.com/repository/docker/atb00ker/insurance-ng)
 [![Go Report Card](https://goreportcard.com/badge/github.com/atb00ker/insurance-ng)](https://goreportcard.com/report/github.com/atb00ker/insurance-ng)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b989e07971bd4b05b5b6d8678c86c69e)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=atb00ker/insurance-ng&utm_campaign=Badge_Grade)
 ![Stack](https://img.shields.io/static/v1?label=stack&message=golang-react&color=green)
 ![License](https://img.shields.io/github/license/atb00ker/insurance-ng)
-[![Support](https://img.shields.io/badge/support-orange)](mailto:ajay39in@gmail.com)
+[![Support](https://img.shields.io/badge/support-mail-orange)](mailto:ajay39in@gmail.com)
 
 <img src="./docs/complete-logo-docs.jpg" alt="Logo" />
 

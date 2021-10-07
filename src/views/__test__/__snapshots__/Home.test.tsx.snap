@@ -1,0 +1,581 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home page tests home snapshot structure after login 1`] = `
+<div
+  className="container"
+>
+  <div
+    className="mt-4 row"
+  >
+    <div
+      className="col-sm-12"
+    >
+      <form
+        className=""
+        data-testid="home-phone-number-input"
+        id="ProvideConsentForm"
+        noValidate={true}
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group row"
+        >
+          <div
+            className="col"
+          >
+            <div
+              className="create-consent-input-container mx-auto"
+            >
+              <input
+                className="d-inline create-consent-input form-control"
+                id="enterNumber"
+                name="phone"
+                pattern="[0-9]{10}"
+                placeholder="Enter Phone Number"
+                required={true}
+              />
+              <button
+                className="d-inline ms-2 btn btn-primary"
+                disabled={false}
+                style={
+                  Object {
+                    "marginBottom": "2px",
+                  }
+                }
+                type="submit"
+              >
+                <svg
+                  className="bi bi-arrow-right-circle-fill"
+                  fill="currentColor"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"
+                  />
+                </svg>
+              </button>
+              <div
+                className="invalid-feedback"
+              >
+                A valid phone number is required for getting your financial information.
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div
+      className="col-sm-12"
+    >
+      <div
+        className="justify-content-center row"
+      >
+        <div
+          className="mt-4 text-center col-lg-7 col-md-10 col-sm-12"
+        >
+          To provide
+           
+          <a
+            className="href-no-underline"
+            href="/features/"
+            onClick={[Function]}
+          >
+            the features
+          </a>
+           
+          and show lowest possible prices, we need your financial information associated with your phone number. We will show you all the data we need to access and you'll have the choice to provide consent to our data request.
+        </div>
+        <div
+          className="mt-4 text-center col-lg-7 col-md-10 col-sm-12"
+        >
+          <img
+            alt="Process Summary"
+            className=""
+            height="100%"
+            src={Object {}}
+            width="100%"
+          />
+        </div>
+        <div
+          className="mt-4 mb-5 text-center col-lg-7 col-md-10 col-sm-12"
+        >
+          We use the setu account aggregator to collect the data, if you want more information about the data collection, processing, storage, security, sharing or deletion or you want to contact us. Please visit
+           
+          <a
+            className="href-no-underline"
+            href="/about/"
+            onClick={[Function]}
+          >
+            our about page
+          </a>
+          .
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Home page tests home snapshot structure before login 1`] = `
+Array [
+  <div
+    className="container"
+  />,
+  <div
+    className="overflow-hidden container-fluid"
+  >
+    <div
+      className="cover-screen row"
+    >
+      <div
+        className="d-flex-center col-sm-12"
+      >
+        <div
+          className="d-flex-center container"
+        >
+          <div
+            className="d-flex-center row"
+          >
+            <div
+              className="text-center-md mt-4 max-width-960 col-md-5 col-sm-12"
+            >
+              <h1>
+                The future of 
+                <span
+                  className="text-primary"
+                >
+                  Insurance Services
+                </span>
+              </h1>
+              <h5>
+                Insurance management experience tailored to your lifestyle.
+              </h5>
+              <button
+                className="d-inline btn btn-primary"
+                data-testid="features-page-button"
+                disabled={false}
+                onClick={[Function]}
+                type="button"
+              >
+                Sign Up 
+                <svg
+                  className="bi bi-arrow-right-circle-fill"
+                  fill="currentColor"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              className="text-center col-md-7 col-12 order-md-last order-first"
+              data-testid="features-page-logo"
+            >
+              <img
+                className="d-md-none"
+                src={Object {}}
+                width="90%"
+              />
+              <img
+                className="d-none d-md-block d-lg-none"
+                src={Object {}}
+                width="400px"
+              />
+              <img
+                className="d-none d-lg-block"
+                src={Object {}}
+                width="500px"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen bg-off-white row"
+    >
+      <div
+        className="col-sm-12"
+      >
+        <div
+          className="h-100 max-width-960 container"
+        >
+          <div
+            className="h-100 row"
+          >
+            <div
+              className="cover-screen-flex col-md-8 col-12"
+            >
+              <img
+                alt="Variable Premiums"
+                className="d-none d-md-block cover-screen-flex"
+                src={Object {}}
+                width="450px"
+              />
+              <img
+                alt="Variable Premiums"
+                className="d-md-none cover-screen-flex"
+                src={Object {}}
+                width="100%"
+              />
+            </div>
+            <div
+              className="col-md-4 col-12"
+            >
+              <div
+                className="cover-screen-flex"
+              >
+                <div
+                  className="row"
+                >
+                  <div
+                    className="col-12"
+                  >
+                    <h2
+                      className="text-primary"
+                    >
+                      Variable Premiums
+                    </h2>
+                  </div>
+                  <div
+                    className="col-12"
+                  >
+                    We offer lower premiums which adjusts to your lifestyle. If you are a low risk taker, why should your premiums be high?
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen row"
+    >
+      <div
+        className="col-sm-12"
+      >
+        <div
+          className="h-100 max-width-960 container"
+        >
+          <div
+            className="h-100 row"
+          >
+            <div
+              className="col-md-4 col-12"
+            >
+              <div
+                className="cover-screen-flex"
+              >
+                <div
+                  className="row"
+                >
+                  <div
+                    className="col-12"
+                  >
+                    <h2
+                      className="text-primary"
+                    >
+                      Tailored Dashboard
+                    </h2>
+                  </div>
+                  <div
+                    className="col-12"
+                  >
+                    Don't waste time searching what you want, we will find it for you and provide an experience created uniquely for you.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className="cover-screen-flex col-md-8 col-12 order-md-last order-first"
+            >
+              <img
+                alt="Tailored Dashboard"
+                className="d-none d-md-block cover-screen-flex"
+                src={Object {}}
+                width="550px"
+              />
+              <img
+                alt="Tailored Dashboard"
+                className="d-md-none cover-screen-flex"
+                src={Object {}}
+                width="100%"
+              />
+               
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen bg-off-white row"
+    >
+      <div
+        className="col-sm-12"
+      >
+        <div
+          className="h-100 max-width-960 container"
+        >
+          <div
+            className="h-100 row"
+          >
+            <div
+              className="cover-screen-flex col-md-8 col-12"
+            >
+              <img
+                alt="Find Better Plans"
+                className="d-none d-md-block cover-screen-flex"
+                src={Object {}}
+                width="550px"
+              />
+              <img
+                alt="Find Better Plans"
+                className="d-md-none cover-screen-flex"
+                src={Object {}}
+                width="100%"
+              />
+            </div>
+            <div
+              className="col-md-4 col-12"
+            >
+              <div
+                className="cover-screen-flex"
+              >
+                <div
+                  className="row"
+                >
+                  <div
+                    className="col-12"
+                  >
+                    <h2
+                      className="text-primary"
+                    >
+                      Find Better Plans
+                    </h2>
+                  </div>
+                  <div
+                    className="col-12"
+                  >
+                    Do you have an existing insurance, if there exists a better plan in the category, we will suggest it to you.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen row"
+    >
+      <div
+        className="col-sm-12"
+      >
+        <div
+          className="h-100 max-width-960 container"
+        >
+          <div
+            className="h-100 row"
+          >
+            <div
+              className="col-md-4 col-12"
+            >
+              <div
+                className="cover-screen-flex"
+              >
+                <div
+                  className="row"
+                >
+                  <div
+                    className="col-12"
+                  >
+                    <h2
+                      className="text-primary"
+                    >
+                      Clause Discovery
+                    </h2>
+                  </div>
+                  <div
+                    className="col-12"
+                  >
+                    No need to go through 18 pages of terms and conditions, clearly see what's applicable for you and for what you are paying.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className="cover-screen-flex col-md-8 col-12 order-md-last order-first"
+            >
+              <img
+                alt="Clause Discovery"
+                className="d-none d-md-block cover-screen-flex"
+                src={Object {}}
+                width="550px"
+              />
+              <img
+                alt="Clause Discovery"
+                className="d-md-none cover-screen-flex"
+                src={Object {}}
+                width="100%"
+              />
+               
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen bg-off-white row"
+    >
+      <div
+        className="col-sm-12"
+      >
+        <div
+          className="h-100 max-width-960 container"
+        >
+          <div
+            className="h-100 row"
+          >
+            <div
+              className="cover-screen-flex col-md-8 col-12"
+            >
+              <img
+                alt="See the future"
+                className="d-none d-md-block cover-screen-flex"
+                src={Object {}}
+                width="650px"
+              />
+              <img
+                alt="See the future"
+                className="d-md-none cover-screen-flex"
+                src={Object {}}
+                width="100%"
+              />
+            </div>
+            <div
+              className="col-md-4 col-12"
+            >
+              <div
+                className="cover-screen-flex"
+              >
+                <div
+                  className="row"
+                >
+                  <div
+                    className="col-12"
+                  >
+                    <h2
+                      className="text-primary"
+                    >
+                      See the future
+                    </h2>
+                  </div>
+                  <div
+                    className="col-12"
+                  >
+                    Your premiums change with time, see the future predictions for upto 5 years, predicted based on your financial status of the past 5 years.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="cover-screen row"
+    >
+      <div
+        className="d-flex-center col-sm-12"
+      >
+        <div
+          className="d-flex-center container"
+        >
+          <div
+            className="row"
+          >
+            <div
+              className="d-flex-center max-width-960 col-sm-12"
+            >
+              <h1>
+                Much more...
+              </h1>
+            </div>
+            <div
+              className="d-flex-center text-center max-width-960 col-sm-12"
+            >
+              <h5>
+                No long forms, full control on your data, quick and simple user experience. 
+                <br />
+                So, what are you waiting for?
+                <br />
+                <a
+                  className="href-no-underline"
+                  onClick={[Function]}
+                >
+                  Sign up now and get started 
+                  <svg
+                    className="bi bi-arrow-right-circle-fill"
+                    fill="currentColor"
+                    height="16"
+                    viewBox="0 2 20 16"
+                    width="16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"
+                    />
+                  </svg>
+                </a>
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="row"
+    >
+      <div
+        className="mb-3 text-center col-sm-12"
+      >
+        Made with 
+        <span
+          className="text-danger"
+        >
+          <svg
+            className="bi bi-arrow-right-circle-fill"
+            fill="currentColor"
+            height="16"
+            viewBox="0 0 16 16"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+              fillRule="evenodd"
+            />
+          </svg>
+        </span>
+         by
+         
+        <a
+          className="href-no-underline"
+          href="https://github.com/atb00ker"
+        >
+          @atb00ker
+        </a>
+      </div>
+    </div>
+  </div>,
+]
+`;

@@ -33,7 +33,7 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
             }
           })
           .catch((error: HTTPError) => {
-            console.log(error);
+            console.error(error);
             changePageState(PageState.Error);
             setValidated(false);
           });
@@ -53,6 +53,7 @@ const CreateConsent: React.FC<{ auth: IAuth }> = ({ auth }) => {
           <Col sm='12'>
             <Form
               id='ProvideConsentForm'
+              data-testid="home-phone-number-input"
               noValidate
               validated={validated}
               onSubmit={handleCreateConsentSubmit}>

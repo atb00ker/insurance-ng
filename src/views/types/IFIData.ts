@@ -34,5 +34,5 @@ export type IFIInsurance = {
   is_active: boolean;
   is_claimed: boolean;
   yoy_deduction_rate: number;
-  is_insurance_ng_acct: string;
+  is_insurance_ng_acct: boolean;
 };

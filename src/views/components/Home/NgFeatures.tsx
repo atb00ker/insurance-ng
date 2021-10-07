@@ -4,8 +4,8 @@ import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import CompleteLogoImage from '../../assets/icons/complete-logo.jpg';
 import './NgFeatures.scss';
-import Button from 'react-bootstrap/esm/Button';
-import Container from 'react-bootstrap/esm/Container';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 import { FeatureDisplayOffWhite } from './FeatureDisplayOffWhite';
 import { FeatureDisplayWhite } from './FeatureDisplayWhite';
 import EmptyInformationDashboard3 from '../../assets/illustrations/empty-information-dashboard-3.svg';
@@ -32,12 +32,17 @@ const NgFeatures: React.FC = () => {
                 </h1>
                 <h5>Insurance management experience tailored to your lifestyle.</h5>
                 {auth.isReady && !auth.isAuthenticated && (
-                  <Button onClick={() => auth.loginWithRedirect()} className='d-inline' variant='primary'>
+                  <Button
+                    data-testid='features-page-button'
+                    onClick={() => auth.loginWithRedirect()}
+                    className='d-inline'
+                    variant='primary'>
                     Sign Up {rightArrowInCircle('0 0 16 16')}
                   </Button>
                 )}
               </Col>
               <Col
+                data-testid='features-page-logo'
                 className='text-center'
                 xs={{ order: 'first', span: '12' }}
                 md={{ order: 'last', span: '7' }}>

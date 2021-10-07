@@ -1,5 +1,5 @@
 import React from 'react';
-import Table from 'react-bootstrap/esm/Table';
+import Table from 'react-bootstrap/Table';
 import { IFIInsurance } from '../../types/IFIData';
 
 const InsuranceInfoClauses: React.FC<{ insuranceInfo: IFIInsurance }> = ({ insuranceInfo }) => {

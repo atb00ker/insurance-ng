@@ -8,8 +8,7 @@ export default {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   moduleNameMapper: {
-    '^.+\\.(css|scss)$': '<rootDir>/src/views/__test__/mock/CssLoaderMock.jest.js',
-    '^.+\\.(svg)$': '<rootDir>/src/views/__test__/mock/SVGLoaderMock.jest.js',
+    '^.+\\.(jpg|png|svg|s?css)$': '<rootDir>/src/views/__test__/mock/GenericLoaderMock.jest.ts',
   },
   testMatch: [
     // "**/__tests__/Pern.test.js"

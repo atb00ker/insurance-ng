@@ -2,7 +2,7 @@ import React from 'react';
 import Col from 'react-bootstrap/Col';
 import { useHistory } from 'react-router-dom';
 import { IFIData, IFIInsurance } from '../../types/IFIData';
-import Button from 'react-bootstrap/esm/Button';
+import Button from 'react-bootstrap/Button';
 import { RouterPath } from '../../enums/UrlPath';
 
 const TitleSection: React.FC<{ fiData: IFIData; insuranceInfo: IFIInsurance }> = ({

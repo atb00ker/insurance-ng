@@ -61,7 +61,7 @@ const InsuranceCard: React.FC<{ fiData: IFIData; insurance: IFIInsurance }> = ({
             </Card.Subtitle>
             <Card.Text className='insurance-card-text roboto-regular'>
               {insurance.description} <br />
-              {insurance.is_insurance_ng_acct && (
+              {!!insurance.is_insurance_ng_acct && (
                 <>
                   We are offering you a cover of
                   <span className={`text-${cardColor}`}>

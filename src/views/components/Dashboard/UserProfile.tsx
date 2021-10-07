@@ -6,7 +6,7 @@ import Table from 'react-bootstrap/Table';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { IFIUserData } from '../../types/IFIData';
-import Row from 'react-bootstrap/esm/Row';
+import Row from 'react-bootstrap/Row';
 import ProfileImageFemale from './../../assets/images/default-profile-picture-female.jpeg';
 import ProfileImageMale from './../../assets/images/default-profile-picture.jpeg';
 import {
@@ -18,7 +18,7 @@ import {
   warnIcon,
 } from '../../helpers/svgIcons';
 import { InsuranceTypes } from '../../enums/Insurance';
-import Button from 'react-bootstrap/esm/Button';
+import Button from 'react-bootstrap/Button';
 import { createConsentRequest, getPathToDashboard } from '../../helpers/axios';
 import { PageState } from '../../enums/PageStates';
 import { IAuth, IUserProfileScores } from '../../types/IUser';
@@ -62,7 +62,7 @@ const UserProfile: React.FC<IUserProfile> = ({ changePageState, fiData, auth }) 
           }
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
           changePageState(PageState.Error);
         });
     });

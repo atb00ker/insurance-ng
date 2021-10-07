@@ -2,7 +2,7 @@ import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
-import Container from 'react-bootstrap/esm/Container';
+import Container from 'react-bootstrap/Container';
 import { FeatureDisplayType } from '../../types/react-component-input-types';
 
 const FeatureDisplayWhite: React.FC<FeatureDisplayType> = ({ image, title, description, imageWidth }) => {
